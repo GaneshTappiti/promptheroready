@@ -1,22 +1,23 @@
-# Welcome to your Lovable project
+# PromptHeroReady
 
-## Project info
+**AI-Powered Startup Toolkit** - Your comprehensive platform for building, planning, and scaling startups with AI assistance.
 
-**URL**: https://lovable.dev/projects/c4510a55-06fc-4271-9bba-27c373244985
+## 🚀 Features
 
-## How can I edit this code?
+- **IdeaForge**: Comprehensive idea development with AI assistance
+- **MVP Studio**: AI-powered MVP development and prompt generation
+- **Investor Radar**: Track and manage investor relationships
+- **AI Tools Hub**: Curated collection of AI tools for startups
+- **Team Space**: Real-time collaboration with chat and task management
+- **Docs & Decks**: Document and pitch deck management
 
-There are several ways of editing your application.
+## 🛠️ Tech Stack
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/c4510a55-06fc-4271-9bba-27c373244985) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **Frontend**: React 18 + TypeScript + Vite
+- **UI**: Tailwind CSS + shadcn/ui components
+- **Backend**: Supabase (Database + Auth + Real-time)
+- **AI Integration**: Multiple AI providers (OpenAI, Claude, Gemini, etc.)
+- **State Management**: React Query + Context API
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
