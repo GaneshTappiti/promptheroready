@@ -1,26 +1,8 @@
 
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
-const testimonials = [
-  {
-    quote: "This platform saved me months of research and development. I validated my SaaS idea in hours, not weeks!",
-    author: "Sarah Johnson",
-    role: "Founder, TaskFlow",
-    avatar: "https://i.pravatar.cc/150?img=1",
-  },
-  {
-    quote: "The roadmap generation feature alone is worth the price. It gave me a clear path from idea to launch that I'm still following.",
-    author: "Michael Chen",
-    role: "CEO, DataViz Pro",
-    avatar: "https://i.pravatar.cc/150?img=3",
-  },
-  {
-    quote: "I used the pitch script creator before my Y Combinator interview and it helped me communicate my vision clearly. We got in!",
-    author: "Alex Rodriguez",
-    role: "CTO, HealthSync",
-    avatar: "https://i.pravatar.cc/150?img=4",
-  },
-];
+// Testimonials will be loaded from real user feedback or removed for production
+const testimonials: any[] = [];
 
 const Testimonials = () => {
   return (

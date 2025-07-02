@@ -11,7 +11,7 @@ import {
   WorkspaceCard,
   WorkspaceHeader
 } from "@/components/ui/workspace-layout";
-import WorkspaceSidebar from "@/components/WorkspaceSidebar";
+import WorkspaceSidebar, { SidebarToggle } from "@/components/WorkspaceSidebar";
 import AddPhaseModal from "@/components/blueprint/AddPhaseModal";
 import TaskModal from "@/components/blueprint/TaskModal";
 import PhaseCard, { Phase, Task } from "@/components/blueprint/PhaseCard";
@@ -26,60 +26,10 @@ const BlueprintZone = () => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [taskModalMode, setTaskModalMode] = useState<"add" | "edit">("add");
   
-  // Initialize with sample data
+  // Start with empty phases - users will create their own project phases
   useEffect(() => {
-    const initialPhases: Phase[] = [
-      {
-        id: "research",
-        title: "Research",
-        description: "Market research and idea validation",
-        tasks: [
-          { id: 1, title: "Conduct competitive analysis", status: "completed" },
-          { id: 2, title: "Create user personas", status: "in-progress" },
-          { id: 3, title: "Define value proposition", status: "pending" }
-        ],
-        duration: "2 weeks",
-        progress: 60
-      },
-      {
-        id: "design",
-        title: "Design",
-        description: "UI/UX design and prototyping",
-        tasks: [
-          { id: 4, title: "Create wireframes", status: "pending" },
-          { id: 5, title: "Design UI components", status: "pending" },
-          { id: 6, title: "Usability testing", status: "pending" }
-        ],
-        duration: "3 weeks",
-        progress: 0
-      },
-      {
-        id: "development",
-        title: "Development",
-        description: "Building the MVP",
-        tasks: [
-          { id: 7, title: "Set up development environment", status: "pending" },
-          { id: 8, title: "Implement core features", status: "pending" },
-          { id: 9, title: "Testing and debugging", status: "pending" }
-        ],
-        duration: "6 weeks",
-        progress: 0
-      },
-      {
-        id: "launch",
-        title: "Launch",
-        description: "Product launch and marketing",
-        tasks: [
-          { id: 10, title: "Prepare marketing materials", status: "pending" },
-          { id: 11, title: "Set up analytics", status: "pending" },
-          { id: 12, title: "Launch product", status: "pending" }
-        ],
-        duration: "2 weeks",
-        progress: 0
-      }
-    ];
-    
-    setPhases(initialPhases);
+    // Phases will be created by the user or loaded from their project data
+    setPhases([]);
   }, []);
   
   // Calculate progress for each phase
@@ -197,15 +147,7 @@ const BlueprintZone = () => {
       <main className="flex-1 p-6 transition-all duration-300">
         {/* Top navigation with hamburger menu */}
         <div className="flex items-center gap-4 mb-6">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-gray-400 hover:text-white hover:bg-black/30"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle Sidebar</span>
-          </Button>
+          <SidebarToggle onClick={() => setSidebarOpen(true)} />
           <div className="flex-1">
             {/* Page-specific navigation can go here */}
           </div>
@@ -335,7 +277,8 @@ const BlueprintZone = () => {
         task={selectedTask || undefined}
         mode={taskModalMode}
       />
-    </WorkspaceLayout>
+      </main>
+    </div>
   );
 };
 

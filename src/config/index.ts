@@ -12,7 +12,7 @@ const env = {
   VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL || '',
   VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY || '',
   VITE_DATABASE_URL: import.meta.env.VITE_DATABASE_URL || '',
-  VITE_ENCRYPTION_KEY: import.meta.env.VITE_ENCRYPTION_KEY || 'default-key-change-in-production',
+  VITE_ENCRYPTION_KEY: import.meta.env.VITE_ENCRYPTION_KEY || '',
   VITE_SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN || '',
   VITE_ANALYTICS_ID: import.meta.env.VITE_ANALYTICS_ID || '',
   VITE_FEATURE_FLAGS: import.meta.env.VITE_FEATURE_FLAGS || '',
@@ -236,8 +236,8 @@ export const validateConfig = () => {
   }
 
   // Validate encryption key in production
-  if (config.app.isProduction && config.security.encryptionKey === 'default-key-change-in-production') {
-    errors.push('Encryption key must be changed in production');
+  if (config.app.isProduction && !config.security.encryptionKey) {
+    errors.push('Encryption key is required in production');
   }
 
   if (errors.length > 0) {

@@ -120,33 +120,9 @@ const IdeaForge = () => {
 
   // Initialize data from storage and handle URL params
   useEffect(() => {
-    // Load ideas from storage
+    // Load ideas from storage - start with empty state for production
     const storedIdeas = IdeaForgeStorage.getIdeas();
-
-    // Initialize with sample idea if none exist
-    if (storedIdeas.length === 0) {
-      const sampleIdea: StoredIdea = {
-        id: "sample-idea",
-        title: "AI-Powered Grocery Management",
-        description: "App that helps track expiry dates and suggests recipes based on what's in your fridge",
-        content: "",
-        status: 'researching',
-        tags: ["AI", "Mobile App", "Sustainability"],
-        favorited: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        progress: {
-          wiki: 65,
-          blueprint: 30,
-          journey: 45,
-          feedback: 20
-        }
-      };
-      IdeaForgeStorage.saveIdea(sampleIdea);
-      setIdeas([sampleIdea]);
-    } else {
-      setIdeas(storedIdeas);
-    }
+    setIdeas(storedIdeas);
   }, []);
 
   // Handle export functionality - simplified to display content

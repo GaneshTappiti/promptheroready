@@ -95,139 +95,14 @@ const FeedbackView: React.FC<FeedbackViewProps> = ({ ideaId }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
-  // Sample feedback data
-  const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([
-    {
-      id: '1',
-      source: 'user-interview',
-      type: 'validation',
-      status: 'new',
-      title: 'Love the recipe suggestion feature!',
-      content: 'I interviewed Sarah, a busy mom of 3. She said the AI recipe suggestions based on expiring ingredients would save her 2-3 hours per week of meal planning. She\'s willing to pay $9.99/month for this feature alone.',
-      author: 'Sarah M.',
-      authorEmail: 'sarah.m@email.com',
-      date: new Date().toISOString(),
-      tags: ['recipe-feature', 'pricing', 'time-saving'],
-      linkedFeature: 'recipe-suggestions',
-      priority: 'high',
-      sentiment: 0.9,
-      aiGenerated: false
-    },
-    {
-      id: '2',
-      source: 'mentor',
-      type: 'concern',
-      status: 'reviewed',
-      title: 'OCR complexity might delay launch',
-      content: 'During our mentorship session, John raised concerns about the receipt scanning feature. He suggests starting with manual entry for MVP and adding OCR later. Focus on core value prop first.',
-      author: 'John D. (Mentor)',
-      date: new Date(Date.now() - 86400000).toISOString(),
-      tags: ['technical-risk', 'mvp-scope', 'mentor-advice'],
-      linkedFeature: 'receipt-scanning',
-      priority: 'high',
-      sentiment: -0.3,
-      aiGenerated: false
-    },
-    {
-      id: '3',
-      source: 'ai',
-      type: 'feature-request',
-      status: 'new',
-      title: 'Consider social sharing features',
-      content: 'Based on market analysis, 73% of food apps with social features have higher retention rates. Consider adding recipe sharing, cooking achievements, or family meal planning collaboration.',
-      author: 'AI Analysis',
-      date: new Date(Date.now() - 172800000).toISOString(),
-      tags: ['social-features', 'retention', 'market-research'],
-      priority: 'medium',
-      sentiment: 0.6,
-      aiGenerated: true
-    },
-    {
-      id: '4',
-      source: 'survey',
-      type: 'positive',
-      status: 'actioned',
-      title: 'Mobile-first approach is perfect',
-      content: 'Survey results from 50 potential users: 89% prefer mobile app over web for grocery management. 67% would use it while shopping. This validates our mobile-first decision.',
-      author: 'Survey Results',
-      date: new Date(Date.now() - 259200000).toISOString(),
-      tags: ['mobile-first', 'user-preference', 'validation'],
-      linkedFeature: 'mobile-app',
-      priority: 'high',
-      sentiment: 0.8,
-      aiGenerated: false
-    },
-    {
-      id: '5',
-      source: 'discord',
-      type: 'confusion',
-      status: 'new',
-      title: 'Unclear value proposition',
-      content: 'User in #startup-feedback channel said: "I don\'t understand how this is different from existing apps like Yuka or HowGood. What makes your AI special?" Need clearer differentiation.',
-      author: 'Discord User @foodie_dev',
-      date: new Date(Date.now() - 345600000).toISOString(),
-      tags: ['value-prop', 'differentiation', 'messaging'],
-      priority: 'medium',
-      sentiment: -0.2,
-      aiGenerated: false
-    }
-  ]);
+  // Start with empty feedback - users will add their own feedback
+  const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([]);
 
-  // AI-generated clusters
-  const [feedbackClusters, setFeedbackClusters] = useState<FeedbackCluster[]>([
-    {
-      id: 'cluster-1',
-      theme: 'Recipe Feature Validation',
-      description: 'Strong positive feedback on AI-powered recipe suggestions',
-      feedbackIds: ['1', '4'],
-      priority: 'high',
-      actionable: true
-    },
-    {
-      id: 'cluster-2',
-      theme: 'Technical Complexity Concerns',
-      description: 'Multiple sources suggest simplifying MVP scope',
-      feedbackIds: ['2'],
-      priority: 'high',
-      actionable: true
-    },
-    {
-      id: 'cluster-3',
-      theme: 'Messaging & Differentiation',
-      description: 'Users need clearer understanding of unique value',
-      feedbackIds: ['5'],
-      priority: 'medium',
-      actionable: true
-    }
-  ]);
+  // Start with empty clusters - will be generated from user feedback
+  const [feedbackClusters, setFeedbackClusters] = useState<FeedbackCluster[]>([]);
 
-  // Validation insights
-  const [validationInsights, setValidationInsights] = useState<ValidationInsight[]>([
-    {
-      id: 'insight-1',
-      category: 'market-fit',
-      insight: 'Strong product-market fit signals for recipe suggestion feature',
-      confidence: 85,
-      supportingFeedback: ['1', '4'],
-      recommendation: 'Prioritize recipe AI as core differentiator for MVP launch'
-    },
-    {
-      id: 'insight-2',
-      category: 'feature-validation',
-      insight: 'Mobile-first approach validated by user preferences',
-      confidence: 89,
-      supportingFeedback: ['4'],
-      recommendation: 'Continue mobile-first development, consider web version later'
-    },
-    {
-      id: 'insight-3',
-      category: 'user-experience',
-      insight: 'OCR complexity may hurt user experience in MVP',
-      confidence: 75,
-      supportingFeedback: ['2'],
-      recommendation: 'Start with manual entry, add OCR in v2 after core validation'
-    }
-  ]);
+  // Start with empty insights - will be generated from user feedback
+  const [validationInsights, setValidationInsights] = useState<ValidationInsight[]>([]);
 
   // Helper functions
   const feedbackSources = [

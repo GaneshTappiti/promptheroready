@@ -53,71 +53,10 @@ const TaskPlanner = () => {
   const [activeView, setActiveView] = useState("kanban");
   const { toast } = useToast();
 
-  // Initialize with sample tasks
+  // Start with empty tasks - users will create their own tasks
   useEffect(() => {
-    const sampleTasks: Task[] = [
-      {
-        id: "1",
-        title: "Create landing page",
-        description: "Design and develop the main landing page for the product",
-        status: "todo",
-        priority: "high",
-        dueDate: "2024-01-15",
-        assignee: "John Doe",
-        tags: ["frontend", "design"],
-        createdAt: "2024-01-10",
-        updatedAt: "2024-01-10"
-      },
-      {
-        id: "2",
-        title: "Design system implementation",
-        description: "Implement the design system components across the application",
-        status: "in-progress",
-        priority: "medium",
-        dueDate: "2024-01-20",
-        assignee: "Jane Smith",
-        tags: ["design", "components"],
-        createdAt: "2024-01-08",
-        updatedAt: "2024-01-12"
-      },
-      {
-        id: "3",
-        title: "Project setup",
-        description: "Initial project setup and configuration",
-        status: "done",
-        priority: "high",
-        dueDate: "2024-01-05",
-        assignee: "John Doe",
-        tags: ["setup", "config"],
-        createdAt: "2024-01-01",
-        updatedAt: "2024-01-05"
-      },
-      {
-        id: "4",
-        title: "API integration",
-        description: "Integrate with third-party APIs for data fetching",
-        status: "todo",
-        priority: "medium",
-        dueDate: "2024-01-25",
-        assignee: "Mike Johnson",
-        tags: ["backend", "api"],
-        createdAt: "2024-01-11",
-        updatedAt: "2024-01-11"
-      },
-      {
-        id: "5",
-        title: "User authentication",
-        description: "Implement user login and registration functionality",
-        status: "in-progress",
-        priority: "high",
-        dueDate: "2024-01-18",
-        assignee: "Sarah Wilson",
-        tags: ["auth", "security"],
-        createdAt: "2024-01-09",
-        updatedAt: "2024-01-13"
-      }
-    ];
-    setTasks(sampleTasks);
+    // Tasks will be loaded from user's database or created by the user
+    setTasks([]);
   }, []);
 
   const filteredTasks = tasks.filter(task => {

@@ -336,4 +336,71 @@
   .workspace-warning {
     @apply text-yellow-400 bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3;
   }
+
+  /* AI Response Styling */
+  .ai-response-content {
+    @apply text-foreground;
+  }
+
+  /* Enhanced list styling for AI responses */
+  .ai-response-content .counter-reset-item {
+    counter-reset: item;
+  }
+
+  .ai-response-content .counter-increment-item {
+    counter-increment: item;
+  }
+
+  .ai-response-content .counter-item::before {
+    content: counter(item);
+  }
+
+  /* Syntax highlighting theme adjustments */
+  .ai-response-content pre[class*="language-"] {
+    @apply !bg-transparent !m-0;
+  }
+
+  .ai-response-content code[class*="language-"] {
+    @apply !bg-transparent;
+  }
+
+  /* Custom scrollbar for code blocks */
+  .ai-response-content pre::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .ai-response-content pre::-webkit-scrollbar-track {
+    @apply bg-muted rounded;
+  }
+
+  .ai-response-content pre::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded hover:bg-muted-foreground/50;
+  }
+
+  /* Prompt viewer specific styles */
+  .prompt-section-header {
+    @apply transition-colors duration-200;
+  }
+
+  .prompt-section-header:hover {
+    @apply bg-muted/50;
+  }
+
+  /* Enhanced table styling for AI responses */
+  .ai-response-content table {
+    @apply w-full border-collapse;
+  }
+
+  .ai-response-content th,
+  .ai-response-content td {
+    @apply border-b border-border p-3 text-left;
+  }
+
+  .ai-response-content th {
+    @apply bg-muted font-semibold;
+  }
+
+  .ai-response-content tbody tr:hover {
+    @apply bg-muted/30;
+  }
 }

@@ -1,12 +1,8 @@
 import { Pool } from 'pg';
 
-// Database connection configuration
+// Database connection configuration - should be set via environment variables
 const dbConfig = {
-  user: 'postgres.dsfikceaftssoaazhvwv',
-  password: '[Tappiti@160905]',
-  host: 'aws-0-ap-south-1.pooler.supabase.com',
-  port: 5432,
-  database: 'postgres',
+  connectionString: import.meta.env.VITE_DATABASE_URL,
   ssl: true,
   max: 20, // Maximum number of clients in the pool
   idleTimeoutMillis: 30000, // How long a client is allowed to remain idle before being closed

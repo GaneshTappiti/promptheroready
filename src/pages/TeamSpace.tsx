@@ -159,70 +159,11 @@ const TeamSpace = () => {
     setupTeam();
   }, [user]);
 
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
-    {
-      id: 1,
-      name: "Alex Johnson",
-      role: "Co-Founder & CEO",
-      email: "alex@startup.com",
-      phone: "+1 (555) 123-4567",
-      avatar: "AJ",
-      status: "online"
-    },
-    {
-      id: 2,
-      name: "Sarah Chen",
-      role: "Co-Founder & CTO",
-      email: "sarah@startup.com",
-      phone: "+1 (555) 987-6543",
-      avatar: "SC",
-      status: "away"
-    },
-    {
-      id: 3,
-      name: "Michael Rodriguez",
-      role: "Product Manager",
-      email: "michael@startup.com",
-      phone: "+1 (555) 456-7890",
-      avatar: "MR",
-      status: "offline"
-    }
-  ]);
+  // Start with empty team members - will be loaded from database
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: 1,
-      title: "Update pitch deck with new metrics",
-      assignee: "Alex Johnson",
-      dueDate: "Today",
-      status: "in-progress",
-      priority: "high"
-    },
-    {
-      id: 2,
-      title: "Finalize product roadmap",
-      assignee: "Sarah Chen",
-      dueDate: "Tomorrow",
-      status: "pending",
-      priority: "high"
-    },
-    {
-      id: 3,
-      title: "Review competitor analysis",
-      assignee: "Michael Rodriguez",
-      dueDate: "Next week",
-      status: "completed",
-      priority: "medium"
-    },
-    {
-      id: 4,
-      title: "Schedule investor meetings",
-      assignee: "Alex Johnson",
-      dueDate: "Next week",
-      status: "pending",
-      priority: "medium"
-    }
-  ]);
+  // Start with empty tasks - will be loaded from database
+  const [tasks, setTasks] = useState<Task[]>([]);
   
   const meetings = [
     {

@@ -46,6 +46,7 @@ export const STORAGE_KEYS = {
 export const ROUTES = {
   HOME: '/',
   AUTH: '/auth',
+  ONBOARDING: '/onboarding',
   WORKSPACE: '/workspace',
   IDEA_FORGE: '/workspace/idea-forge',
   MVP_STUDIO: '/workspace/mvp-studio',

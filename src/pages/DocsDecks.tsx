@@ -74,81 +74,9 @@ const DocsDecks = () => {
   const [filterBy, setFilterBy] = useState("all");
   const [isGeneratingContent, setIsGeneratingContent] = useState(false);
   
-  const pitchDecks = [
-    {
-      id: 1,
-      name: "Investor Pitch",
-      description: "15-slide deck for seed round investors",
-      lastEdited: "Yesterday",
-      slides: 15,
-      template: "YC Seed",
-      status: "active",
-      collaborators: ["john@example.com", "sarah@example.com"],
-      views: 127,
-      shares: 8,
-      version: "v2.1",
-      createdAt: "2024-01-10",
-      tags: ["investor", "seed", "funding"],
-      analytics: {
-        totalViews: 127,
-        uniqueViewers: 45,
-        avgTimeSpent: "4:32",
-        completionRate: 78,
-        engagementScore: 85
-      }
-    },
-    {
-      id: 2,
-      name: "Partner Pitch",
-      description: "Overview for potential strategic partners",
-      lastEdited: "3 days ago",
-      slides: 10,
-      template: "Partner Brief"
-    },
-    {
-      id: 3,
-      name: "Product Demo",
-      description: "Product walkthrough for customers",
-      lastEdited: "Last week",
-      slides: 12,
-      template: "Product Launch"
-    }
-  ];
-  
-  const documents = [
-    {
-      id: 1,
-      name: "Business Plan",
-      description: "Full business plan with financial projections",
-      type: "Document",
-      lastEdited: "Today",
-      pages: 24
-    },
-    {
-      id: 2,
-      name: "One-Pager",
-      description: "Executive summary for quick overview",
-      type: "One-pager",
-      lastEdited: "Yesterday",
-      pages: 1
-    },
-    {
-      id: 3,
-      name: "Market Research",
-      description: "Industry analysis and market opportunity",
-      type: "Research",
-      lastEdited: "Last week",
-      pages: 15
-    },
-    {
-      id: 4,
-      name: "Financial Model",
-      description: "5-year projection with assumptions",
-      type: "Spreadsheet",
-      lastEdited: "2 weeks ago",
-      pages: "N/A"
-    }
-  ];
+  // Start with empty arrays - users will create their own documents and decks
+  const pitchDecks: any[] = [];
+  const documents: any[] = [];
   
   const templates = [
     {

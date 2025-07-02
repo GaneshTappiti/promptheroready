@@ -1,14 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://dsfikceaftssoaazhvwv.supabase.co';
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzZmlrY2VhZnRzc29hYXpodnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2MTM2NzYsImV4cCI6MjA2NDE4OTY3Nn0.TVtwI2INheLjdnwnaZNM0tLuz9URmGZ4MHbH2Akb3fA';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseKey = import.meta.env.VITE_SUPABASE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 if (!supabaseUrl || !supabaseKey) {
   console.error('Missing Supabase configuration. Please check your environment variables.');
 }
 
-// Database connection string for session pooler
-const dbConnectionString = 'postgresql://postgres.dsfikceaftssoaazhvwv:[Tappiti@160905]@aws-0-ap-south-1.pooler.supabase.com:5432/postgres';
+// Database connection string for session pooler - should be set via environment variables
+const dbConnectionString = import.meta.env.VITE_DATABASE_URL || '';
 
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
@@ -448,41 +448,4 @@ export const testSupabaseConnection = async () => {
   }
 };
 
-// Function to insert test data
-export const insertTestData = async () => {
-  try {
-    // Test project data
-    const testProject = {
-      name: "Test Project",
-      description: "This is a test project to verify Supabase integration",
-    };
-
-    // Test task data
-    const testTask = {
-      title: "Test Task",
-      priority: "High",
-      due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
-    };
-
-    // Insert test project
-    const { data: projectData, error: projectError } = await supabaseHelpers.createProject(testProject);
-    if (projectError) {
-      console.error('Error inserting test project:', projectError);
-      return false;
-    }
-    console.log('Test project inserted successfully:', projectData);
-
-    // Insert test task
-    const { data: taskData, error: taskError } = await supabaseHelpers.createTask(testTask);
-    if (taskError) {
-      console.error('Error inserting test task:', taskError);
-      return false;
-    }
-    console.log('Test task inserted successfully:', taskData);
-
-    return true;
-  } catch (error) {
-    console.error('Error inserting test data:', error);
-    return false;
-  }
-}; 
+// Test data functions removed for production

@@ -6,6 +6,7 @@
 // Re-export new hooks
 export * from './useLocalStorage';
 export * from './useApi';
+export * from './useProfile';
 
 // Re-export existing hooks
 export * from '../../hooks/use-debounce';

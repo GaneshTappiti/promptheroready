@@ -55,59 +55,22 @@ const DocumentEditor = () => {
   const [aiPrompt, setAiPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Mock document data - in a real app, this would be fetched based on the docId
+  // Document data will be loaded from user's database or created new
   const documentData = {
     id: docId,
-    title: docId === "new" ? "New Document" : "Investment Pitch Deck",
+    title: docId === "new" ? "New Document" : "Untitled Document",
     type: type || "deck",
-    slides: 10,
+    slides: 0,
     lastEdited: "Just now"
   };
 
   useEffect(() => {
+    // Initialize with empty document - users will create their own content
+    setDocumentTitle(documentData.title);
     if (documentData.type === "deck") {
-      // Initialize with sample slides for pitch deck
-      const sampleSlides: Slide[] = [
-        {
-          id: "1",
-          title: "Title Slide",
-          content: "# Your Startup Name\n\n## Tagline: Revolutionizing the Industry\n\n**Presented by:** Your Name\n**Date:** " + new Date().toLocaleDateString(),
-          type: "title",
-          layout: "default"
-        },
-        {
-          id: "2",
-          title: "Problem",
-          content: "# The Problem\n\n- Current market pain point #1\n- Existing solution limitations\n- Market gap opportunity\n- Why this matters now",
-          type: "content",
-          layout: "default"
-        },
-        {
-          id: "3",
-          title: "Solution",
-          content: "# Our Solution\n\n- Innovative approach to solving the problem\n- Key differentiators\n- Unique value proposition\n- Technology advantages",
-          type: "content",
-          layout: "default"
-        },
-        {
-          id: "4",
-          title: "Market Opportunity",
-          content: "# Market Opportunity\n\n- Total Addressable Market (TAM): $X billion\n- Serviceable Addressable Market (SAM): $Y billion\n- Market growth rate: Z% annually\n- Key market trends",
-          type: "content",
-          layout: "default"
-        },
-        {
-          id: "5",
-          title: "Business Model",
-          content: "# Business Model\n\n- Revenue streams\n- Pricing strategy\n- Customer acquisition cost\n- Lifetime value\n- Unit economics",
-          type: "content",
-          layout: "default"
-        }
-      ];
-      setSlides(sampleSlides);
-      setDocumentTitle(documentData.title);
+      setSlides([]);
     } else {
-      setDocumentTitle(documentData.title);
+      setContent("");
     }
   }, [docId, type]);
 

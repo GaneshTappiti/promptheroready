@@ -12,7 +12,8 @@ import {
   MessageSquare,
   X,
   FileText,
-  Menu
+  Menu,
+  Target
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -70,7 +71,7 @@ const WorkspaceSidebar = ({ isOpen = false, setIsOpen = () => {} }: WorkspaceSid
     { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, path: "/workspace" },
     { id: "idea-vault", name: "Idea Vault", icon: Lightbulb, path: "/workspace/idea-vault" },
     { id: "ideaforge", name: "IdeaForge", icon: Brain, path: "/workspace/ideaforge" },
-
+    { id: "blueprint-zone", name: "Blueprint Zone", icon: Target, path: "/workspace/blueprint-zone" },
     { id: "mvp-studio", name: "MVP Studio", icon: Code, path: "/workspace/mvp-studio" },
     { id: "ai-tools", name: "AI Tools Hub", icon: Brain, path: "/workspace/ai-tools" },
     { id: "docs-decks", name: "Docs & Decks", icon: FileText, path: "/workspace/docs-decks" },

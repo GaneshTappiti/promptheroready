@@ -73,49 +73,8 @@ const MVPStudio = () => {
     .filter(tool => tool.category === 'app-builders')
     .slice(0, 6);
 
-  // Sample templates data for MVP generation
-  const mvpTemplates = [
-    {
-      id: 1,
-      name: "SaaS Dashboard",
-      description: "Complete SaaS application with user management, analytics, and billing",
-      icon: LayoutGrid,
-      tags: ["Dashboard", "Analytics", "User Management"],
-      complexity: "Medium",
-      estimatedTime: "2-3 weeks",
-      recommendedTools: ["Framer", "FlutterFlow", "Supabase"]
-    },
-    {
-      id: 2,
-      name: "E-commerce Store",
-      description: "Online store with product catalog, cart, and payment integration",
-      icon: Code,
-      tags: ["E-commerce", "Payments", "Inventory"],
-      complexity: "High",
-      estimatedTime: "3-4 weeks",
-      recommendedTools: ["Webflow", "Shopify", "Stripe"]
-    },
-    {
-      id: 3,
-      name: "Mobile App",
-      description: "Cross-platform mobile application with native features",
-      icon: Palette,
-      tags: ["Mobile", "Cross-platform", "Native"],
-      complexity: "Medium",
-      estimatedTime: "2-3 weeks",
-      recommendedTools: ["FlutterFlow", "Draftbit", "Firebase"]
-    },
-    {
-      id: 4,
-      name: "AI-Powered Tool",
-      description: "AI application with chat interface and intelligent features",
-      icon: Brain,
-      tags: ["AI", "Chatbot", "Machine Learning"],
-      complexity: "High",
-      estimatedTime: "3-5 weeks",
-      recommendedTools: ["Replit", "Cursor", "OpenAI"]
-    }
-  ];
+  // Templates will be loaded dynamically based on user preferences and AI recommendations
+  const mvpTemplates: any[] = [];
 
   // Check AI provider on component mount
   useEffect(() => {

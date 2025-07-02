@@ -128,6 +128,7 @@ const Workspace = () => {
   const [isGeneratingIdea, setIsGeneratingIdea] = useState(false);
   const [showStartupBrief, setShowStartupBrief] = useState(false);
   const [briefPrompt, setBriefPrompt] = useState("");
+  const [showQuickStart, setShowQuickStart] = useState(false);
 
   const notificationRef = useRef<HTMLDivElement>(null);
   const settingsRef = useRef<HTMLDivElement>(null);
@@ -162,85 +163,11 @@ const Workspace = () => {
       }
     };
 
-    // Initialize sample data for new features
+    // Initialize with empty data - users will create their own content
     const initializeEnhancedData = () => {
-      // Sample weekly goals
-      setWeeklyGoals([
-        {
-          id: '1',
-          title: 'Complete MVP Design',
-          description: 'Finish wireframes and user flow',
-          progress: 75,
-          target: 100,
-          dueDate: '2024-01-20'
-        },
-        {
-          id: '2',
-          title: 'User Research',
-          description: 'Interview 10 potential customers',
-          progress: 40,
-          target: 100,
-          dueDate: '2024-01-25'
-        },
-        {
-          id: '3',
-          title: 'Technical Setup',
-          description: 'Set up development environment',
-          progress: 90,
-          target: 100,
-          dueDate: '2024-01-18'
-        }
-      ]);
-
-      // Sample trending ideas
-      setTrendingIdeas([
-        {
-          id: '1',
-          title: 'AI-Powered Meal Planning',
-          description: 'Smart grocery management with recipe suggestions',
-          category: 'Health & Fitness',
-          popularity: 85
-        },
-        {
-          id: '2',
-          title: 'Remote Team Collaboration',
-          description: 'Virtual workspace for distributed teams',
-          category: 'Productivity',
-          popularity: 78
-        },
-        {
-          id: '3',
-          title: 'Sustainable Shopping Assistant',
-          description: 'Help users make eco-friendly purchase decisions',
-          category: 'Sustainability',
-          popularity: 72
-        }
-      ]);
-
-      // Sample upcoming events
-      setUpcomingEvents([
-        {
-          id: '1',
-          title: 'Team Standup',
-          date: '2024-01-16',
-          time: '09:00',
-          type: 'meeting'
-        },
-        {
-          id: '2',
-          title: 'User Testing Session',
-          date: '2024-01-18',
-          time: '14:00',
-          type: 'testing'
-        },
-        {
-          id: '3',
-          title: 'Investor Pitch Deadline',
-          date: '2024-01-22',
-          time: '17:00',
-          type: 'deadline'
-        }
-      ]);
+      setWeeklyGoals([]);
+      setTrendingIdeas([]);
+      setUpcomingEvents([]);
     };
 
     fetchData();
@@ -667,6 +594,7 @@ const Workspace = () => {
                 <Button
                   variant="outline"
                   className="bg-green-600/20 border-green-500/30 text-green-400 hover:bg-green-600/30 hover:border-green-500/50"
+                  onClick={() => setShowQuickStart(true)}
                 >
                   <Sparkles className="h-4 w-4 mr-2" />
                   Quick Start
@@ -989,8 +917,8 @@ const Workspace = () => {
                 <h3 className="text-sm font-medium text-gray-400">Total Ideas</h3>
                 <Lightbulb className="h-4 w-4 text-yellow-400" />
               </div>
-              <div className="text-2xl font-bold text-white mb-1">{projects.length || 12}</div>
-              <div className="text-xs text-green-400">+3 this week</div>
+              <div className="text-2xl font-bold text-white mb-1">{projects.length || 0}</div>
+              <div className="text-xs text-green-400">+{Math.max(0, projects.length - 3)} this week</div>
             </div>
 
             <div className="bg-black/20 backdrop-blur-xl rounded-xl p-4 border border-white/10">
@@ -998,8 +926,8 @@ const Workspace = () => {
                 <h3 className="text-sm font-medium text-gray-400">Active Tasks</h3>
                 <CheckCircle2 className="h-4 w-4 text-blue-400" />
               </div>
-              <div className="text-2xl font-bold text-white mb-1">{tasks.filter(t => t.status !== 'done').length || 8}</div>
-              <div className="text-xs text-blue-400">2 due today</div>
+              <div className="text-2xl font-bold text-white mb-1">{tasks.filter(t => t.status !== 'done').length || 0}</div>
+              <div className="text-xs text-blue-400">{tasks.filter(t => new Date(t.due_date).toDateString() === new Date().toDateString()).length || 0} due today</div>
             </div>
 
             <div className="bg-black/20 backdrop-blur-xl rounded-xl p-4 border border-white/10">
@@ -1007,8 +935,8 @@ const Workspace = () => {
                 <h3 className="text-sm font-medium text-gray-400">In Development</h3>
                 <Rocket className="h-4 w-4 text-purple-400" />
               </div>
-              <div className="text-2xl font-bold text-white mb-1">3</div>
-              <div className="text-xs text-purple-400">2 MVPs ready</div>
+              <div className="text-2xl font-bold text-white mb-1">{projects.filter(p => p.stage === 'development').length || 0}</div>
+              <div className="text-xs text-purple-400">{projects.filter(p => p.stage === 'testing').length || 0} MVPs ready</div>
             </div>
 
             <div className="bg-black/20 backdrop-blur-xl rounded-xl p-4 border border-white/10">
@@ -1016,8 +944,8 @@ const Workspace = () => {
                 <h3 className="text-sm font-medium text-gray-400">AI Assists</h3>
                 <Zap className="h-4 w-4 text-green-400" />
               </div>
-              <div className="text-2xl font-bold text-white mb-1">47</div>
-              <div className="text-xs text-green-400">+12 today</div>
+              <div className="text-2xl font-bold text-white mb-1">0</div>
+              <div className="text-xs text-green-400">Ready to assist</div>
             </div>
 
             <div className="bg-black/20 backdrop-blur-xl rounded-xl p-4 border border-white/10">
@@ -1025,8 +953,8 @@ const Workspace = () => {
                 <h3 className="text-sm font-medium text-gray-400">Success Rate</h3>
                 <BarChart3 className="h-4 w-4 text-orange-400" />
               </div>
-              <div className="text-2xl font-bold text-white mb-1">78%</div>
-              <div className="text-xs text-orange-400">Above average</div>
+              <div className="text-2xl font-bold text-white mb-1">--</div>
+              <div className="text-xs text-orange-400">Start tracking</div>
             </div>
           </div>
 
@@ -1040,34 +968,45 @@ const Workspace = () => {
               </Button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              {['Idea', 'Planning', 'Development', 'Testing', 'Launch'].map((stage, index) => (
-                <Card key={stage} className="workspace-card">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-white flex items-center justify-between">
-                      {stage}
-                      <span className="text-xs bg-green-600/20 text-green-400 px-2 py-1 rounded-full">
-                        {Math.floor(Math.random() * 5) + 1}
-                      </span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="h-2 bg-gray-700 rounded-full">
-                        <div
-                          className="h-2 bg-green-400 rounded-full transition-all duration-300"
-                          style={{ width: `${(index + 1) * 20}%` }}
-                        ></div>
+              {['Idea', 'Planning', 'Development', 'Testing', 'Launch'].map((stage, index) => {
+                const stageProjects = projects.filter(p => {
+                  if (stage === 'Idea') return p.stage === 'idea' || !p.stage;
+                  if (stage === 'Planning') return p.stage === 'planning';
+                  if (stage === 'Development') return p.stage === 'development';
+                  if (stage === 'Testing') return p.stage === 'testing';
+                  if (stage === 'Launch') return p.stage === 'launch';
+                  return false;
+                }).length;
+
+                return (
+                  <Card key={stage} className="workspace-card">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm text-white flex items-center justify-between">
+                        {stage}
+                        <span className="text-xs bg-green-600/20 text-green-400 px-2 py-1 rounded-full">
+                          {stageProjects}
+                        </span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div className="h-2 bg-gray-700 rounded-full">
+                          <div
+                            className="h-2 bg-green-400 rounded-full transition-all duration-300"
+                            style={{ width: projects.length > 0 ? `${(stageProjects / projects.length) * 100}%` : '0%' }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-400">
+                          {index === 0 ? 'New ideas' :
+                           index === 1 ? 'In planning' :
+                           index === 2 ? 'Building MVP' :
+                           index === 3 ? 'User testing' : 'Ready to launch'}
+                        </p>
                       </div>
-                      <p className="text-xs text-gray-400">
-                        {index === 0 ? 'New ideas' :
-                         index === 1 ? 'In planning' :
-                         index === 2 ? 'Building MVP' :
-                         index === 3 ? 'User testing' : 'Ready to launch'}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
             
@@ -1177,11 +1116,11 @@ const Workspace = () => {
                 </div>
               </Link>
 
-              <Link to="/workspace/teamspace" className="group">
+              <Link to="/workspace/blueprint-zone" className="group">
                 <div className="bg-black/20 backdrop-blur-xl rounded-xl p-4 border border-white/10 hover:border-green-500/30 transition-all duration-300 text-center hover:bg-black/30">
-                  <User className="h-8 w-8 mx-auto mb-2 text-green-400 group-hover:scale-110 transition-transform" />
-                  <h3 className="font-medium text-white text-sm group-hover:text-green-400 transition-colors">Invite Team</h3>
-                  <p className="text-xs text-gray-400 mt-1">Collaborate</p>
+                  <Target className="h-8 w-8 mx-auto mb-2 text-green-400 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-medium text-white text-sm group-hover:text-green-400 transition-colors">Plan Roadmap</h3>
+                  <p className="text-xs text-gray-400 mt-1">Strategic planning</p>
                 </div>
               </Link>
 

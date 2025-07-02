@@ -12,6 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import PromptViewer from "@/components/ui/prompt-viewer";
+import AIResponse from "@/components/ui/ai-response";
 import {
   Copy,
   ExternalLink,
@@ -339,207 +341,119 @@ ${result.linkingPrompt || 'Not generated yet'}
 
         {/* Ready Prompts Tab */}
         <TabsContent value="prompts" className="space-y-6">
-          <div className="space-y-6">
-            {/* Framework Prompt */}
-            {result.frameworkPrompt && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Layers className="h-5 w-5" />
-                    Step 1: Framework Prompt
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => copyToClipboard(result.frameworkPrompt!, "Framework prompt")}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-muted/50 p-4 rounded-lg font-mono text-sm max-h-40 overflow-y-auto">
-                    {result.frameworkPrompt}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+          {(() => {
+            // Prepare sections for PromptViewer
+            const sections = [];
 
-            {/* Page Prompts */}
-            {result.pagePrompts && result.pagePrompts.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Monitor className="h-5 w-5" />
-                    Step 2: Page UI Prompts
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {result.pagePrompts.map((pagePrompt, index) => (
-                    <div key={index} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-medium">{pagePrompt.pageName} Page</h4>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => copyToClipboard(pagePrompt.prompt, `${pagePrompt.pageName} page prompt`)}
-                        >
-                          <Copy className="h-4 w-4 mr-2" />
-                          Copy
-                        </Button>
-                      </div>
-                      <div className="bg-muted/50 p-3 rounded text-sm font-mono max-h-32 overflow-y-auto">
-                        {pagePrompt.prompt}
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            )}
+            // Framework Prompt Section
+            if (result.frameworkPrompt) {
+              sections.push({
+                id: 'framework',
+                title: 'Step 1: Framework & Structure',
+                icon: <Layers className="h-4 w-4" />,
+                content: `# 🏗️ App Framework Prompt
 
-            {/* Linking Prompt */}
-            {result.linkingPrompt && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Link className="h-5 w-5" />
-                    Step 3: Navigation & Linking Prompt
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => copyToClipboard(result.linkingPrompt!, "Linking prompt")}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-muted/50 p-4 rounded-lg font-mono text-sm max-h-40 overflow-y-auto">
-                    {result.linkingPrompt}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+${result.frameworkPrompt}
 
-            {/* Enhanced Usage Instructions */}
-            <Card className="bg-gradient-to-r from-primary/10 to-green-500/10 border-primary/20">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                  How to Use These Prompts
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-medium mb-3">Step-by-Step Process:</h4>
-                    <ol className="space-y-3 text-sm">
-                      <li className="flex items-start gap-3">
-                        <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium flex-shrink-0">1</span>
-                        <div>
-                          <div className="font-medium">Choose Your Builder</div>
-                          <div className="text-muted-foreground">Select from our AI Tools recommendations</div>
-                        </div>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium flex-shrink-0">2</span>
-                        <div>
-                          <div className="font-medium">Start with Framework</div>
-                          <div className="text-muted-foreground">Copy and paste the Framework Prompt first</div>
-                        </div>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium flex-shrink-0">3</span>
-                        <div>
-                          <div className="font-medium">Design Each Page</div>
-                          <div className="text-muted-foreground">Use individual page prompts for detailed UI</div>
-                        </div>
-                      </li>
-                      <li className="flex items-start gap-3">
-                        <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium flex-shrink-0">4</span>
-                        <div>
-                          <div className="font-medium">Connect & Launch</div>
-                          <div className="text-muted-foreground">Apply navigation prompt and test your MVP</div>
-                        </div>
-                      </li>
-                    </ol>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-3">Pro Tips:</h4>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span>Start with one page to test the workflow</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span>Customize prompts based on your specific needs</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span>Use the AI Tools tab for direct builder access</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                        <span>Export this blueprint for future reference</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
+## 📋 What This Generates
+- Overall app structure and layout
+- Navigation system design
+- Core page hierarchy
+- Design system foundation
 
-                <Separator className="my-4" />
+## 🎯 Best Used With
+- **Framer**: Perfect for rapid prototyping and design systems
+- **FlutterFlow**: Excellent for mobile app structure
+- **Uizard**: Great for wireframe to design conversion`,
+                type: 'prompt' as const,
+                toolSpecific: {
+                  framer: `Create a ${result.pages.length}-page app with the following structure:\n\n${result.frameworkPrompt}\n\nFocus on: Modern design system, responsive layout, smooth animations`,
+                  flutterflow: `Build a Flutter app with these specifications:\n\n${result.frameworkPrompt}\n\nEmphasize: Native performance, cross-platform compatibility, Material Design`,
+                  uizard: `Design a ${result.pages.length}-screen app:\n\n${result.frameworkPrompt}\n\nPrioritize: Clean wireframes, user flow clarity, mobile-first design`
+                }
+              });
+            }
 
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => copyToClipboard(
-                      `${result.frameworkPrompt}\n\n---\n\n${result.pagePrompts?.map(p => p.prompt).join('\n\n---\n\n') || ''}\n\n---\n\n${result.linkingPrompt || ''}`,
-                      "All prompts"
-                    )}
-                  >
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy All Prompts
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setActiveTab('ai-tools')}
-                  >
-                    <Zap className="h-4 w-4 mr-2" />
-                    View AI Tools
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <Download className="h-4 w-4 mr-2" />
-                        Export Blueprint
-                        <ChevronDown className="h-4 w-4 ml-2" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuItem onClick={exportToMarkdown}>
-                        <FileText className="h-4 w-4 mr-2" />
-                        Markdown (.md)
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={exportToJSON}>
-                        <Code className="h-4 w-4 mr-2" />
-                        JSON (.json)
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={exportToNotion}>
-                        <FileText className="h-4 w-4 mr-2" />
-                        Copy for Notion
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={shareBlueprint}>
-                        <Share className="h-4 w-4 mr-2" />
-                        Share Blueprint
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+            // Page Prompts Sections
+            if (result.pagePrompts && result.pagePrompts.length > 0) {
+              result.pagePrompts.forEach((pagePrompt, index) => {
+                sections.push({
+                  id: `page-${index}`,
+                  title: `Step ${index + 2}: ${pagePrompt.pageName} Page`,
+                  icon: <Monitor className="h-4 w-4" />,
+                  content: `# 📱 ${pagePrompt.pageName} Page Design
+
+${pagePrompt.prompt}
+
+## 🎨 Design Focus Areas
+- User experience and interaction flow
+- Visual hierarchy and content layout
+- Responsive design considerations
+- Accessibility and usability
+
+## 🔧 Implementation Tips
+- Start with wireframes before detailed design
+- Consider mobile-first approach
+- Test user flows and interactions
+- Optimize for performance and loading speed`,
+                  type: 'prompt' as const,
+                  toolSpecific: {
+                    framer: `Design the ${pagePrompt.pageName} page with these specifications:\n\n${pagePrompt.prompt}\n\nFocus on: Interactive prototypes, micro-animations, component variants`,
+                    flutterflow: `Create the ${pagePrompt.pageName} screen:\n\n${pagePrompt.prompt}\n\nEmphasize: Native widgets, state management, API integration`,
+                    uizard: `Design the ${pagePrompt.pageName} interface:\n\n${pagePrompt.prompt}\n\nPrioritize: Clear layout, intuitive navigation, visual consistency`
+                  }
+                });
+              });
+            }
+
+            // Linking Prompt Section
+            if (result.linkingPrompt) {
+              sections.push({
+                id: 'linking',
+                title: `Step ${sections.length + 1}: Navigation & Flow`,
+                icon: <Link className="h-4 w-4" />,
+                content: `# 🔗 Navigation & User Flow
+
+${result.linkingPrompt}
+
+## 🧭 Navigation Principles
+- Intuitive user journey mapping
+- Consistent navigation patterns
+- Clear call-to-action placement
+- Seamless page transitions
+
+## 📱 Implementation Considerations
+- Mobile navigation patterns (tabs, drawer, etc.)
+- Deep linking and URL structure
+- State management between pages
+- Loading states and error handling`,
+                type: 'instruction' as const,
+                toolSpecific: {
+                  framer: `Implement navigation and linking:\n\n${result.linkingPrompt}\n\nFocus on: Smooth page transitions, interactive navigation, component states`,
+                  flutterflow: `Set up app navigation:\n\n${result.linkingPrompt}\n\nEmphasize: Route management, navigation drawer, bottom tabs, deep linking`,
+                  uizard: `Design navigation flow:\n\n${result.linkingPrompt}\n\nPrioritize: User flow clarity, navigation consistency, interaction feedback`
+                }
+              });
+            }
+
+            // Determine app type for PromptViewer
+            const appType = result.pages.some(p => p.name.toLowerCase().includes('dashboard')) ? 'saas' :
+                           result.pages.some(p => p.name.toLowerCase().includes('mobile')) ? 'mobile' : 'web';
+
+            const uiStyle = `${result.styling?.theme || 'Modern'} ${result.styling?.designStyle || 'Clean'}`;
+
+            return (
+              <PromptViewer
+                title="🚀 Ready-to-Use AI Prompts"
+                description="Copy these prompts directly into your favorite AI builder tools. Each prompt is optimized for specific platforms."
+                appType={appType}
+                uiStyle={uiStyle}
+                sections={sections}
+                showToolButtons={true}
+                className="max-w-none"
+              />
+            );
+          })()}
         </TabsContent>
 
         {/* Overview Tab */}

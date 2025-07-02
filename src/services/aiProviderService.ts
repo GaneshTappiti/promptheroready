@@ -298,19 +298,19 @@ export class AIProviderService {
   }
 
   /**
-   * Generate mock response for development/testing
+   * Generate error response when no valid provider is available
    */
-  private generateMockResponse(request: AIRequest): AIResponse {
+  private generateErrorResponse(request: AIRequest): AIResponse {
     return {
-      content: `Mock response for: ${request.prompt}`,
+      content: 'Error: No AI provider configured. Please set up your AI provider in settings.',
       tokensUsed: {
-        input: 10,
-        output: 20,
-        total: 30
+        input: 0,
+        output: 0,
+        total: 0
       },
-      model: 'mock-model',
-      provider: 'openai',
-      finishReason: 'stop'
+      model: 'error',
+      provider: 'none',
+      finishReason: 'error'
     };
   }
 }

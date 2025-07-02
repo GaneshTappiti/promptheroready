@@ -19,6 +19,7 @@ const Auth = lazy(() => import("@/pages/Auth"));
 const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const Workspace = lazy(() => import("@/pages/Workspace"));
+const Workshop = lazy(() => import("@/pages/Workshop"));
 const IdeaVault = lazy(() => import("@/pages/IdeaVault"));
 const IdeaDetails = lazy(() => import("@/pages/IdeaDetails"));
 const IdeaForge = lazy(() => import("@/pages/IdeaForge"));
@@ -31,10 +32,17 @@ const PitchPerfect = lazy(() => import("@/pages/PitchPerfect"));
 const IdeaWiki = lazy(() => import("@/pages/IdeaWiki"));
 const WikiPage = lazy(() => import("@/pages/WikiPage"));
 const WikiPageEditor = lazy(() => import("@/pages/WikiPageEditor"));
+const TaskPlanner = lazy(() => import("@/pages/TaskPlanner"));
+const BlueprintZone = lazy(() => import("@/pages/BlueprintZone"));
+const Profile = lazy(() => import("@/pages/Profile"));
+const Account = lazy(() => import("@/pages/Account"));
 const AIToolsPage = lazy(() => import("@/pages/AIToolsPage"));
 const FeaturesPage = lazy(() => import("@/pages/Features"));
 const About = lazy(() => import("@/pages/About"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
+const AIResponseDemo = lazy(() => import("@/components/demo/AIResponseDemo"));
+const PromptGuide = lazy(() => import("@/components/prompting/PromptGuide"));
+const PromptBuilder = lazy(() => import("@/components/prompting/PromptBuilder"));
 
 // Create QueryClient with optimized configuration
 const queryClient = new QueryClient({
@@ -89,6 +97,11 @@ function AppRoutes() {
         }
       />
       <Route path="/" element={<Navigate to="/workspace" />} />
+      <Route path="/workspace/workshop" element={
+        <ProtectedRoute>
+          <Workshop />
+        </ProtectedRoute>
+      } />
       <Route path="/workspace/idea-vault" element={
         <ProtectedRoute>
           <IdeaVault />
@@ -166,8 +179,31 @@ function AppRoutes() {
           <AIToolsPage />
         </ProtectedRoute>
       } />
+      <Route path="/workspace/task-planner" element={
+        <ProtectedRoute>
+          <TaskPlanner />
+        </ProtectedRoute>
+      } />
+      <Route path="/workspace/blueprint-zone" element={
+        <ProtectedRoute>
+          <BlueprintZone />
+        </ProtectedRoute>
+      } />
+      <Route path="/profile" element={
+        <ProtectedRoute>
+          <Profile />
+        </ProtectedRoute>
+      } />
+      <Route path="/account" element={
+        <ProtectedRoute>
+          <Account />
+        </ProtectedRoute>
+      } />
       <Route path="/features" element={<FeaturesPage />} />
       <Route path="/about" element={<About />} />
+      <Route path="/demo/ai-responses" element={<AIResponseDemo />} />
+      <Route path="/prompting/guide" element={<PromptGuide />} />
+      <Route path="/prompting/builder" element={<PromptBuilder />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

@@ -1,12 +1,15 @@
-// Onboarding Page - Welcome new users and set up AI provider
-import React, { useEffect } from 'react';
+// Comprehensive Onboarding Page - Welcome new users and collect essential info
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { AIProviderOnboarding } from '@/components/onboarding/AIProviderOnboarding';
+import { useToast } from '@/hooks/use-toast';
+import { ComprehensiveOnboarding, type OnboardingData } from '@/components/onboarding';
+import { onboardingService } from '@/services/onboardingService';
 
 export default function Onboarding() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     // Redirect to auth if not logged in
@@ -15,30 +18,47 @@ export default function Onboarding() {
     }
   }, [user, loading, navigate]);
 
-  const handleOnboardingComplete = (configured: boolean) => {
-    // Navigate to workspace after onboarding
-    navigate('/workspace', { 
-      state: { 
-        onboardingComplete: true, 
-        aiProviderConfigured: configured 
-      } 
-    });
-  };
+  const handleOnboardingComplete = async (data: OnboardingData) => {
+    if (!user) return;
 
-  const handleSkip = () => {
-    // Navigate to workspace without AI provider setup
-    navigate('/workspace', { 
-      state: { 
-        onboardingComplete: true, 
-        aiProviderConfigured: false 
-      } 
-    });
+    try {
+      // Save onboarding data to database
+      const result = await onboardingService.saveOnboardingData(user.id, data);
+
+      if (result.success) {
+        toast({
+          title: "Welcome to StartWise! 🎉",
+          description: "Your preferences have been saved successfully.",
+        });
+
+        // Navigate to workspace after successful save
+        navigate('/workspace', {
+          state: {
+            onboardingComplete: true,
+            onboardingData: data
+          }
+        });
+      } else {
+        toast({
+          title: "Error saving preferences",
+          description: result.error || "Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your preferences. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
       </div>
     );
   }
@@ -48,9 +68,8 @@ export default function Onboarding() {
   }
 
   return (
-    <AIProviderOnboarding
+    <ComprehensiveOnboarding
       onComplete={handleOnboardingComplete}
-      onSkip={handleSkip}
     />
   );
 }

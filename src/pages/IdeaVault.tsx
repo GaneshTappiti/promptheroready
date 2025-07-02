@@ -80,82 +80,10 @@ const IdeaVault = () => {
   // Initialize Gemini AI
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || "");
 
-  // Mock data
-  const mockIdeas: IdeaProps[] = [
-    {
-      id: 1,
-      title: "HealthTrack App",
-      description: "A fitness tracking app specifically designed for seniors with simplified UI and health monitoring features.",
-      tags: ["Health", "Mobile App", "Seniors"],
-      votes: 12,
-      comments: 5,
-      status: "validated",
-      priority: "high",
-      validationScore: 85,
-      potentialRevenue: "$2M",
-      timeToMarket: "6 months",
-      createdAt: "2024-01-15",
-      lastUpdated: "2024-01-20",
-      collaborators: [
-        { id: "1", name: "John Smith", avatar: "", role: "owner" },
-        { id: "2", name: "Sarah Wilson", avatar: "", role: "collaborator" }
-      ],
-      category: "Health & Fitness",
-      targetAudience: "Seniors aged 65+",
-      businessModel: "Freemium",
-      isShared: true
-    },
-    {
-      id: 2,
-      title: "EcoMarket",
-      description: "Marketplace for sustainable goods with carbon footprint tracking and eco-friendly product verification.",
-      tags: ["Marketplace", "Sustainability", "E-commerce"],
-      votes: 8,
-      comments: 3,
-      status: "exploring",
-      priority: "medium",
-      validationScore: 65,
-      potentialRevenue: "$5M",
-      timeToMarket: "12 months",
-      createdAt: "2024-01-10",
-      lastUpdated: "2024-01-18",
-      collaborators: [
-        { id: "3", name: "Alex Green", avatar: "", role: "owner" }
-      ],
-      category: "E-commerce",
-      targetAudience: "Eco-conscious consumers",
-      businessModel: "Commission-based",
-      isShared: false
-    },
-    {
-      id: 3,
-      title: "CodeBuddy",
-      description: "AI pair programming assistant that helps developers with code reviews and suggestions in real-time.",
-      tags: ["AI", "Developer Tools", "Productivity"],
-      votes: 15,
-      comments: 7,
-      status: "validated",
-      priority: "high",
-      validationScore: 92,
-      potentialRevenue: "$10M",
-      timeToMarket: "8 months",
-      createdAt: "2024-01-05",
-      lastUpdated: "2024-01-22",
-      collaborators: [
-        { id: "4", name: "Mike Chen", avatar: "", role: "owner" },
-        { id: "5", name: "Lisa Park", avatar: "", role: "collaborator" }
-      ],
-      category: "Developer Tools",
-      targetAudience: "Software developers",
-      businessModel: "Subscription",
-      isShared: true
-    }
-  ];
-
-  // Initialize ideas
+  // Start with empty ideas - users will create their own ideas
   useEffect(() => {
-    setIdeas(mockIdeas);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Ideas will be loaded from user's database or created by the user
+    setIdeas([]);
   }, []);
 
   // Filter ideas based on active tab and search term
