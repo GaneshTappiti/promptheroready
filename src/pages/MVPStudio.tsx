@@ -26,6 +26,9 @@ import { Layers } from "lucide-react";
 import MVPWizard from "@/components/mvp-studio/MVPWizard";
 import MVPResultsDisplay from "@/components/mvp-studio/MVPResultsDisplay";
 import AIToolRecommender from "@/components/ai-tools/AIToolRecommender";
+import IdeaPromptHistory from "@/components/mvp-studio/IdeaPromptHistory";
+import UpgradePrompt from "@/components/UpgradePrompt";
+import AIResponseFormatter from "@/components/AIResponseFormatter";
 import { MVPAnalysisResult } from "@/types/ideaforge";
 import { useAuth } from "@/contexts/AuthContext";
 import { aiProviderService } from "@/services/aiProviderService";
@@ -36,18 +39,121 @@ import {
   AITool
 } from "@/data/aiToolsDatabase";
 import { useToast } from "@/hooks/use-toast";
+import { useActiveIdea, usePromptHistory, useIdeaStore } from "@/stores/ideaStore";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const MVPStudio = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("wizard");
+  const [activeTab, setActiveTab] = useState("tool-recommendation");
   const [mvpWizardOpen, setMvpWizardOpen] = useState(false);
   const [showMvpResults, setShowMvpResults] = useState(false);
   const [mvpResult, setMvpResult] = useState<MVPAnalysisResult | null>(null);
   const [isCheckingAI, setIsCheckingAI] = useState(false);
   const [hasAIProvider, setHasAIProvider] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
+
+  // New state for sequential flow
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedAppType, setSelectedAppType] = useState<'web' | 'mobile' | 'saas' | null>(null);
+  const [selectedTools, setSelectedTools] = useState<AITool[]>([]);
+
+  // Store hooks
+  const { activeIdea } = useActiveIdea();
+  const { promptHistory, addPrompt, getPrompt } = usePromptHistory();
+  const canGeneratePrompts = useIdeaStore((state) => state.canGeneratePrompts);
+  const getRemainingPrompts = useIdeaStore((state) => state.getRemainingPrompts);
+
+  // Initialize Gemini AI
+  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || "");
+
+  // Sequential prompt generation
+  const generatePagePrompt = async (pageName: string, pageDescription: string) => {
+    if (!activeIdea) return;
+
+    if (!canGeneratePrompts()) {
+      toast({
+        title: "Prompt Limit Reached",
+        description: "You've reached your free tier prompt limit. Upgrade to Pro for unlimited prompts.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+      // Get context from IdeaForge prompts
+      const targetUserPrompt = getPrompt('ideaforge', 'target-user');
+      const featuresPrompt = getPrompt('ideaforge', 'features');
+      const uiDesignPrompt = getPrompt('ideaforge', 'ui-design');
+
+      const contextPrompt = `
+      Based on this startup idea and research:
+
+      Idea: ${activeIdea.title}
+      Description: ${activeIdea.description}
+
+      ${targetUserPrompt ? `Target User Research: ${targetUserPrompt.response}` : ''}
+      ${featuresPrompt ? `Core Features: ${featuresPrompt.response}` : ''}
+      ${uiDesignPrompt ? `UI Design Guidelines: ${uiDesignPrompt.response}` : ''}
+
+      Generate a detailed prompt for building the "${pageName}" page/screen.
+
+      Page Description: ${pageDescription}
+      App Type: ${selectedAppType || 'web'}
+      Recommended Tools: ${selectedTools.map(t => t.name).join(', ')}
+
+      Create a comprehensive prompt that includes:
+      1. Page purpose and user goals
+      2. Specific UI components needed
+      3. Layout and design specifications
+      4. Interactive elements and functionality
+      5. Data requirements
+      6. Tool-specific implementation hints
+
+      Format this as a ready-to-use prompt for AI builders like ${selectedTools.map(t => t.name).join(', ')}.
+      `;
+
+      const result = await model.generateContent(contextPrompt);
+      const response = await result.response;
+      const text = response.text();
+
+      // Save to prompt history with organized structure
+      const promptData = {
+        id: Date.now().toString(),
+        prompt: `Generate ${pageName} page for ${activeIdea.title}`,
+        response: text,
+        timestamp: new Date().toISOString(),
+        section: `${activeIdea.id}-${pageName.toLowerCase().replace(/\s+/g, '-')}`,
+        ideaId: activeIdea.id,
+        ideaTitle: activeIdea.title,
+        pageType: pageName,
+        appType: selectedAppType,
+        tools: selectedTools.map(t => t.name)
+      };
+
+      addPrompt('mvpStudio', `${activeIdea.id}-${pageName.toLowerCase().replace(/\s+/g, '-')}`, promptData);
+
+      toast({
+        title: "Page Prompt Generated!",
+        description: `${pageName} prompt has been generated and saved.`,
+      });
+
+    } catch (error) {
+      console.error('Error generating page prompt:', error);
+      toast({
+        title: "Generation Failed",
+        description: "Could not generate page prompt. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   // Enhanced AI Tools data from database
   const categoryStats = aiToolsCategories.map(category => ({
@@ -222,65 +328,164 @@ const MVPStudio = () => {
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="bg-black/60 border border-white/20 grid w-full grid-cols-3 mb-6">
-                <TabsTrigger value="wizard" className="data-[state=active]:bg-green-600">AI MVP Wizard</TabsTrigger>
-                <TabsTrigger value="templates" className="data-[state=active]:bg-green-600">MVP Templates</TabsTrigger>
-                <TabsTrigger value="tools" className="data-[state=active]:bg-green-600">AI Tools Hub</TabsTrigger>
+              <TabsList className="bg-black/60 border border-white/20 grid w-full grid-cols-4 mb-6">
+                <TabsTrigger value="tool-recommendation" className="data-[state=active]:bg-green-600">Tool Recommendation</TabsTrigger>
+                <TabsTrigger value="page-generator" className="data-[state=active]:bg-green-600">Page Generator</TabsTrigger>
+                <TabsTrigger value="final-mapping" className="data-[state=active]:bg-green-600">Final Mapping</TabsTrigger>
+                <TabsTrigger value="prompt-history" className="data-[state=active]:bg-green-600">Prompt History</TabsTrigger>
               </TabsList>
 
-              {/* AI MVP Wizard Tab */}
-              <TabsContent value="wizard" className="space-y-6">
-                <div className="text-center space-y-6 py-8">
-                  <div className="space-y-4">
-                    <h2 className="text-2xl font-bold">Sequential Prompt-by-Prompt Builder</h2>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                      Generate AI prompts step-by-step for external builders like Framer, FlutterFlow, and Uizard.
-                      No overwhelm, just focused prompts delivered one at a time.
-                    </p>
-                  </div>
+              {/* Tool Recommendation Tab */}
+              <TabsContent value="tool-recommendation" className="space-y-6">
+                <Card className="bg-black/40 backdrop-blur-sm border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-white">Step 1: Choose Your App Type & Tools</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div>
+                      <h4 className="text-white font-medium mb-4">What type of app are you building?</h4>
+                      <div className="grid grid-cols-3 gap-4">
+                        {['web', 'mobile', 'saas'].map((type) => (
+                          <Button
+                            key={type}
+                            variant={selectedAppType === type ? "default" : "outline"}
+                            onClick={() => setSelectedAppType(type as any)}
+                            className={selectedAppType === type ? "bg-green-600 hover:bg-green-700" : "border-gray-600 text-gray-300 hover:bg-gray-800"}
+                          >
+                            {type.charAt(0).toUpperCase() + type.slice(1)}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                    <div className="glass-effect p-6 rounded-xl text-center">
-                      <Layers className="h-8 w-8 mx-auto mb-3 text-primary" />
-                      <h3 className="font-semibold mb-2">1. Framework</h3>
-                      <p className="text-sm text-muted-foreground">Generate app structure, pages, and navigation flow</p>
-                    </div>
-                    <div className="glass-effect p-6 rounded-xl text-center">
-                      <Palette className="h-8 w-8 mx-auto mb-3 text-primary" />
-                      <h3 className="font-semibold mb-2">2. Page-by-Page UI</h3>
-                      <p className="text-sm text-muted-foreground">Create UI prompts for each screen individually</p>
-                    </div>
-                    <div className="glass-effect p-6 rounded-xl text-center">
-                      <ArrowRight className="h-8 w-8 mx-auto mb-3 text-primary" />
-                      <h3 className="font-semibold mb-2">3. Linking & Flow</h3>
-                      <p className="text-sm text-muted-foreground">Connect pages with navigation and routing logic</p>
-                    </div>
-                  </div>
+                    {selectedAppType && (
+                      <div>
+                        <h4 className="text-white font-medium mb-4">Recommended Tools for {selectedAppType} apps:</h4>
+                        <AIToolRecommender
+                          selectedCategory="all"
+                          onToolSelect={(tools) => setSelectedTools(tools)}
+                          appType={selectedAppType}
+                        />
+                      </div>
+                    )}
 
-                  <div className="space-y-4">
-                    <Button
-                      onClick={handleStartMVPWizard}
-                      size="lg"
-                      className="px-8 py-3 text-lg workspace-button"
-                      disabled={isCheckingAI}
-                    >
-                      {isCheckingAI ? (
-                        <>
-                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                          Checking AI...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="h-5 w-5 mr-3" />
-                          Start Sequential MVP Builder
-                        </>
-                      )}
-                    </Button>
-                    <p className="text-sm text-muted-foreground">
-                      ✨ Modular • 🎯 Focused • 🛠️ Builder-Ready • 🚀 Export-Friendly
-                    </p>
-                  </div>
-                </div>
+                    {selectedTools.length > 0 && (
+                      <div className="bg-green-600/10 border border-green-600/20 rounded-lg p-4">
+                        <h5 className="text-green-400 font-medium mb-2">Selected Tools:</h5>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedTools.map((tool, index) => (
+                            <Badge key={index} className="bg-green-600/20 text-green-400">
+                              {tool.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Page Generator Tab */}
+              <TabsContent value="page-generator" className="space-y-6">
+                <Card className="bg-black/40 backdrop-blur-sm border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-white">Step 2: Generate Page-by-Page Prompts</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {!selectedAppType ? (
+                      <div className="text-center py-8">
+                        <p className="text-gray-400">Please select an app type in the Tool Recommendation tab first.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <p className="text-gray-300">Generate AI prompts for each page of your {selectedAppType} app:</p>
+                          <div className="text-sm text-gray-400">
+                            {getRemainingPrompts() === -1 ? (
+                              <Badge className="bg-green-600/20 text-green-400">Unlimited</Badge>
+                            ) : (
+                              <span>{getRemainingPrompts()} prompts remaining</span>
+                            )}
+                          </div>
+                        </div>
+
+                        {getRemainingPrompts() === 0 && (
+                          <UpgradePrompt
+                            feature="More Prompts"
+                            description="You've used all your free prompts for this idea. Upgrade to Pro for unlimited AI prompts."
+                            variant="alert"
+                          />
+                        )}
+
+                        {['Homepage', 'Onboarding', 'Dashboard', 'Settings', 'Profile'].map((pageName) => {
+                          const existingPrompt = getPrompt('mvpStudio', `${activeIdea?.id}-${pageName.toLowerCase()}`);
+                          return (
+                            <Card key={pageName} className="bg-gray-900/50 border-gray-700">
+                              <CardContent className="p-4">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <h5 className="text-white font-medium">{pageName} Page</h5>
+                                    <p className="text-gray-400 text-sm">Generate prompt for {pageName.toLowerCase()} page</p>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    {existingPrompt && (
+                                      <Badge className="bg-green-600/20 text-green-400">Generated</Badge>
+                                    )}
+                                    <Button
+                                      onClick={() => generatePagePrompt(pageName, `Create a ${pageName.toLowerCase()} page for the ${selectedAppType} app`)}
+                                      disabled={isGenerating}
+                                      size="sm"
+                                      className="bg-green-600 hover:bg-green-700"
+                                    >
+                                      {isGenerating ? "Generating..." : existingPrompt ? "Regenerate" : "Generate"}
+                                    </Button>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Final Mapping Tab */}
+              <TabsContent value="final-mapping" className="space-y-6">
+                <Card className="bg-black/40 backdrop-blur-sm border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-white">Step 3: Final App Mapping & Architecture</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="text-center py-8">
+                      <p className="text-gray-300 mb-4">Generate the final comprehensive prompt that ties all pages together:</p>
+                      <Button
+                        onClick={() => {/* generateFinalMappingPrompt() */}}
+                        disabled={isGenerating}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        {isGenerating ? "Generating..." : "Generate Final Mapping"}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Prompt History Tab */}
+              <TabsContent value="prompt-history" className="space-y-6">
+                {activeIdea ? (
+                  <IdeaPromptHistory
+                    ideaId={activeIdea.id}
+                    ideaTitle={activeIdea.title}
+                  />
+                ) : (
+                  <Card className="bg-black/40 backdrop-blur-sm border-white/10">
+                    <CardContent className="text-center py-8">
+                      <p className="text-gray-400">No active idea selected</p>
+                    </CardContent>
+                  </Card>
+                )}
               </TabsContent>
 
               {/* MVP Templates Tab */}

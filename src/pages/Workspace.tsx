@@ -41,13 +41,18 @@ import {
   CalendarDays,
   Zap,
   X,
-  Menu
+  Menu,
+  Save
 } from "lucide-react";
 import StartupBriefGenerator from "@/components/StartupBriefGenerator";
 import { supabaseHelpers } from '../lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { aiEngine } from '../services/aiEngine';
 import { useToast } from "@/hooks/use-toast";
+import FlowProgress from "@/components/dashboard/FlowProgress";
+import QuickStats from "@/components/dashboard/QuickStats";
+import { useActiveIdea, useIdeaStore } from "@/stores/ideaStore";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AISettingsPanel } from '@/components/ai-settings';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { WorkspaceContainer, WorkspaceHeader } from '@/components/ui/workspace-layout';
@@ -111,7 +116,168 @@ const Workspace = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showPromptHistory, setShowPromptHistory] = useState(false);
+
+  // Workshop/Idea validation state
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationResult, setValidationResult] = useState<any>(null);
+  const [showValidationResult, setShowValidationResult] = useState(false);
+
+  // Store hooks
+  const { activeIdea, setActiveIdea } = useActiveIdea();
+  const canCreateNewIdea = useIdeaStore((state) => state.canCreateNewIdea);
+  const setHasActiveIdea = useIdeaStore((state) => state.setHasActiveIdea);
+  const setCurrentStep = useIdeaStore((state) => state.setCurrentStep);
+
+  // Initialize Gemini AI
+  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || "");
   const [showTemplates, setShowTemplates] = useState(false);
+
+  const { toast } = useToast();
+
+  // Idea validation function (from Workshop)
+  const validateIdea = async (ideaText: string) => {
+    if (!canCreateNewIdea()) {
+      toast({
+        title: "Cannot Create New Idea",
+        description: "You already have an active idea. Archive it first or upgrade to Pro.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsValidating(true);
+    setValidationResult(null);
+    setShowValidationResult(false);
+
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+      const prompt = `
+      Analyze this startup idea comprehensively and provide a detailed validation report:
+
+      Idea: "${ideaText}"
+
+      Please provide a structured analysis with:
+
+      1. VALIDATION SCORE (0-100): Overall viability score
+      2. MARKET OPPORTUNITY: Market size, demand, and potential
+      3. RISK ASSESSMENT: Key risks and challenges
+      4. MONETIZATION STRATEGY: Revenue model suggestions
+      5. KEY FEATURES: Essential features for MVP
+      6. NEXT STEPS: Immediate actionable steps
+      7. COMPETITOR ANALYSIS: Similar solutions and differentiation
+      8. TARGET MARKET: Primary customer segments
+      9. PROBLEM STATEMENT: Core problem being solved
+
+      Format your response as a structured analysis with clear sections.
+      `;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+
+      // Parse the response to extract structured data
+      const validationScore = extractValidationScore(text);
+      const sections = parseValidationResponse(text);
+
+      const validatedIdea = {
+        id: Date.now().toString(),
+        title: extractIdeaTitle(ideaText),
+        description: ideaText,
+        status: 'active' as const,
+        validation_score: validationScore,
+        market_opportunity: sections.marketOpportunity,
+        risk_assessment: sections.riskAssessment,
+        monetization_strategy: sections.monetizationStrategy,
+        key_features: sections.keyFeatures,
+        next_steps: sections.nextSteps,
+        competitor_analysis: sections.competitorAnalysis,
+        target_market: sections.targetMarket,
+        problem_statement: sections.problemStatement,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      setValidationResult({
+        idea: validatedIdea,
+        fullResponse: text,
+        score: validationScore
+      });
+
+      setShowValidationResult(true);
+
+      toast({
+        title: "Idea Validated!",
+        description: `Your idea scored ${validationScore}/100. Review the analysis below.`,
+      });
+
+    } catch (error) {
+      console.error('Validation error:', error);
+      toast({
+        title: "Validation Failed",
+        description: "Could not validate your idea. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
+  // Helper functions for parsing validation response
+  const extractValidationScore = (text: string): number => {
+    const scoreMatch = text.match(/VALIDATION SCORE.*?(\d+)/i);
+    return scoreMatch ? parseInt(scoreMatch[1]) : 75;
+  };
+
+  const extractIdeaTitle = (description: string): string => {
+    const words = description.split(' ').slice(0, 6);
+    return words.join(' ') + (description.split(' ').length > 6 ? '...' : '');
+  };
+
+  const parseValidationResponse = (text: string) => {
+    const sections = {
+      marketOpportunity: extractSection(text, 'MARKET OPPORTUNITY'),
+      riskAssessment: extractSection(text, 'RISK ASSESSMENT'),
+      monetizationStrategy: extractSection(text, 'MONETIZATION STRATEGY'),
+      keyFeatures: extractListSection(text, 'KEY FEATURES'),
+      nextSteps: extractListSection(text, 'NEXT STEPS'),
+      competitorAnalysis: extractSection(text, 'COMPETITOR ANALYSIS'),
+      targetMarket: extractSection(text, 'TARGET MARKET'),
+      problemStatement: extractSection(text, 'PROBLEM STATEMENT')
+    };
+    return sections;
+  };
+
+  const extractSection = (text: string, sectionName: string): string => {
+    const regex = new RegExp(`${sectionName}:?\\s*([\\s\\S]*?)(?=\\n\\d+\\.|\\n[A-Z][A-Z\\s]+:|$)`, 'i');
+    const match = text.match(regex);
+    return match ? match[1].trim() : '';
+  };
+
+  const extractListSection = (text: string, sectionName: string): string[] => {
+    const sectionText = extractSection(text, sectionName);
+    return sectionText.split('\n')
+      .filter(line => line.trim())
+      .map(line => line.replace(/^[-*•]\s*/, '').trim())
+      .filter(item => item.length > 0);
+  };
+
+  const saveValidatedIdea = () => {
+    if (!validationResult) return;
+
+    setActiveIdea(validationResult.idea);
+    setHasActiveIdea(true);
+    setCurrentStep('idea-vault');
+
+    toast({
+      title: "Idea Saved!",
+      description: "Your validated idea has been saved to your Idea Vault.",
+    });
+
+    // Navigate to Idea Vault
+    window.location.href = '/workspace/idea-vault';
+  };
+
   const [showFeatureModal, setShowFeatureModal] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState<GPTFeature | null>(null);
   const [showAISettings, setShowAISettings] = useState(false);
@@ -322,13 +488,26 @@ const Workspace = () => {
 
   const modules: Module[] = [
     {
+      id: "workshop",
+      name: "Workshop",
+      description: "Free playground for idea validation with AI",
+      path: "/workspace/workshop",
+      icon: "🧠"
+    },
+    {
       id: "idea-vault",
       name: "Idea Vault",
       description: "Store and manage your startup ideas",
       path: "/workspace/idea-vault",
       icon: "💡"
     },
-
+    {
+      id: "ideaforge",
+      name: "IdeaForge",
+      description: "Turn ideas into actionable product frameworks",
+      path: "/workspace/ideaforge",
+      icon: "⚙️"
+    },
     {
       id: "mvp-studio",
       name: "MVP Studio",
@@ -362,10 +541,15 @@ const Workspace = () => {
   const quickActions = [
     {
       title: "Validate Idea",
-      description: "Get feedback on your startup concept",
+      description: "Get AI-powered validation for your startup concept",
       icon: <Lightbulb className="h-5 w-5 text-yellow-400" />,
       category: 'ideation',
-      onClick: () => setGptInput("Help me validate my startup idea: ")
+      onClick: () => {
+        const ideaText = prompt("Enter your startup idea for validation:");
+        if (ideaText && ideaText.trim()) {
+          validateIdea(ideaText.trim());
+        }
+      }
     },
     {
       title: "Business Model",
@@ -584,6 +768,16 @@ const Workspace = () => {
             title="Dashboard"
             subtitle="Manage your startup journey with AI-powered tools and insights."
           >
+            {/* Quick Stats */}
+            <div className="mb-8">
+              <QuickStats />
+            </div>
+          </WorkspaceHeader>
+
+          {/* Flow Progress */}
+          <div className="mb-8">
+            <FlowProgress />
+          </div>
             <div className="flex items-center gap-3">
                 {isGeneratingIdea && (
                   <div className="flex items-center gap-2 text-green-400 text-sm px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full">
@@ -1162,6 +1356,99 @@ const Workspace = () => {
             </div>
           </div>
         )}
+
+        {/* Idea Validation Result */}
+        {showValidationResult && validationResult && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-black/90 backdrop-blur-xl border border-white/10 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-600/20 rounded-full">
+                      <Lightbulb className="h-6 w-6 text-green-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-white">Idea Validation Complete</h2>
+                      <p className="text-gray-400">Your startup idea has been analyzed</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowValidationResult(false)}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Validation Score */}
+                  <div className="bg-green-600/10 border border-green-600/20 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-white">Validation Score</h3>
+                      <div className="text-2xl font-bold text-green-400">
+                        {validationResult.score}/100
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-2">
+                      <div
+                        className="bg-green-400 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${validationResult.score}%` }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  {/* Idea Details */}
+                  <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="font-semibold text-white mb-2">{validationResult.idea.title}</h3>
+                    <p className="text-gray-300 text-sm">{validationResult.idea.description}</p>
+                  </div>
+
+                  {/* Full Analysis */}
+                  <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
+                    <h3 className="font-semibold text-white mb-3">Detailed Analysis</h3>
+                    <div className="prose prose-invert max-w-none">
+                      <pre className="whitespace-pre-wrap text-gray-300 text-sm leading-relaxed">
+                        {validationResult.fullResponse}
+                      </pre>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={saveValidatedIdea}
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <Save className="h-4 w-4 mr-2" />
+                      Save to Idea Vault
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowValidationResult(false)}
+                      className="border-gray-600 text-gray-300 hover:bg-gray-800"
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Loading Overlay for Validation */}
+        {isValidating && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+            <div className="bg-black/90 backdrop-blur-xl border border-white/10 rounded-xl p-8 text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-400 mx-auto mb-4"></div>
+              <h3 className="text-white font-semibold mb-2">Validating Your Idea</h3>
+              <p className="text-gray-400">AI is analyzing your startup concept...</p>
+            </div>
+          </div>
+        )}
+
         </div>
       </main>
 

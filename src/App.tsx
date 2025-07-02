@@ -19,7 +19,7 @@ const Auth = lazy(() => import("@/pages/Auth"));
 const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const Workspace = lazy(() => import("@/pages/Workspace"));
-const Workshop = lazy(() => import("@/pages/Workshop"));
+
 const IdeaVault = lazy(() => import("@/pages/IdeaVault"));
 const IdeaDetails = lazy(() => import("@/pages/IdeaDetails"));
 const IdeaForge = lazy(() => import("@/pages/IdeaForge"));
@@ -97,11 +97,7 @@ function AppRoutes() {
         }
       />
       <Route path="/" element={<Navigate to="/workspace" />} />
-      <Route path="/workspace/workshop" element={
-        <ProtectedRoute>
-          <Workshop />
-        </ProtectedRoute>
-      } />
+
       <Route path="/workspace/idea-vault" element={
         <ProtectedRoute>
           <IdeaVault />

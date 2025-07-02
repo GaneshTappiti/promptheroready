@@ -20,7 +20,49 @@ CREATE TABLE IF NOT EXISTS ideas (
     tags TEXT[],
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    -- Workshop validation fields
+    validation_score INTEGER,
+    market_opportunity TEXT,
+    risk_assessment TEXT,
+    monetization_strategy TEXT,
+    key_features TEXT[],
+    next_steps TEXT[],
+    competitor_analysis TEXT,
+    target_market TEXT,
+    problem_statement TEXT
+);
+
+-- Prompt history table for storing AI-generated prompts
+CREATE TABLE IF NOT EXISTS prompt_history (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    idea_id UUID REFERENCES ideas(id) ON DELETE CASCADE,
+    section TEXT NOT NULL, -- 'ideaforge' or 'mvpStudio'
+    section_key TEXT NOT NULL, -- specific section like 'target-user', 'homepage', etc.
+    prompt TEXT NOT NULL,
+    response TEXT NOT NULL,
+    metadata JSONB, -- Additional data like tools, app_type, etc.
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE
+);
+
+-- User settings and subscription info
+CREATE TABLE IF NOT EXISTS user_settings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
+    ai_provider TEXT DEFAULT 'gemini',
+    api_key TEXT,
+    preferred_tools TEXT[],
+    budget TEXT DEFAULT 'free',
+    skill_level TEXT DEFAULT 'beginner',
+    app_type TEXT DEFAULT 'web',
+    subscription_tier TEXT DEFAULT 'free',
+    subscription_status TEXT DEFAULT 'active',
+    trial_ends_at TIMESTAMP WITH TIME ZONE,
+    subscription_ends_at TIMESTAMP WITH TIME ZONE,
+    settings JSONB, -- Additional settings as JSON
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS tasks (
@@ -391,4 +433,56 @@ CREATE POLICY "Users can update their own AI preferences"
 
 CREATE POLICY "Users can delete their own AI preferences"
     ON user_ai_preferences FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- Create indexes for better query performance
+CREATE INDEX IF NOT EXISTS idx_ideas_validation_score ON ideas(validation_score);
+CREATE INDEX IF NOT EXISTS idx_ideas_status_category ON ideas(status, category);
+CREATE INDEX IF NOT EXISTS idx_ideas_user_id ON ideas(user_id);
+
+-- Prompt history indexes
+CREATE INDEX IF NOT EXISTS idx_prompt_history_idea_id ON prompt_history(idea_id);
+CREATE INDEX IF NOT EXISTS idx_prompt_history_user_id ON prompt_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_prompt_history_section ON prompt_history(section, section_key);
+
+-- User settings indexes
+CREATE INDEX IF NOT EXISTS idx_user_settings_user_id ON user_settings(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_settings_subscription ON user_settings(subscription_tier, subscription_status);
+
+-- Enable RLS for new tables
+ALTER TABLE prompt_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_settings ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for prompt_history
+CREATE POLICY "Users can view their own prompt history"
+    ON prompt_history FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own prompt history"
+    ON prompt_history FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own prompt history"
+    ON prompt_history FOR UPDATE
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own prompt history"
+    ON prompt_history FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- RLS Policies for user_settings
+CREATE POLICY "Users can view their own settings"
+    ON user_settings FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own settings"
+    ON user_settings FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own settings"
+    ON user_settings FOR UPDATE
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own settings"
+    ON user_settings FOR DELETE
     USING (auth.uid() = user_id);

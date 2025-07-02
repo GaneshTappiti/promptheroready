@@ -168,6 +168,15 @@ export const supabaseHelpers = {
     return { data, error };
   },
 
+  async updateIdea(ideaId: string, updates: any) {
+    const { data, error } = await supabase
+      .from('ideas')
+      .update(updates)
+      .eq('id', ideaId)
+      .select();
+    return { data, error };
+  },
+
   // MVP Studio helpers
   async getMVPs() {
     const { data, error } = await supabase
