@@ -35,7 +35,7 @@ export class QueryOptimizationService {
     ttl: number = this.DEFAULT_TTL
   ): Promise<T> {
     const startTime = performance.now();
-    
+
     // Check cache first
     const cached = this.getFromCache<T>(cacheKey);
     if (cached) {
@@ -45,12 +45,24 @@ export class QueryOptimizationService {
 
     // Execute query
     const result = await queryFn();
-    
+
     // Cache the result
     this.setCache(cacheKey, result, ttl);
-    
+
     this.recordMetrics(cacheKey, performance.now() - startTime, false);
     return result;
+  }
+
+  /**
+   * Optimized schema verification with extended caching
+   * Use this for expensive schema introspection queries
+   */
+  static async getCachedSchemaQuery<T>(
+    cacheKey: string,
+    queryFn: () => Promise<T>,
+    ttl: number = 10 * 60 * 1000 // 10 minutes default for schema queries
+  ): Promise<T> {
+    return this.getCachedQuery(cacheKey, queryFn, ttl);
   }
 
   /**

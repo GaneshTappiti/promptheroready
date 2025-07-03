@@ -142,9 +142,25 @@ async function checkTable(tableName: string): Promise<TableInfo> {
 
 /**
  * Verify all expected tables exist and are properly configured
+ * Now with caching to prevent frequent expensive queries
  */
-export async function verifyDatabaseSchema(): Promise<VerificationResult> {
+export async function verifyDatabaseSchema(useCache: boolean = true): Promise<VerificationResult> {
   console.log('🔍 Starting database schema verification...');
+
+  // Check cache first if enabled
+  const cacheKey = 'database_schema_verification';
+  const cacheExpiry = 5 * 60 * 1000; // 5 minutes
+
+  if (useCache) {
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < cacheExpiry) {
+        console.log('📋 Using cached schema verification result');
+        return data;
+      }
+    }
+  }
 
   const tables: TableInfo[] = [];
   const errors: string[] = [];
@@ -187,12 +203,22 @@ export async function verifyDatabaseSchema(): Promise<VerificationResult> {
     console.error('Errors:', errors);
   }
 
-  return {
+  const result = {
     success,
     tables,
     errors,
     summary
   };
+
+  // Cache the result if enabled
+  if (useCache) {
+    localStorage.setItem(cacheKey, JSON.stringify({
+      data: result,
+      timestamp: Date.now()
+    }));
+  }
+
+  return result;
 }
 
 /**

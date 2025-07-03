@@ -280,13 +280,23 @@ const AdminDashboard: React.FC = () => {
               </Button>
             )}
             {isSuperAdmin && (
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full justify-start border-white/20 text-white hover:bg-white/10"
                 onClick={() => window.location.href = '/admin/settings'}
               >
                 <Zap className="mr-2 h-4 w-4" />
                 Platform Settings
+              </Button>
+            )}
+            {isSuperAdmin && (
+              <Button
+                variant="outline"
+                className="w-full justify-start border-white/20 text-white hover:bg-white/10"
+                onClick={() => window.location.href = '/admin/performance'}
+              >
+                <Activity className="mr-2 h-4 w-4" />
+                Database Performance
               </Button>
             )}
           </CardContent>

@@ -70,6 +70,7 @@ const AdminTest = lazy(() => import("@/pages/AdminTest"));
 const AuthTest = lazy(() => import("@/pages/AuthTest"));
 const DatabaseTest = lazy(() => import("@/pages/DatabaseTest"));
 const RoleManagement = lazy(() => import("@/pages/admin/RoleManagement"));
+const DatabasePerformance = lazy(() => import("@/pages/admin/DatabasePerformance"));
 
 // Create QueryClient with optimized configuration
 const queryClient = new QueryClient({
@@ -268,6 +269,7 @@ function AppRoutes() {
             <Route path="tools" element={<ProtectedAdminRoute requiredPermission="canManageTools"><AIToolsDirectory /></ProtectedAdminRoute>} />
             <Route path="settings" element={<ProtectedAdminRoute requiredPermission="canManageSettings" superAdminOnly><PlatformSettings /></ProtectedAdminRoute>} />
             <Route path="roles" element={<ProtectedAdminRoute requiredPermission="canManageRoles" superAdminOnly><RoleManagement /></ProtectedAdminRoute>} />
+            <Route path="performance" element={<ProtectedAdminRoute requiredPermission="canViewAnalytics" superAdminOnly><DatabasePerformance /></ProtectedAdminRoute>} />
           </Routes>
         </AdminLayout>
       } />

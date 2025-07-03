@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { databaseTester } from '@/utils/database-test';
+import { QueryOptimizationService } from '@/services/queryOptimizationService';
 
 interface TestResult {
   name: string;
@@ -51,9 +52,14 @@ const DatabaseTestPanel: React.FC = () => {
   const runTests = async () => {
     setIsRunning(true);
     try {
-      const testResults = await databaseTester.runAllTests();
+      // Use cached query optimization for database tests
+      const testResults = await QueryOptimizationService.getCachedSchemaQuery(
+        'database_test_results',
+        () => databaseTester.runAllTests(),
+        5 * 60 * 1000 // Cache for 5 minutes
+      );
       setResults(testResults);
-      
+
       // Auto-expand failed suites
       const failedSuites = testResults.suites
         .filter(suite => suite.summary.failed > 0)

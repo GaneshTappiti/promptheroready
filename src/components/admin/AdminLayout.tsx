@@ -127,6 +127,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       superAdminOnly: true,
     },
     {
+      name: 'Database Performance',
+      href: '/admin/performance',
+      icon: Activity,
+      permission: 'canViewAnalytics' as const,
+      superAdminOnly: true,
+    },
+    {
       name: 'Role Management',
       href: '/admin/roles',
       icon: Shield,

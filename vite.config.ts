@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
       // Production optimizations
       minify: isProduction ? 'terser' : false,
       sourcemap: isDevelopment ? 'inline' : false,
-      cssMinify: false, // Temporarily disabled to fix CSS warnings
+      cssMinify: false, // Disable CSS minification to avoid @apply directive issues
       target: 'es2020',
 
       // Terser options for better compression
