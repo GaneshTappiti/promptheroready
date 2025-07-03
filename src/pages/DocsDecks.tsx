@@ -48,6 +48,8 @@ import TemplateCard from "@/components/docs-decks/TemplateCard";
 import EmptyState from "@/components/docs-decks/EmptyState";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { docsDecksHelpers } from "@/lib/supabase-connection-helpers";
+import { useAuth } from "@/contexts/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -60,6 +62,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 const DocsDecks = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("pitch-decks");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -73,10 +76,11 @@ const DocsDecks = () => {
   const [sortBy, setSortBy] = useState("recent");
   const [filterBy, setFilterBy] = useState("all");
   const [isGeneratingContent, setIsGeneratingContent] = useState(false);
-  
-  // Start with empty arrays - users will create their own documents and decks
-  const pitchDecks: any[] = [];
-  const documents: any[] = [];
+  const [loading, setLoading] = useState(true);
+
+  // Database state
+  const [pitchDecks, setPitchDecks] = useState<any[]>([]);
+  const [documents, setDocuments] = useState<any[]>([]);
   
   const templates = [
     {
@@ -109,15 +113,98 @@ const DocsDecks = () => {
     }
   ];
 
-  const handleCreateDocument = (data: { title: string; description: string; type: string }) => {
-    toast({
-      title: "Document created",
-      description: `Your ${data.type === "deck" ? "pitch deck" : "document"} was created successfully`,
-    });
-    
-    // In a real app, you would add the document to your state or database
-    // For this demo, we'll navigate to the editor
-    navigate("/workspace/docs-decks/editor/new");
+  // Database helper functions
+  const loadDocuments = async () => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      const { data, error } = await docsDecksHelpers.getDocuments(user.id);
+
+      if (error) throw error;
+
+      setDocuments(data || []);
+    } catch (error: any) {
+      console.error('Error loading documents:', error);
+      toast({
+        title: "Error Loading Documents",
+        description: "Failed to load your documents. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadPitchDecks = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await docsDecksHelpers.getPitchDecks(user.id);
+
+      if (error) throw error;
+
+      setPitchDecks(data || []);
+    } catch (error: any) {
+      console.error('Error loading pitch decks:', error);
+    }
+  };
+
+  // Load data on component mount
+  React.useEffect(() => {
+    if (user) {
+      loadDocuments();
+      loadPitchDecks();
+    }
+  }, [user]);
+
+  const handleCreateDocument = async (data: { title: string; description: string; type: string }) => {
+    if (!user) return;
+
+    try {
+      if (data.type === "deck") {
+        // Create pitch deck
+        const { data: newDeck, error } = await docsDecksHelpers.createPitchDeck({
+          title: data.title,
+          description: data.description,
+          user_id: user.id
+        });
+
+        if (error) throw error;
+
+        if (newDeck) {
+          await loadPitchDecks();
+          navigate(`/workspace/docs-decks/editor/${newDeck.id}`);
+        }
+      } else {
+        // Create document
+        const { data: newDoc, error } = await docsDecksHelpers.createDocument({
+          title: data.title,
+          description: data.description,
+          document_type: 'other',
+          user_id: user.id
+        });
+
+        if (error) throw error;
+
+        if (newDoc) {
+          await loadDocuments();
+          navigate(`/workspace/docs-decks/editor/${newDoc.id}`);
+        }
+      }
+
+      toast({
+        title: "Document created",
+        description: `Your ${data.type === "deck" ? "pitch deck" : "document"} was created successfully`,
+      });
+    } catch (error: any) {
+      console.error('Error creating document:', error);
+      toast({
+        title: "Error Creating Document",
+        description: "Failed to create document. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleDeckClick = (id: number) => {

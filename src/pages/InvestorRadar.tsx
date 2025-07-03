@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import WorkspaceSidebar, { SidebarToggle } from "@/components/WorkspaceSidebar";
 import InvestorsList from "@/components/investor/InvestorsList";
 import FundingRoundsList from "@/components/investor/FundingRoundsList";
@@ -13,21 +14,69 @@ import ActionBar from "@/components/investor/ActionBar";
 import TabNavigation from "@/components/investor/TabNavigation";
 import { Button } from "@/components/ui/button";
 import { Menu, ChevronLeft, Target } from "lucide-react";
+import { investorRadarHelpers } from "@/lib/supabase-connection-helpers";
+import { useAuth } from "@/contexts/AuthContext";
 
 const InvestorRadar = () => {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("investors");
-  const [investors, setInvestors] = useState<Investor[]>(mockInvestors);
-  const [fundingRounds, setFundingRounds] = useState<FundingRound[]>(mockFundingRounds);
+  const [investors, setInvestors] = useState<Investor[]>([]);
+  const [fundingRounds, setFundingRounds] = useState<FundingRound[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredInvestors, setFilteredInvestors] = useState<Investor[]>(investors);
+  const [filteredInvestors, setFilteredInvestors] = useState<Investor[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isAddInvestorOpen, setIsAddInvestorOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+
+  // Load data from database
+  const loadInvestors = async () => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      const { data, error } = await investorRadarHelpers.getInvestors(user.id);
+
+      if (error) throw error;
+
+      setInvestors(data || []);
+    } catch (error: any) {
+      console.error('Error loading investors:', error);
+      toast({
+        title: "Error Loading Investors",
+        description: "Failed to load your investors. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadFundingRounds = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await investorRadarHelpers.getFundingRounds(user.id);
+
+      if (error) throw error;
+
+      setFundingRounds(data || []);
+    } catch (error: any) {
+      console.error('Error loading funding rounds:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      loadInvestors();
+      loadFundingRounds();
+    }
+  }, [user]);
 
   useEffect(() => {
     // Filter investors based on search query
-    const filtered = investors.filter((investor) => 
+    const filtered = investors.filter((investor) =>
       investor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       investor.focus.toLowerCase().includes(searchQuery.toLowerCase()) ||
       investor.stage.toLowerCase().includes(searchQuery.toLowerCase())
@@ -35,14 +84,33 @@ const InvestorRadar = () => {
     setFilteredInvestors(filtered);
   }, [searchQuery, investors]);
 
-  const handleAddInvestor = (investorData: InvestorInput) => {
-    const updatedInvestors = [...investors, { ...investorData, id: investors.length + 1 }];
-    setInvestors(updatedInvestors);
-    setIsAddInvestorOpen(false);
-    toast({
-      title: "Success",
-      description: "Investor added successfully",
-    });
+  const handleAddInvestor = async (investorData: InvestorInput) => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await investorRadarHelpers.createInvestor({
+        ...investorData,
+        user_id: user.id
+      });
+
+      if (error) throw error;
+
+      if (data) {
+        setInvestors(prev => [...prev, data]);
+        setIsAddInvestorOpen(false);
+        toast({
+          title: "Success",
+          description: "Investor added successfully",
+        });
+      }
+    } catch (error: any) {
+      console.error('Error adding investor:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add investor. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleUpdateInvestorStatus = (id: number, status: string) => {
@@ -83,10 +151,13 @@ const InvestorRadar = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <SidebarToggle onClick={() => setSidebarOpen(true)} />
-                <div className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm">
+                <Link
+                  to="/workspace"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+                >
                   <ChevronLeft className="h-4 w-4" />
                   <span>Back to Workspace</span>
-                </div>
+                </Link>
               </div>
               <Button
                 onClick={() => setIsAddInvestorOpen(true)}

@@ -28,6 +28,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WorkspaceSidebar from "@/components/WorkspaceSidebar";
 import { useToast } from "@/hooks/use-toast";
+import { taskPlannerHelpers } from "@/lib/supabase-connection-helpers";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Task {
   id: string;
@@ -43,11 +45,13 @@ interface Task {
 }
 
 const TaskPlanner = () => {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isNewTaskModalOpen, setIsNewTaskModalOpen] = useState(false);
   const [isEditTaskModalOpen, setIsEditTaskModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
   const [filterPriority, setFilterPriority] = useState<string>("all");
   const [filterAssignee, setFilterAssignee] = useState<string>("all");
   const [activeView, setActiveView] = useState("kanban");

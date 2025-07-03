@@ -52,7 +52,7 @@ export interface User extends BaseEntity {
   preferences: UserPreferences;
 }
 
-export type UserRole = 'admin' | 'user' | 'premium' | 'enterprise';
+export type UserRole = 'super_admin' | 'admin' | 'user' | 'premium' | 'enterprise';
 
 export interface UserPreferences {
   theme: 'light' | 'dark' | 'system';

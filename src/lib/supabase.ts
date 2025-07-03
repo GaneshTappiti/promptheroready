@@ -1,41 +1,55 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database';
 
+// =====================================================
+// SUPABASE CONFIGURATION & CLIENT SETUP
+// =====================================================
+
+// Environment variables with validation
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase configuration. Please check your environment variables.');
-}
-
-// Database connection string for session pooler - should be set via environment variables
 const dbConnectionString = import.meta.env.VITE_DATABASE_URL || '';
 
-export const supabase = createClient(supabaseUrl, supabaseKey, {
+// Configuration validation
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Missing Supabase configuration. Please check your environment variables.');
+  console.error('Required: VITE_SUPABASE_URL, VITE_SUPABASE_KEY');
+}
+
+// Validate URL format
+try {
+  new URL(supabaseUrl);
+} catch (error) {
+  console.error('❌ Invalid Supabase URL format:', supabaseUrl);
+}
+
+// Connection configuration
+const supabaseConfig = {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
-    storageKey: 'pitch-perfect-auth',
-    // Enhanced security configuration
-    flowType: 'pkce', // Use PKCE flow for better security
-    debug: process.env.NODE_ENV === 'development',
+    storageKey: 'promptheroready-auth',
+    flowType: 'pkce' as const, // Use PKCE flow for better security
+    debug: import.meta.env.DEV,
     storage: {
-      getItem: (key) => {
+      getItem: (key: string) => {
         try {
-          return JSON.parse(localStorage.getItem(key) || 'null');
+          const item = localStorage.getItem(key);
+          return item ? JSON.parse(item) : null;
         } catch (error) {
           console.error('Error reading from localStorage:', error);
           return null;
         }
       },
-      setItem: (key, value) => {
+      setItem: (key: string, value: any) => {
         try {
           localStorage.setItem(key, JSON.stringify(value));
         } catch (error) {
           console.error('Error writing to localStorage:', error);
         }
       },
-      removeItem: (key) => {
+      removeItem: (key: string) => {
         try {
           localStorage.removeItem(key);
         } catch (error) {
@@ -50,7 +64,8 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   global: {
     headers: {
       'x-connection-pool': 'true',
-      'x-client-info': 'pitch-perfect-engine',
+      'x-client-info': 'promptheroready-v1.0',
+      'x-client-version': '1.0.0',
     },
   },
   realtime: {
@@ -58,96 +73,677 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
       eventsPerSecond: 10, // Rate limiting for realtime events
     },
   },
-});
+};
 
-// Helper functions for common Supabase operations
+// Create typed Supabase client
+export const supabase: SupabaseClient<Database> = createClient<Database>(
+  supabaseUrl,
+  supabaseKey,
+  supabaseConfig
+);
+
+// =====================================================
+// CONNECTION HEALTH & MONITORING
+// =====================================================
+
+// Connection health check
+export const checkSupabaseConnection = async (): Promise<{
+  isConnected: boolean;
+  latency?: number;
+  error?: string;
+}> => {
+  const startTime = performance.now();
+
+  try {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('count')
+      .limit(1)
+      .single();
+
+    const latency = performance.now() - startTime;
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+      return {
+        isConnected: false,
+        latency,
+        error: error.message
+      };
+    }
+
+    return {
+      isConnected: true,
+      latency
+    };
+  } catch (error) {
+    return {
+      isConnected: false,
+      latency: performance.now() - startTime,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+};
+
+// Enhanced error handler with retry logic
+export const withRetry = async <T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3,
+  delay: number = 1000
+): Promise<T> => {
+  let lastError: Error;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('Unknown error');
+
+      if (attempt === maxRetries) {
+        console.error(`Operation failed after ${maxRetries} attempts:`, lastError);
+        throw lastError;
+      }
+
+      console.warn(`Attempt ${attempt} failed, retrying in ${delay}ms:`, lastError.message);
+      await new Promise(resolve => setTimeout(resolve, delay * attempt));
+    }
+  }
+
+  throw lastError!;
+};
+
+// Connection pool monitoring
+export const getConnectionStats = async () => {
+  try {
+    const { data, error } = await supabase.rpc('get_connection_stats');
+
+    if (error) {
+      console.warn('Could not fetch connection stats:', error);
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    console.warn('Connection stats not available:', error);
+    return null;
+  }
+};
+
+// Performance monitoring
+export const logPerformanceMetric = (
+  operation: string,
+  duration: number,
+  success: boolean,
+  metadata?: Record<string, any>
+) => {
+  if (import.meta.env.DEV) {
+    console.log(`🔍 Performance: ${operation}`, {
+      duration: `${duration.toFixed(2)}ms`,
+      success,
+      ...metadata
+    });
+  }
+
+  // In production, you might want to send this to an analytics service
+  if (!import.meta.env.DEV && duration > 5000) {
+    console.warn(`⚠️ Slow operation detected: ${operation} took ${duration.toFixed(2)}ms`);
+  }
+};
+
+// =====================================================
+// ENHANCED HELPER FUNCTIONS WITH TYPE SAFETY
+// =====================================================
+
+// Type definitions for helper responses
+type SupabaseResponse<T> = {
+  data: T | null;
+  error: any;
+  performance?: {
+    duration: number;
+    operation: string;
+  };
+};
+
+// Enhanced helper functions with performance monitoring and error handling
 export const supabaseHelpers = {
-  // Auth helpers
-  async signIn(email: string, password: string) {
+  // =====================================================
+  // AUTHENTICATION HELPERS
+  // =====================================================
+
+  async signIn(email: string, password: string): Promise<SupabaseResponse<any>> {
+    const startTime = performance.now();
+    const operation = 'auth.signIn';
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      return { data, error };
+
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, !error);
+
+      if (error) {
+        console.error('❌ Sign in failed:', error.message);
+      } else {
+        console.log('✅ User signed in successfully');
+      }
+
+      return {
+        data,
+        error,
+        performance: { duration, operation }
+      };
     } catch (error) {
-      console.error('Error signing in:', error);
-      return { data: null, error };
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, false);
+      console.error('❌ Sign in error:', error);
+      return {
+        data: null,
+        error,
+        performance: { duration, operation }
+      };
     }
   },
 
-  async signUp(email: string, password: string) {
+  async signUp(email: string, password: string, metadata?: Record<string, any>): Promise<SupabaseResponse<any>> {
+    const startTime = performance.now();
+    const operation = 'auth.signUp';
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: metadata,
         },
       });
-      return { data, error };
+
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, !error);
+
+      if (error) {
+        console.error('❌ Sign up failed:', error.message);
+      } else {
+        console.log('✅ User signed up successfully');
+      }
+
+      return {
+        data,
+        error,
+        performance: { duration, operation }
+      };
     } catch (error) {
-      console.error('Error signing up:', error);
-      return { data: null, error };
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, false);
+      console.error('❌ Sign up error:', error);
+      return {
+        data: null,
+        error,
+        performance: { duration, operation }
+      };
     }
   },
 
-  async signOut() {
+  async signOut(): Promise<SupabaseResponse<null>> {
+    const startTime = performance.now();
+    const operation = 'auth.signOut';
+
     try {
       const { error } = await supabase.auth.signOut();
-      return { error };
+
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, !error);
+
+      if (error) {
+        console.error('❌ Sign out failed:', error.message);
+      } else {
+        console.log('✅ User signed out successfully');
+      }
+
+      return {
+        data: null,
+        error,
+        performance: { duration, operation }
+      };
     } catch (error) {
-      console.error('Error signing out:', error);
-      return { error };
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, false);
+      console.error('❌ Sign out error:', error);
+      return {
+        data: null,
+        error,
+        performance: { duration, operation }
+      };
     }
   },
 
-  // Data helpers
-  async getProjects() {
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .order('created_at', { ascending: false });
-    return { data, error };
+  async getCurrentUser() {
+    const startTime = performance.now();
+    const operation = 'auth.getUser';
+
+    try {
+      const { data, error } = await supabase.auth.getUser();
+
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, !error);
+
+      return {
+        data: data.user,
+        error,
+        performance: { duration, operation }
+      };
+    } catch (error) {
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, false);
+      console.error('❌ Get user error:', error);
+      return {
+        data: null,
+        error,
+        performance: { duration, operation }
+      };
+    }
   },
 
-  async getTasks() {
-    const { data, error } = await supabase
-      .from('tasks')
-      .select('*')
-      .order('due_date', { ascending: true });
-    return { data, error };
+  async resetPassword(email: string): Promise<SupabaseResponse<null>> {
+    const startTime = performance.now();
+    const operation = 'auth.resetPassword';
+
+    try {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      });
+
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, !error);
+
+      return {
+        data,
+        error,
+        performance: { duration, operation }
+      };
+    } catch (error) {
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, false);
+      console.error('❌ Reset password error:', error);
+      return {
+        data: null,
+        error,
+        performance: { duration, operation }
+      };
+    }
   },
 
-  async createProject(project: any) {
-    const { data, error } = await supabase
-      .from('projects')
-      .insert([project])
-      .select();
-    return { data, error };
+  // =====================================================
+  // DATA HELPERS WITH ENHANCED ERROR HANDLING
+  // =====================================================
+
+  async getProjects(userId?: string): Promise<SupabaseResponse<any[]>> {
+    const startTime = performance.now();
+    const operation = 'projects.getAll';
+
+    try {
+      let query = supabase
+        .from('projects')
+        .select(`
+          *,
+          owner:user_profiles!projects_owner_id_fkey(id, username, avatar_url),
+          team:teams(id, name)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (userId) {
+        query = query.eq('owner_id', userId);
+      }
+
+      const { data, error } = await query;
+
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, !error, { count: data?.length });
+
+      if (error) {
+        console.error('❌ Failed to fetch projects:', error.message);
+      }
+
+      return {
+        data: data || [],
+        error,
+        performance: { duration, operation }
+      };
+    } catch (error) {
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, false);
+      console.error('❌ Get projects error:', error);
+      return {
+        data: [],
+        error,
+        performance: { duration, operation }
+      };
+    }
   },
 
-  async createTask(task: any) {
-    const { data, error } = await supabase
-      .from('tasks')
-      .insert([task])
-      .select();
-    return { data, error };
+  async getTasks(projectId?: string, userId?: string): Promise<SupabaseResponse<any[]>> {
+    const startTime = performance.now();
+    const operation = 'tasks.getAll';
+
+    try {
+      let query = supabase
+        .from('tasks')
+        .select(`
+          *,
+          project:projects(id, name),
+          assignee:user_profiles!tasks_assigned_to_fkey(id, username, avatar_url)
+        `)
+        .order('due_date', { ascending: true, nullsLast: true });
+
+      if (projectId) {
+        query = query.eq('project_id', projectId);
+      }
+
+      if (userId) {
+        query = query.eq('assigned_to', userId);
+      }
+
+      const { data, error } = await query;
+
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, !error, { count: data?.length });
+
+      if (error) {
+        console.error('❌ Failed to fetch tasks:', error.message);
+      }
+
+      return {
+        data: data || [],
+        error,
+        performance: { duration, operation }
+      };
+    } catch (error) {
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, false);
+      console.error('❌ Get tasks error:', error);
+      return {
+        data: [],
+        error,
+        performance: { duration, operation }
+      };
+    }
   },
 
-  // Real-time subscriptions
-  subscribeToProjects(callback: (payload: any) => void) {
-    return supabase
+  async createProject(project: Database['public']['Tables']['projects']['Insert']): Promise<SupabaseResponse<any>> {
+    const startTime = performance.now();
+    const operation = 'projects.create';
+
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .insert([{
+          ...project,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }])
+        .select(`
+          *,
+          owner:user_profiles!projects_owner_id_fkey(id, username, avatar_url)
+        `)
+        .single();
+
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, !error);
+
+      if (error) {
+        console.error('❌ Failed to create project:', error.message);
+      } else {
+        console.log('✅ Project created successfully:', data.name);
+      }
+
+      return {
+        data,
+        error,
+        performance: { duration, operation }
+      };
+    } catch (error) {
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, false);
+      console.error('❌ Create project error:', error);
+      return {
+        data: null,
+        error,
+        performance: { duration, operation }
+      };
+    }
+  },
+
+  async createTask(task: Database['public']['Tables']['tasks']['Insert']): Promise<SupabaseResponse<any>> {
+    const startTime = performance.now();
+    const operation = 'tasks.create';
+
+    try {
+      const { data, error } = await supabase
+        .from('tasks')
+        .insert([{
+          ...task,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }])
+        .select(`
+          *,
+          project:projects(id, name),
+          assignee:user_profiles!tasks_assigned_to_fkey(id, username, avatar_url)
+        `)
+        .single();
+
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, !error);
+
+      if (error) {
+        console.error('❌ Failed to create task:', error.message);
+      } else {
+        console.log('✅ Task created successfully:', data.title);
+      }
+
+      return {
+        data,
+        error,
+        performance: { duration, operation }
+      };
+    } catch (error) {
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, false);
+      console.error('❌ Create task error:', error);
+      return {
+        data: null,
+        error,
+        performance: { duration, operation }
+      };
+    }
+  },
+
+  async updateProject(id: string, updates: Database['public']['Tables']['projects']['Update']): Promise<SupabaseResponse<any>> {
+    const startTime = performance.now();
+    const operation = 'projects.update';
+
+    try {
+      const { data, error } = await supabase
+        .from('projects')
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .select(`
+          *,
+          owner:user_profiles!projects_owner_id_fkey(id, username, avatar_url)
+        `)
+        .single();
+
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, !error);
+
+      if (error) {
+        console.error('❌ Failed to update project:', error.message);
+      } else {
+        console.log('✅ Project updated successfully:', data.name);
+      }
+
+      return {
+        data,
+        error,
+        performance: { duration, operation }
+      };
+    } catch (error) {
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, false);
+      console.error('❌ Update project error:', error);
+      return {
+        data: null,
+        error,
+        performance: { duration, operation }
+      };
+    }
+  },
+
+  async deleteProject(id: string): Promise<SupabaseResponse<null>> {
+    const startTime = performance.now();
+    const operation = 'projects.delete';
+
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', id);
+
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, !error);
+
+      if (error) {
+        console.error('❌ Failed to delete project:', error.message);
+      } else {
+        console.log('✅ Project deleted successfully');
+      }
+
+      return {
+        data: null,
+        error,
+        performance: { duration, operation }
+      };
+    } catch (error) {
+      const duration = performance.now() - startTime;
+      logPerformanceMetric(operation, duration, false);
+      console.error('❌ Delete project error:', error);
+      return {
+        data: null,
+        error,
+        performance: { duration, operation }
+      };
+    }
+  },
+
+  // =====================================================
+  // REAL-TIME SUBSCRIPTIONS WITH ERROR HANDLING
+  // =====================================================
+
+  subscribeToProjects(
+    callback: (payload: any) => void,
+    errorCallback?: (error: any) => void
+  ) {
+    const channel = supabase
       .channel('projects_changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, callback)
-      .subscribe();
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'projects'
+      }, (payload) => {
+        try {
+          callback(payload);
+        } catch (error) {
+          console.error('❌ Projects subscription callback error:', error);
+          errorCallback?.(error);
+        }
+      })
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Subscribed to projects changes');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Projects subscription error');
+          errorCallback?.(new Error('Subscription failed'));
+        }
+      });
+
+    return channel;
   },
 
-  subscribeToTasks(callback: (payload: any) => void) {
-    return supabase
+  subscribeToTasks(
+    callback: (payload: any) => void,
+    errorCallback?: (error: any) => void
+  ) {
+    const channel = supabase
       .channel('tasks_changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, callback)
-      .subscribe();
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'tasks'
+      }, (payload) => {
+        try {
+          callback(payload);
+        } catch (error) {
+          console.error('❌ Tasks subscription callback error:', error);
+          errorCallback?.(error);
+        }
+      })
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Subscribed to tasks changes');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Tasks subscription error');
+          errorCallback?.(new Error('Subscription failed'));
+        }
+      });
+
+    return channel;
+  },
+
+  // Enhanced subscription with user filtering
+  subscribeToUserData(
+    userId: string,
+    tables: string[],
+    callback: (payload: any) => void,
+    errorCallback?: (error: any) => void
+  ) {
+    const channels = tables.map(table => {
+      return supabase
+        .channel(`${table}_user_${userId}`)
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table,
+          filter: `user_id=eq.${userId}`
+        }, (payload) => {
+          try {
+            callback({ ...payload, table });
+          } catch (error) {
+            console.error(`❌ ${table} subscription callback error:`, error);
+            errorCallback?.(error);
+          }
+        })
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log(`✅ Subscribed to ${table} changes for user ${userId}`);
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error(`❌ ${table} subscription error for user ${userId}`);
+            errorCallback?.(new Error(`${table} subscription failed`));
+          }
+        });
+    });
+
+    return {
+      channels,
+      unsubscribe: () => {
+        channels.forEach(channel => {
+          supabase.removeChannel(channel);
+        });
+      }
+    };
   },
 
   // Additional helper functions for all pages
@@ -441,20 +1037,161 @@ export const supabaseHelpers = {
   },
 };
 
-// Test function to verify Supabase connection
-export const testSupabaseConnection = async () => {
+// =====================================================
+// CONNECTION TESTING & VALIDATION
+// =====================================================
+
+// Enhanced connection test with detailed diagnostics
+export const testSupabaseConnection = async (): Promise<{
+  success: boolean;
+  details: {
+    connection: boolean;
+    authentication: boolean;
+    database: boolean;
+    realtime: boolean;
+  };
+  errors: string[];
+  performance: {
+    connectionTime: number;
+    queryTime: number;
+  };
+}> => {
+  const startTime = performance.now();
+  const errors: string[] = [];
+  const details = {
+    connection: false,
+    authentication: false,
+    database: false,
+    realtime: false
+  };
+
   try {
-    const { data, error } = await supabase.from('projects').select('count').limit(1);
-    if (error) {
-      console.error('Supabase connection test failed:', error);
-      return false;
+    // Test 1: Basic connection
+    const connectionResult = await checkSupabaseConnection();
+    details.connection = connectionResult.isConnected;
+
+    if (!connectionResult.isConnected) {
+      errors.push(`Connection failed: ${connectionResult.error}`);
     }
-    console.log('Supabase connection successful!');
-    return true;
+
+    const connectionTime = performance.now() - startTime;
+
+    // Test 2: Authentication check
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      details.authentication = true;
+      console.log('✅ Authentication system working');
+    } catch (error) {
+      errors.push('Authentication system error');
+      console.warn('⚠️ Authentication test failed (this is normal if not logged in)');
+    }
+
+    // Test 3: Database query
+    const queryStartTime = performance.now();
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('count')
+        .limit(1);
+
+      if (!error) {
+        details.database = true;
+        console.log('✅ Database queries working');
+      } else {
+        errors.push(`Database query failed: ${error.message}`);
+      }
+    } catch (error) {
+      errors.push('Database connection failed');
+    }
+
+    const queryTime = performance.now() - queryStartTime;
+
+    // Test 4: Real-time capabilities
+    try {
+      const channel = supabase.channel('connection_test');
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Real-time connection timeout'));
+        }, 5000);
+
+        channel.subscribe((status) => {
+          clearTimeout(timeout);
+          if (status === 'SUBSCRIBED') {
+            details.realtime = true;
+            console.log('✅ Real-time subscriptions working');
+            resolve(true);
+          } else {
+            reject(new Error(`Real-time subscription failed: ${status}`));
+          }
+        });
+      });
+
+      supabase.removeChannel(channel);
+    } catch (error) {
+      errors.push('Real-time connection failed');
+      console.warn('⚠️ Real-time test failed:', error);
+    }
+
+    const success = details.connection && details.database;
+
+    if (success) {
+      console.log('🎉 Supabase connection test passed!');
+    } else {
+      console.error('❌ Supabase connection test failed');
+    }
+
+    return {
+      success,
+      details,
+      errors,
+      performance: {
+        connectionTime,
+        queryTime
+      }
+    };
+
   } catch (error) {
-    console.error('Supabase connection test failed:', error);
-    return false;
+    const connectionTime = performance.now() - startTime;
+    errors.push(`Connection test failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+
+    return {
+      success: false,
+      details,
+      errors,
+      performance: {
+        connectionTime,
+        queryTime: 0
+      }
+    };
   }
 };
 
-// Test data functions removed for production
+// Initialize connection monitoring
+export const initializeSupabaseMonitoring = () => {
+  if (import.meta.env.DEV) {
+    console.log('🔧 Initializing Supabase monitoring...');
+
+    // Test connection on startup
+    testSupabaseConnection().then(result => {
+      if (result.success) {
+        console.log('✅ Supabase initialization successful');
+      } else {
+        console.error('❌ Supabase initialization failed:', result.errors);
+      }
+    });
+
+    // Monitor auth state changes
+    supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔐 Auth state changed:', event, session?.user?.email || 'No user');
+    });
+  }
+};
+
+// Auto-initialize monitoring in development
+if (import.meta.env.DEV) {
+  initializeSupabaseMonitoring();
+}
+
+// Export types for use in other files
+export type { Database } from '@/types/database';
+export type SupabaseClient = typeof supabase;

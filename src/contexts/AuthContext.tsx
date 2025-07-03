@@ -78,19 +78,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string, rememberMe = false) => {
     try {
-      // Use enhanced security sign in
-      const { PasswordSecurityService } = await import('@/services/passwordSecurityService');
-      const result = await PasswordSecurityService.secureSignIn(email, password);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      if (result.error) {
+      if (error) {
         toast({
           title: "Sign In Failed",
-          description: result.error.message || "Invalid credentials",
+          description: error.message || "Invalid credentials",
           variant: "destructive"
         });
+        return { error };
       }
 
-      return result;
+      return { data, error: null };
     } catch (error) {
       console.error('Error signing in:', error);
       toast({
@@ -104,36 +106,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, userData?: any) => {
     try {
-      // Use enhanced security sign up with password validation
-      const { PasswordSecurityService } = await import('@/services/passwordSecurityService');
-      const result = await PasswordSecurityService.secureSignUp(email, password, userData);
+      console.log('🔄 Attempting signup for email:', email);
 
-      if (result.error) {
-        if (result.error.details) {
-          // Show password validation errors
-          const validation = result.error.details;
-          toast({
-            title: "Password Requirements Not Met",
-            description: validation.issues.join('. '),
-            variant: "destructive"
-          });
-        } else {
-          toast({
-            title: "Sign Up Failed",
-            description: result.error.message || "Failed to create account",
-            variant: "destructive"
-          });
-        }
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: userData,
+        },
+      });
+
+      if (error) {
+        console.error('❌ Signup error:', error);
+        toast({
+          title: "Sign Up Failed",
+          description: error.message || "Failed to create account",
+          variant: "destructive"
+        });
+        return { error };
       } else {
+        console.log('✅ Signup successful:', data);
         toast({
           title: "Account Created",
           description: "Please check your email to verify your account",
         });
       }
 
-      return result;
+      return { data, error: null };
     } catch (error) {
-      console.error('Error signing up:', error);
+      console.error('❌ Unexpected signup error:', error);
       toast({
         title: "Error",
         description: "An unexpected error occurred during sign up",

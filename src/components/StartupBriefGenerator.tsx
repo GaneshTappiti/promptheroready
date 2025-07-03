@@ -4,12 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Lightbulb, 
-  Target, 
-  DollarSign, 
-  Code, 
-  Users, 
+import {
+  Lightbulb,
+  Target,
+  DollarSign,
+  Code,
+  Users,
   TrendingUp,
   Clock,
   CheckCircle2,
@@ -20,6 +20,7 @@ import {
 import { createAIEngine, StartupBrief } from '@/services/aiEngine';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { AIGenerationLoader } from '@/components/common/LoadingSpinner';
 
 interface StartupBriefGeneratorProps {
   prompt: string;
@@ -67,15 +68,14 @@ const StartupBriefGenerator: React.FC<StartupBriefGeneratorProps> = ({
   if (isGenerating) {
     return (
       <Card className="bg-black/20 backdrop-blur-xl border-white/10">
-        <CardContent className="p-8 text-center">
-          <div className="space-y-4">
-            <div className="h-12 w-12 mx-auto animate-spin rounded-full border-4 border-green-400 border-t-transparent"></div>
-            <h3 className="text-lg font-semibold text-white">Analyzing Your Startup Idea</h3>
-            <p className="text-gray-400">Our AI is breaking down your concept into actionable insights...</p>
-            <div className="space-y-2">
-              <Progress value={33} className="h-2" />
-              <p className="text-sm text-gray-500">Analyzing market potential...</p>
-            </div>
+        <CardContent className="p-4">
+          <AIGenerationLoader
+            text="Analyzing your startup idea..."
+            size="lg"
+          />
+          <div className="mt-6 space-y-2">
+            <Progress value={33} className="h-2" />
+            <p className="text-sm text-gray-500 text-center">Analyzing market potential...</p>
           </div>
         </CardContent>
       </Card>

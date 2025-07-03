@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useActiveIdea, useIdeaStore } from '@/stores/ideaStore';
 
-export type FlowStep = 'idea-vault' | 'ideaforge' | 'mvp-studio';
+export type FlowStep = 'idea-vault' | 'ideaforge' | 'mvp-studio' | 'workshop' | 'vault' | 'mvpstudio';
 
 interface FlowContextType {
   currentFlow: FlowStep;
@@ -53,9 +53,30 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({ children }) => {
 
   const setCurrentFlow = (flow: FlowStep) => {
     setCurrentFlowState(flow);
-    // Update the store's current step as well
+    // Update the store's current step as well with mapping
     const setCurrentStep = useIdeaStore.getState().setCurrentStep;
-    setCurrentStep(flow);
+    const mappedStep = mapFlowStepToStoreStep(flow);
+    setCurrentStep(mappedStep);
+  };
+
+  // Map FlowStep to store step format
+  const mapFlowStepToStoreStep = (flow: FlowStep): 'workshop' | 'vault' | 'ideaforge' | 'mvpstudio' => {
+    switch (flow) {
+      case 'idea-vault':
+        return 'vault';
+      case 'ideaforge':
+        return 'ideaforge';
+      case 'mvp-studio':
+        return 'mvpstudio';
+      case 'workshop':
+        return 'workshop';
+      case 'vault':
+        return 'vault';
+      case 'mvpstudio':
+        return 'mvpstudio';
+      default:
+        return 'workshop';
+    }
   };
 
   const canNavigateToStep = (step: FlowStep): boolean => {

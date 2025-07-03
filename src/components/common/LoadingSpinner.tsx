@@ -86,3 +86,60 @@ export const InlineLoader: React.FC<{ text?: string }> = ({ text }) => (
 export const ButtonLoader: React.FC = () => (
   <LoadingSpinner size="sm" className="mr-2" />
 );
+
+// AI Generation Loading Animation
+export const AIGenerationLoader: React.FC<{
+  text?: string;
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}> = ({
+  text = "AI is generating...",
+  size = 'md',
+  className
+}) => {
+  const sizeMultiplier = size === 'sm' ? 0.6 : size === 'lg' ? 1.4 : 1;
+  const width = 75 * sizeMultiplier;
+  const height = 100 * sizeMultiplier;
+
+  return (
+    <div className={cn("flex flex-col items-center gap-4 p-6", className)}>
+      <div
+        className="relative"
+        style={{ width: `${width}px`, height: `${height}px` }}
+      >
+        {/* Bars */}
+        {[1, 2, 3, 4, 5].map((index) => (
+          <div
+            key={index}
+            className={cn(
+              "absolute bottom-0 bg-gray-600 shadow-sm rounded-sm",
+              `animate-ai-bar-${index}`
+            )}
+            style={{
+              left: `${15 * (index - 1) * sizeMultiplier}px`,
+              width: `${10 * sizeMultiplier}px`,
+              height: '50%',
+              transformOrigin: 'center bottom',
+              transform: `scale(1, ${0.2 * index})`
+            }}
+          />
+        ))}
+
+        {/* Ball */}
+        <div
+          className="absolute bg-green-400 rounded-full shadow-lg shadow-green-400/50 animate-ai-ball"
+          style={{
+            bottom: `${10 * sizeMultiplier}px`,
+            left: 0,
+            width: `${10 * sizeMultiplier}px`,
+            height: `${10 * sizeMultiplier}px`
+          }}
+        />
+      </div>
+
+      {text && (
+        <p className="text-sm text-gray-400 animate-pulse text-center font-medium">{text}</p>
+      )}
+    </div>
+  );
+};

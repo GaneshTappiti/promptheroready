@@ -9,6 +9,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Mail, Lock, Github, Sparkles } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
+import { isValidEmail } from '@/shared/utils/validation';
+import { VALIDATION } from '@/shared/constants';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -76,6 +78,12 @@ export default function Auth() {
           return;
         }
 
+        // Validate email format
+        if (!isValidEmail(email)) {
+          setError('Please enter a valid email address');
+          return;
+        }
+
         const { error } = await resetPassword(email);
         if (error) {
           setError(error.message);
@@ -99,8 +107,14 @@ export default function Auth() {
           return;
         }
 
-        if (!isLogin && password.length < 6) {
-          setError('Password must be at least 6 characters long');
+        // Validate email format
+        if (!isValidEmail(email)) {
+          setError('Please enter a valid email address');
+          return;
+        }
+
+        if (!isLogin && password.length < VALIDATION.PASSWORD_MIN_LENGTH) {
+          setError(`Password must be at least ${VALIDATION.PASSWORD_MIN_LENGTH} characters long`);
           return;
         }
 
@@ -186,8 +200,8 @@ export default function Auth() {
 
   if (isResetPassword) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-md p-8 space-y-8 bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10">
+      <div className="min-h-screen flex items-center justify-center bg-green-glass">
+        <div className="w-full max-w-md p-8 space-y-8 workspace-card">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-white mb-2">Reset Password</h1>
             <p className="text-gray-400">Enter your new password</p>
@@ -259,8 +273,8 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-md space-y-8 bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 shadow-lg p-8">
+    <div className="min-h-screen flex items-center justify-center bg-green-glass">
+      <div className="w-full max-w-md space-y-8 workspace-card p-8">
         <div className="text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Sparkles className="h-8 w-8 text-green-400" />

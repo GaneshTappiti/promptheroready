@@ -33,6 +33,8 @@ import BlueprintView from "@/components/ideaforge/BlueprintView";
 import JourneyView from "@/components/ideaforge/JourneyView";
 import FeedbackView from "@/components/ideaforge/FeedbackView";
 import IdeaForgeStorage, { StoredIdea } from "@/utils/ideaforge-storage";
+import { ideaForgeHelpers } from "@/lib/supabase-connection-helpers";
+import { useAuth } from "@/contexts/AuthContext";
 import ShareIdeaModal from "@/components/ideaforge/ShareIdeaModal";
 import IdeaSummaryModal from "@/components/ideaforge/IdeaSummaryModal";
 
@@ -67,7 +69,8 @@ const IdeaForge = () => {
   const { ideaId } = useParams<{ ideaId?: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+  const { user } = useAuth();
+
   // State management
   const [ideas, setIdeas] = useState<StoredIdea[]>([]);
   const [currentIdea, setCurrentIdea] = useState<StoredIdea | null>(null);
@@ -76,6 +79,7 @@ const IdeaForge = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Sidebar configuration
   const sidebarItems: IdeaForgeSidebarItem[] = [
@@ -87,46 +91,112 @@ const IdeaForge = () => {
   ];
 
   // Handle creating a new idea
-  const handleCreateIdea = (idea: IdeaInput) => {
-    const newIdea: StoredIdea = {
-      id: Date.now().toString(),
-      title: idea.title,
-      description: idea.description || "",
-      content: "",
-      status: 'draft',
-      tags: idea.tags || [],
-      coverImage: idea.coverImage,
-      favorited: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      progress: {
-        wiki: 0,
-        blueprint: 0,
-        journey: 0,
-        feedback: 0
+  const handleCreateIdea = async (idea: IdeaInput) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to create ideas.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { data: newIdea, error } = await ideaForgeHelpers.createIdea({
+        title: idea.title,
+        description: idea.description || "",
+        status: 'draft',
+        tags: idea.tags || [],
+        user_id: user.id,
+        progress: {
+          wiki: 0,
+          blueprint: 0,
+          journey: 0,
+          feedback: 0
+        }
+      });
+
+      if (error) throw error;
+
+      if (newIdea) {
+        // Update local state
+        await loadIdeas();
+
+        navigate(`/workspace/ideaforge/${newIdea.id}`);
+        toast({
+          title: "Idea Created!",
+          description: `"${newIdea.title}" has been added to your IdeaForge.`,
+        });
       }
-    };
-
-    // Save to storage
-    IdeaForgeStorage.saveIdea(newIdea);
-
-    // Update local state
-    const updatedIdeas = IdeaForgeStorage.getIdeas();
-    setIdeas(updatedIdeas);
-
-    navigate(`/workspace/ideaforge/${newIdea.id}`);
-    toast({
-      title: "Idea Created!",
-      description: `"${newIdea.title}" has been added to your IdeaForge.`,
-    });
+    } catch (error: any) {
+      console.error('Error creating idea:', error);
+      toast({
+        title: "Error Creating Idea",
+        description: "Failed to create idea. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
-  // Initialize data from storage and handle URL params
+  // Load ideas from database
+  const loadIdeas = async () => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      const { data: ideasData, error } = await ideaForgeHelpers.getIdeas(user.id);
+
+      if (error) throw error;
+
+      // Convert database format to StoredIdea format for compatibility
+      const convertedIdeas: StoredIdea[] = (ideasData || []).map(idea => ({
+        id: idea.id,
+        title: idea.title,
+        description: idea.description || "",
+        content: "", // This would be populated from wiki pages
+        status: idea.status as IdeaStatus,
+        tags: idea.tags || [],
+        coverImage: undefined,
+        favorited: false,
+        createdAt: idea.created_at,
+        updatedAt: idea.updated_at,
+        progress: idea.progress || {
+          wiki: 0,
+          blueprint: 0,
+          journey: 0,
+          feedback: 0
+        }
+      }));
+
+      setIdeas(convertedIdeas);
+    } catch (error: any) {
+      console.error('Error loading ideas:', error);
+      toast({
+        title: "Error Loading Ideas",
+        description: "Failed to load your ideas. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initialize data from database and handle URL params
   useEffect(() => {
-    // Load ideas from storage - start with empty state for production
-    const storedIdeas = IdeaForgeStorage.getIdeas();
-    setIdeas(storedIdeas);
-  }, []);
+    if (user) {
+      loadIdeas();
+    }
+  }, [user]);
+
+  // Load current idea when ideaId changes
+  useEffect(() => {
+    if (ideaId && ideas.length > 0) {
+      const idea = ideas.find(i => i.id === ideaId);
+      setCurrentIdea(idea || null);
+    } else if (!ideaId) {
+      setCurrentIdea(null);
+    }
+  }, [ideaId, ideas]);
 
   // Handle export functionality - simplified to display content
   const handleExport = (format: 'summary' | 'display' | 'markdown' | 'json') => {

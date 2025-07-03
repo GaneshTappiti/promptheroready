@@ -1,5 +1,6 @@
 -- Performance Optimization SQL Functions and Configurations
 -- Run these in your Supabase SQL editor to implement performance improvements
+-- Note: This file is optimized for Supabase and excludes auth schema modifications
 
 -- 1. Create function to get timezone names with caching
 CREATE OR REPLACE FUNCTION get_timezone_names()
@@ -46,25 +47,26 @@ $$;
 
 -- 3. Create indexes for better query performance
 -- Index for messages table (if it exists)
-CREATE INDEX IF NOT EXISTS idx_messages_timestamp ON messages(timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_messages_username ON messages(username);
 CREATE INDEX IF NOT EXISTS idx_messages_country ON messages(country);
 
--- Index for user authentication events
-CREATE INDEX IF NOT EXISTS idx_auth_events_user_id ON auth.audit_log_entries(user_id);
-CREATE INDEX IF NOT EXISTS idx_auth_events_created_at ON auth.audit_log_entries(created_at DESC);
+-- Note: Cannot create indexes on auth schema tables in Supabase
+-- These are system-managed tables with existing optimizations
+-- CREATE INDEX IF NOT EXISTS idx_auth_events_user_id ON auth.audit_log_entries(user_id);
+-- CREATE INDEX IF NOT EXISTS idx_auth_events_created_at ON auth.audit_log_entries(created_at DESC);
 
 -- 4. Create materialized view for frequently accessed data
+-- Note: Using auth.users is allowed for reading in Supabase
 CREATE MATERIALIZED VIEW IF NOT EXISTS mv_user_stats AS
-SELECT 
+SELECT
     u.id,
     u.email,
     u.created_at,
-    COUNT(DISTINCT s.id) as session_count,
-    MAX(s.created_at) as last_login
+    u.raw_user_meta_data,
+    u.last_sign_in_at
 FROM auth.users u
-LEFT JOIN auth.sessions s ON u.id = s.user_id
-GROUP BY u.id, u.email, u.created_at;
+WHERE u.deleted_at IS NULL;
 
 -- Create index on materialized view
 CREATE UNIQUE INDEX IF NOT EXISTS idx_mv_user_stats_id ON mv_user_stats(id);

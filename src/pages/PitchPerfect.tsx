@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -18,14 +18,60 @@ import {
 } from "lucide-react";
 import WorkspaceSidebar, { SidebarToggle } from "@/components/WorkspaceSidebar";
 import { useToast } from "@/hooks/use-toast";
+import { pitchPerfectHelpers } from "@/lib/supabase-connection-helpers";
+import { useAuth } from "@/contexts/AuthContext";
 
 const PitchPerfect = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("scripts");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
-  const scripts = [
+  const [loading, setLoading] = useState(true);
+
+  // Database state
+  const [scripts, setScripts] = useState<any[]>([]);
+  const [decks, setDecks] = useState<any[]>([]);
+  const [videos, setVideos] = useState<any[]>([]);
+
+  // Load data from database
+  const loadPitchData = async () => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      const [scriptsResult, decksResult, videosResult] = await Promise.all([
+        pitchPerfectHelpers.getPitchScripts(user.id),
+        pitchPerfectHelpers.getPitchDecks(user.id),
+        pitchPerfectHelpers.getPitchVideos(user.id)
+      ]);
+
+      if (scriptsResult.error) throw scriptsResult.error;
+      if (decksResult.error) throw decksResult.error;
+      if (videosResult.error) throw videosResult.error;
+
+      setScripts(scriptsResult.data || []);
+      setDecks(decksResult.data || []);
+      setVideos(videosResult.data || []);
+    } catch (error: any) {
+      console.error('Error loading pitch data:', error);
+      toast({
+        title: "Error Loading Data",
+        description: "Failed to load your pitch content. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (user) {
+      loadPitchData();
+    }
+  }, [user]);
+
+  const mockScripts = [
     {
       id: 1,
       title: "Investor Elevator Pitch",
@@ -49,7 +95,7 @@ const PitchPerfect = () => {
     }
   ];
   
-  const decks = [
+  const sampleDecks = [
     {
       id: 1,
       title: "Seed Round Pitch Deck",
@@ -114,10 +160,13 @@ const PitchPerfect = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <SidebarToggle onClick={() => setSidebarOpen(true)} />
-                <div className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm">
+                <Link
+                  to="/workspace"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+                >
                   <ChevronLeft className="h-4 w-4" />
                   <span>Back to Workspace</span>
-                </div>
+                </Link>
               </div>
               <Button
                 onClick={handleNewScript}
@@ -267,7 +316,7 @@ const PitchPerfect = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {decks.map(deck => (
+                {(decks.length > 0 ? decks : sampleDecks).map(deck => (
                   <Card 
                     key={deck.id} 
                     className="workspace-card hover:shadow-lg cursor-pointer transition-all duration-200 hover:scale-[1.01] bg-black/80"

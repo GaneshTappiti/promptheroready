@@ -403,4 +403,75 @@
   .ai-response-content tbody tr:hover {
     @apply bg-muted/30;
   }
+
+  /* AI Generation Loader Animations */
+  @keyframes aiBall {
+    0% { transform: translate(0, 0); }
+    5% { transform: translate(8px, -14px); }
+    10% { transform: translate(15px, -10px); }
+    17% { transform: translate(23px, -24px); }
+    20% { transform: translate(30px, -20px); }
+    27% { transform: translate(38px, -34px); }
+    30% { transform: translate(45px, -30px); }
+    37% { transform: translate(53px, -44px); }
+    40% { transform: translate(60px, -40px); }
+    50% { transform: translate(60px, 0); }
+    57% { transform: translate(53px, -14px); }
+    60% { transform: translate(45px, -10px); }
+    67% { transform: translate(37px, -24px); }
+    70% { transform: translate(30px, -20px); }
+    77% { transform: translate(22px, -34px); }
+    80% { transform: translate(15px, -30px); }
+    87% { transform: translate(7px, -44px); }
+    90% { transform: translate(0, -40px); }
+    100% { transform: translate(0, 0); }
+  }
+
+  @keyframes aiBar1 {
+    0%, 40%, 100% { transform: scale(1, 0.2); }
+    50%, 90% { transform: scale(1, 1); }
+  }
+
+  @keyframes aiBar2 {
+    0%, 40%, 100% { transform: scale(1, 0.4); }
+    50%, 90% { transform: scale(1, 0.8); }
+  }
+
+  @keyframes aiBar3 {
+    0%, 100% { transform: scale(1, 0.6); }
+  }
+
+  @keyframes aiBar4 {
+    0%, 40%, 100% { transform: scale(1, 0.8); }
+    50%, 90% { transform: scale(1, 0.4); }
+  }
+
+  @keyframes aiBar5 {
+    0%, 40%, 100% { transform: scale(1, 1); }
+    50%, 90% { transform: scale(1, 0.2); }
+  }
+
+  .animate-ai-ball {
+    animation: aiBall 4s infinite;
+  }
+
+  .animate-ai-bar-1 {
+    animation: aiBar1 4s infinite;
+  }
+
+  .animate-ai-bar-2 {
+    animation: aiBar2 4s infinite;
+  }
+
+  .animate-ai-bar-3 {
+    animation: aiBar3 4s infinite;
+  }
+
+  .animate-ai-bar-4 {
+    animation: aiBar4 4s infinite;
+  }
+
+  .animate-ai-bar-5 {
+    animation: aiBar5 4s infinite;
+  }
 }

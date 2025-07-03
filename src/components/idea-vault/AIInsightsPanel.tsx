@@ -18,6 +18,7 @@ import {
   ExternalLink,
   RefreshCw
 } from 'lucide-react';
+import { AIGenerationLoader } from '@/components/common/LoadingSpinner';
 
 interface AIInsightsPanelProps {
   idea: {
@@ -135,11 +136,11 @@ const AIInsightsPanel: React.FC<AIInsightsPanelProps> = ({
         {/* AI Insights */}
         {isGenerating ? (
           <Card className="bg-black/20 backdrop-blur-xl border-white/10">
-            <CardContent className="p-6 text-center">
-              <div className="space-y-4">
-                <div className="h-8 w-8 mx-auto animate-spin rounded-full border-2 border-green-400 border-t-transparent"></div>
-                <p className="text-sm text-gray-400">Generating AI insights...</p>
-              </div>
+            <CardContent className="p-2">
+              <AIGenerationLoader
+                text="Generating AI insights..."
+                size="md"
+              />
             </CardContent>
           </Card>
         ) : idea.aiInsights ? (

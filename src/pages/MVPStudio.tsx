@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -38,9 +39,12 @@ import {
   getRecommendedTools,
   AITool
 } from "@/data/aiToolsDatabase";
+import { aiToolsSyncService } from "@/services/aiToolsSyncService";
 import { useToast } from "@/hooks/use-toast";
 import { useActiveIdea, usePromptHistory, useIdeaStore } from "@/stores/ideaStore";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { AIGenerationLoader } from "@/components/common/LoadingSpinner";
+import { mvpStudioHelpers } from "@/lib/supabase-connection-helpers";
 
 const MVPStudio = () => {
   const { user } = useAuth();
@@ -53,6 +57,8 @@ const MVPStudio = () => {
   const [isCheckingAI, setIsCheckingAI] = useState(false);
   const [hasAIProvider, setHasAIProvider] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [mvps, setMvps] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // New state for sequential flow
   const [currentStep, setCurrentStep] = useState(1);
@@ -68,6 +74,59 @@ const MVPStudio = () => {
 
   // Initialize Gemini AI
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || "");
+
+  // Database helper functions
+  const loadMVPs = async () => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      const { data, error } = await mvpStudioHelpers.getMVPs(user.id);
+
+      if (error) throw error;
+
+      setMvps(data || []);
+    } catch (error: any) {
+      console.error('Error loading MVPs:', error);
+      toast({
+        title: "Error Loading MVPs",
+        description: "Failed to load your MVPs. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const savePromptToDatabase = async (section: string, sectionKey: string, prompt: string, response: string) => {
+    if (!user || !activeIdea) return;
+
+    try {
+      await mvpStudioHelpers.savePromptHistory({
+        idea_id: activeIdea.id,
+        section,
+        section_key: sectionKey,
+        prompt,
+        response,
+        ai_provider: 'gemini',
+        model_used: 'gemini-2.0-flash',
+        user_id: user.id,
+        metadata: {
+          app_type: selectedAppType,
+          tools: selectedTools.map(t => t.name)
+        }
+      });
+    } catch (error: any) {
+      console.error('Error saving prompt to database:', error);
+    }
+  };
+
+  // Load data on component mount
+  useEffect(() => {
+    if (user) {
+      loadMVPs();
+    }
+  }, [user]);
 
   // Sequential prompt generation
   const generatePagePrompt = async (pageName: string, pageDescription: string) => {
@@ -136,7 +195,16 @@ const MVPStudio = () => {
         tools: selectedTools.map(t => t.name)
       };
 
+      // Save to local store for immediate UI updates
       addPrompt('mvpStudio', `${activeIdea.id}-${pageName.toLowerCase().replace(/\s+/g, '-')}`, promptData);
+
+      // Save to database for persistence
+      await savePromptToDatabase(
+        'mvpstudio',
+        `${activeIdea.id}-${pageName.toLowerCase().replace(/\s+/g, '-')}`,
+        `Generate ${pageName} page for ${activeIdea.title}`,
+        text
+      );
 
       toast({
         title: "Page Prompt Generated!",
@@ -241,10 +309,13 @@ const MVPStudio = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <SidebarToggle onClick={() => setSidebarOpen(true)} />
-                <div className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm">
+                <Link
+                  to="/workspace"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+                >
                   <ChevronLeft className="h-4 w-4" />
                   <span>Back to Workspace</span>
-                </div>
+                </Link>
               </div>
               <Button
                 onClick={() => setMvpWizardOpen(true)}

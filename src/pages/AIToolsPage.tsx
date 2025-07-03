@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -67,10 +68,13 @@ const AIToolsPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <SidebarToggle onClick={() => setSidebarOpen(true)} />
-                <div className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm">
+                <Link
+                  to="/workspace"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+                >
                   <ChevronLeft className="h-4 w-4" />
                   <span>Back to Workspace</span>
-                </div>
+                </Link>
               </div>
             </div>
           </div>

@@ -18,6 +18,7 @@ export { toolMatcher } from './toolMatcher';
 // Security Services
 export { encryptApiKey, decryptApiKey } from './encryptionService';
 export { SecurityAuditService } from './securityAuditService';
+export { PasswordSecurityService } from './passwordSecurityService';
 
 // Provider Services
 // export * from './providers'; // Uncomment when providers barrel export is created

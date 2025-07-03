@@ -13,11 +13,13 @@ import {
   X,
   FileText,
   Menu,
-  Target
+  Target,
+  Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { useAdmin } from "@/contexts/AdminContext";
 
 interface SidebarItemProps {
   icon: React.ElementType;
@@ -53,6 +55,7 @@ const WorkspaceSidebar = ({ isOpen = false, setIsOpen = () => {} }: WorkspaceSid
   const location = useLocation();
   const currentPath = location.pathname;
   const isMobile = useIsMobile();
+  const { isAdmin } = useAdmin();
 
   const handleLinkClick = () => {
     if (setIsOpen) {
@@ -96,19 +99,33 @@ const WorkspaceSidebar = ({ isOpen = false, setIsOpen = () => {} }: WorkspaceSid
       <div className="px-2 py-4 flex-1 overflow-y-auto">
         <nav className="space-y-1">
           {modules.map((module) => (
-            <SidebarItem 
+            <SidebarItem
               key={module.id}
               icon={module.icon}
               label={module.name}
               path={module.path}
               onClick={handleLinkClick}
               isActive={
-                module.path === "/workspace" 
+                module.path === "/workspace"
                   ? currentPath === "/workspace"
                   : currentPath.startsWith(module.path)
               }
             />
           ))}
+
+          {/* Admin Panel Link - Only visible to admin users */}
+          {isAdmin && (
+            <>
+              <div className="my-4 border-t border-white/10"></div>
+              <SidebarItem
+                icon={Shield}
+                label="Admin Panel"
+                path="/admin"
+                onClick={handleLinkClick}
+                isActive={currentPath.startsWith("/admin")}
+              />
+            </>
+          )}
         </nav>
       </div>
       <div className="p-4 border-t border-white/10">

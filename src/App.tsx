@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { AppStateProvider } from "@/contexts/AppStateContext";
+import { AdminProvider } from "@/contexts/AdminContext";
 import { BreadcrumbProvider } from "@/components/BreadcrumbNavigation";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
@@ -36,6 +37,7 @@ const WikiPage = lazy(() => import("@/pages/WikiPage"));
 const WikiPageEditor = lazy(() => import("@/pages/WikiPageEditor"));
 const TaskPlanner = lazy(() => import("@/pages/TaskPlanner"));
 const BlueprintZone = lazy(() => import("@/pages/BlueprintZone"));
+const Workshop = lazy(() => import("@/pages/Workshop"));
 const Profile = lazy(() => import("@/pages/Profile"));
 const Account = lazy(() => import("@/pages/Account"));
 const Settings = lazy(() => import("@/pages/Settings"));
@@ -43,9 +45,23 @@ const AIToolsPage = lazy(() => import("@/pages/AIToolsPage"));
 const FeaturesPage = lazy(() => import("@/pages/Features"));
 const About = lazy(() => import("@/pages/About"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
+const SignupTest = lazy(() => import("@/pages/SignupTest"));
 
 const PromptGuide = lazy(() => import("@/components/prompting/PromptGuide"));
 const PromptBuilder = lazy(() => import("@/components/prompting/PromptBuilder"));
+
+// Admin Components
+const AdminLayout = lazy(() => import("@/components/admin/AdminLayout"));
+const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
+const UserAnalytics = lazy(() => import("@/pages/admin/UserAnalytics"));
+const SubscriptionAnalytics = lazy(() => import("@/pages/admin/SubscriptionAnalytics"));
+const PromptTemplates = lazy(() => import("@/pages/admin/PromptTemplates"));
+const AIToolsDirectory = lazy(() => import("@/pages/admin/AIToolsDirectory"));
+const PlatformSettings = lazy(() => import("@/pages/admin/PlatformSettings"));
+const AdminSetupDemo = lazy(() => import("@/components/admin/AdminSetupDemo"));
+const AdminTest = lazy(() => import("@/pages/AdminTest"));
+const AuthTest = lazy(() => import("@/pages/AuthTest"));
+const RoleManagement = lazy(() => import("@/pages/admin/RoleManagement"));
 
 // Create QueryClient with optimized configuration
 const queryClient = new QueryClient({
@@ -83,6 +99,7 @@ function AppRoutes() {
       <Route path="/auth" element={<Auth />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
       <Route path="/auth/reset-password" element={<Auth />} />
+      <Route path="/signup-test" element={<SignupTest />} />
       <Route
         path="/onboarding"
         element={
@@ -188,6 +205,11 @@ function AppRoutes() {
           <BlueprintZone />
         </ProtectedRoute>
       } />
+      <Route path="/workspace/workshop" element={
+        <ProtectedRoute>
+          <Workshop />
+        </ProtectedRoute>
+      } />
       <Route path="/profile" element={
         <ProtectedRoute>
           <Profile />
@@ -208,6 +230,25 @@ function AppRoutes() {
 
       <Route path="/prompting/guide" element={<PromptGuide />} />
       <Route path="/prompting/builder" element={<PromptBuilder />} />
+      <Route path="/admin-setup" element={<AdminSetupDemo />} />
+      <Route path="/admin-test" element={<AdminTest />} />
+      <Route path="/auth-test" element={<AuthTest />} />
+
+      {/* Admin Routes */}
+      <Route path="/admin/*" element={
+        <AdminLayout>
+          <Routes>
+            <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<UserAnalytics />} />
+            <Route path="subscriptions" element={<SubscriptionAnalytics />} />
+            <Route path="prompts" element={<PromptTemplates />} />
+            <Route path="tools" element={<AIToolsDirectory />} />
+            <Route path="settings" element={<PlatformSettings />} />
+            <Route path="roles" element={<RoleManagement />} />
+          </Routes>
+        </AdminLayout>
+      } />
+
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
@@ -220,8 +261,9 @@ const App = () => {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <AppStateProvider>
-            <BreadcrumbProvider>
+          <AdminProvider>
+            <AppStateProvider>
+              <BreadcrumbProvider>
               <TooltipProvider>
                 <Router>
                   <Suspense fallback={<LoadingSpinner fullScreen text="Loading application..." />}>
@@ -233,6 +275,7 @@ const App = () => {
               </TooltipProvider>
             </BreadcrumbProvider>
           </AppStateProvider>
+        </AdminProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,12 +47,16 @@ import {
 import StartupBriefGenerator from "@/components/StartupBriefGenerator";
 import { supabaseHelpers } from '../lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAdmin } from '@/contexts/AdminContext';
 import { aiEngine } from '../services/aiEngine';
 import { useToast } from "@/hooks/use-toast";
 import FlowProgress from "@/components/dashboard/FlowProgress";
 import QuickStats from "@/components/dashboard/QuickStats";
 import { useActiveIdea, useIdeaStore } from "@/stores/ideaStore";
 import { AISettingsPanel } from '@/components/ai-settings';
+import AdminStatusIndicator from '@/components/admin/AdminStatusIndicator';
+import AdminQuickActions from '@/components/admin/AdminQuickActions';
+import AdminVerification from '@/components/admin/AdminVerification';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { WorkspaceContainer, WorkspaceHeader } from '@/components/ui/workspace-layout';
 import { useFeatureAccess } from '@/hooks/useFeatureAccess';
@@ -317,6 +321,8 @@ const Workspace = () => {
   const [showStartupBrief, setShowStartupBrief] = useState(false);
   const [briefPrompt, setBriefPrompt] = useState("");
   const [showQuickStart, setShowQuickStart] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearchResults, setShowSearchResults] = useState(false);
 
   const notificationRef = useRef<HTMLDivElement>(null);
   const settingsRef = useRef<HTMLDivElement>(null);
@@ -324,6 +330,27 @@ const Workspace = () => {
 
   const navigate = useNavigate();
   const { signOut } = useAuth();
+  const { isAdmin } = useAdmin();
+
+  // Click outside handlers for dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
+      }
+      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
+        setShowSettings(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setShowProfile(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
 
 
@@ -562,33 +589,56 @@ const Workspace = () => {
       description: "Get AI-powered validation for your startup concept",
       icon: <Lightbulb className="h-5 w-5 text-yellow-400" />,
       category: 'ideation',
-      onClick: () => {
-        const ideaText = prompt("Enter your startup idea for validation:");
-        if (ideaText && ideaText.trim()) {
-          validateIdea(ideaText.trim());
-        }
-      }
+      onClick: () => setGptInput("Please validate this startup idea and provide detailed analysis including market opportunity, risks, target audience, and next steps: ")
+    },
+    {
+      title: "Brainstorm Ideas",
+      description: "Generate new startup ideas based on trends",
+      icon: <Sparkles className="h-5 w-5 text-yellow-400" />,
+      category: 'ideation',
+      onClick: () => setGptInput("Help me brainstorm innovative startup ideas in the following industry or problem area: ")
     },
     {
       title: "Business Model",
       description: "Create a business model canvas",
       icon: <FileSpreadsheet className="h-5 w-5 text-blue-400" />,
       category: 'planning',
-      onClick: () => setGptInput("Help me create a business model for: ")
+      onClick: () => setGptInput("Help me create a business model canvas for: ")
+    },
+    {
+      title: "Roadmap Planning",
+      description: "Create a strategic roadmap",
+      icon: <CalendarDays className="h-5 w-5 text-blue-400" />,
+      category: 'planning',
+      onClick: () => setGptInput("Help me create a strategic roadmap and timeline for: ")
     },
     {
       title: "MVP Features",
       description: "Define your minimum viable product",
       icon: <Rocket className="h-5 w-5 text-green-400" />,
       category: 'execution',
-      onClick: () => setGptInput("Help me define MVP features for: ")
+      onClick: () => setGptInput("Help me define MVP features and prioritize development for: ")
+    },
+    {
+      title: "Tech Stack",
+      description: "Choose the right technology stack",
+      icon: <Zap className="h-5 w-5 text-green-400" />,
+      category: 'execution',
+      onClick: () => setGptInput("Recommend the best technology stack and architecture for: ")
     },
     {
       title: "Market Analysis",
       description: "Analyze your target market",
       icon: <Globe2 className="h-5 w-5 text-purple-400" />,
       category: 'validation',
-      onClick: () => setGptInput("Help me analyze the market for: ")
+      onClick: () => setGptInput("Help me analyze the target market, competition, and opportunities for: ")
+    },
+    {
+      title: "User Research",
+      description: "Design user research strategy",
+      icon: <User className="h-5 w-5 text-purple-400" />,
+      category: 'validation',
+      onClick: () => setGptInput("Help me design a user research strategy and create user personas for: ")
     }
   ];
 
@@ -597,6 +647,65 @@ const Workspace = () => {
   const handleSignOut = async () => {
     await signOut();
     navigate('/auth');
+  };
+
+  // Handler functions for non-functional buttons
+  const handleCustomizeModules = () => {
+    toast({
+      title: "Customize Modules",
+      description: "Module customization feature coming soon!",
+    });
+  };
+
+  const handleViewAllProjects = () => {
+    navigate('/workspace/idea-vault');
+  };
+
+  const handleViewAllTasks = () => {
+    navigate('/workspace/task-planner');
+  };
+
+  const handleExploreIdeas = () => {
+    navigate('/workspace/idea-vault');
+  };
+
+  const handleProjectClick = (projectId: string) => {
+    navigate(`/workspace/idea-vault/${projectId}`);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim()) {
+      setShowSearchResults(true);
+      // For now, just show a toast. In a real app, you'd implement actual search
+      toast({
+        title: "Search",
+        description: `Searching for "${query}"...`,
+      });
+    } else {
+      setShowSearchResults(false);
+    }
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch(searchQuery);
+    }
+  };
+
+  const handleNotificationClick = (notificationId: string) => {
+    toast({
+      title: "Notification",
+      description: "Notification clicked!",
+    });
+  };
+
+  const handleMarkAllRead = () => {
+    toast({
+      title: "Notifications",
+      description: "All notifications marked as read",
+    });
+    setShowNotifications(false);
   };
 
   return (
@@ -625,6 +734,9 @@ const Workspace = () => {
                 <Input
                   placeholder="Search workspace..."
                   className="pl-10 pr-4 py-2 w-full md:w-80 workspace-input-enhanced"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
                 />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 hidden md:block">
                   <kbd className="px-2 py-1 text-xs text-gray-400 bg-black/30 rounded border border-white/10">
@@ -672,7 +784,10 @@ const Workspace = () => {
                       <span className="text-xs text-gray-400">2 new</span>
                     </div>
                     <div className="space-y-3">
-                      <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                      <div
+                        className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg cursor-pointer hover:bg-green-500/20 transition-colors"
+                        onClick={() => handleNotificationClick('mvp-update')}
+                      >
                         <div className="flex items-start gap-3">
                           <div className="h-2 w-2 bg-green-400 rounded-full mt-2"></div>
                           <div>
@@ -681,7 +796,10 @@ const Workspace = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                      <div
+                        className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg cursor-pointer hover:bg-blue-500/20 transition-colors"
+                        onClick={() => handleNotificationClick('ideaforge-sync')}
+                      >
                         <div className="flex items-start gap-3">
                           <div className="h-2 w-2 bg-blue-400 rounded-full mt-2"></div>
                           <div>
@@ -690,6 +808,16 @@ const Workspace = () => {
                           </div>
                         </div>
                       </div>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-white/10">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full text-gray-400 hover:text-white"
+                        onClick={handleMarkAllRead}
+                      >
+                        Mark all as read
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -765,6 +893,16 @@ const Workspace = () => {
                         <CreditCard className="h-4 w-4 text-gray-400" />
                         <span className="text-sm text-gray-300">Billing & Plans</span>
                       </Link>
+                      {isAdmin && (
+                        <>
+                          <div className="border-t border-white/10 my-2"></div>
+                          <Link to="/admin" className="flex items-center gap-3 p-2 hover:bg-green-500/10 rounded-lg transition-colors">
+                            <Shield className="h-4 w-4 text-green-400" />
+                            <span className="text-sm text-green-400">Admin Panel</span>
+                          </Link>
+                        </>
+                      )}
+                      <div className="border-t border-white/10 my-2"></div>
                       <button
                         className="w-full flex items-center gap-3 p-2 hover:bg-red-500/10 rounded-lg transition-colors text-left"
                         onClick={handleSignOut}
@@ -960,6 +1098,16 @@ const Workspace = () => {
               <QuickStats />
             </div>
 
+            {/* Admin Status Indicator */}
+            <div className="px-4 md:px-0">
+              <AdminStatusIndicator variant="card" />
+            </div>
+
+            {/* Admin Quick Actions */}
+            <div className="px-4 md:px-0">
+              <AdminQuickActions />
+            </div>
+
             {/* Flow Progress */}
             <div className="px-4 md:px-0">
               <FlowProgress />
@@ -1046,7 +1194,12 @@ const Workspace = () => {
                     </div>
                   </div>
                 ))}
-                <Button variant="ghost" size="sm" className="w-full text-purple-400 hover:text-purple-300 mt-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full text-purple-400 hover:text-purple-300 mt-3"
+                  onClick={handleExploreIdeas}
+                >
                   <Sparkles className="h-4 w-4 mr-2" />
                   Explore Ideas
                 </Button>
@@ -1060,7 +1213,12 @@ const Workspace = () => {
             <div className="lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-base md:text-xl font-semibold text-white">Quick Access</h2>
-                <Button variant="ghost" size="sm" className="text-green-400 hover:text-green-300">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-green-400 hover:text-green-300"
+                  onClick={handleCustomizeModules}
+                >
                   <Settings className="h-4 w-4 mr-2" />
                   Customize
                 </Button>
@@ -1088,7 +1246,12 @@ const Workspace = () => {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-base md:text-xl font-semibold text-white">Recent Projects</h2>
-                <Button variant="ghost" size="sm" className="text-green-400 hover:text-green-300">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-green-400 hover:text-green-300"
+                  onClick={handleViewAllProjects}
+                >
                   View All
                 </Button>
               </div>
@@ -1097,6 +1260,7 @@ const Workspace = () => {
                   <div
                     key={project.id}
                     className="group bg-black/20 backdrop-blur-xl rounded-xl p-3 md:p-4 border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer hover:bg-black/30"
+                    onClick={() => handleProjectClick(project.id)}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -1311,22 +1475,24 @@ const Workspace = () => {
             )}
           </div>
 
-          {/* Quick Actions Grid */}
+
+
+          {/* Navigation Links */}
           <div className="mb-6 md:mb-8">
-            <h2 className="text-base md:text-xl font-semibold text-white mb-4">Quick Actions</h2>
+            <h2 className="text-base md:text-xl font-semibold text-white mb-4">Navigate</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Link to="/workspace/idea-vault" className="group">
                 <div className="bg-black/20 backdrop-blur-xl rounded-xl p-4 border border-white/10 hover:border-green-500/30 transition-all duration-300 text-center hover:bg-black/30">
                   <Lightbulb className="h-8 w-8 mx-auto mb-2 text-yellow-400 group-hover:scale-110 transition-transform" />
-                  <h3 className="font-medium text-white text-sm group-hover:text-green-400 transition-colors">New Idea</h3>
-                  <p className="text-xs text-gray-400 mt-1">Capture inspiration</p>
+                  <h3 className="font-medium text-white text-sm group-hover:text-green-400 transition-colors">Idea Vault</h3>
+                  <p className="text-xs text-gray-400 mt-1">Manage ideas</p>
                 </div>
               </Link>
 
               <Link to="/workspace/docs-decks" className="group">
                 <div className="bg-black/20 backdrop-blur-xl rounded-xl p-4 border border-white/10 hover:border-green-500/30 transition-all duration-300 text-center hover:bg-black/30">
                   <FileSpreadsheet className="h-8 w-8 mx-auto mb-2 text-blue-400 group-hover:scale-110 transition-transform" />
-                  <h3 className="font-medium text-white text-sm group-hover:text-green-400 transition-colors">New Document</h3>
+                  <h3 className="font-medium text-white text-sm group-hover:text-green-400 transition-colors">Docs & Decks</h3>
                   <p className="text-xs text-gray-400 mt-1">Create content</p>
                 </div>
               </Link>
@@ -1334,7 +1500,7 @@ const Workspace = () => {
               <Link to="/workspace/blueprint-zone" className="group">
                 <div className="bg-black/20 backdrop-blur-xl rounded-xl p-4 border border-white/10 hover:border-green-500/30 transition-all duration-300 text-center hover:bg-black/30">
                   <Target className="h-8 w-8 mx-auto mb-2 text-green-400 group-hover:scale-110 transition-transform" />
-                  <h3 className="font-medium text-white text-sm group-hover:text-green-400 transition-colors">Plan Roadmap</h3>
+                  <h3 className="font-medium text-white text-sm group-hover:text-green-400 transition-colors">Blueprint Zone</h3>
                   <p className="text-xs text-gray-400 mt-1">Strategic planning</p>
                 </div>
               </Link>
@@ -1342,8 +1508,8 @@ const Workspace = () => {
               <Link to="/workspace/investor-radar" className="group">
                 <div className="bg-black/20 backdrop-blur-xl rounded-xl p-4 border border-white/10 hover:border-green-500/30 transition-all duration-300 text-center hover:bg-black/30">
                   <Wallet className="h-8 w-8 mx-auto mb-2 text-purple-400 group-hover:scale-110 transition-transform" />
-                  <h3 className="font-medium text-white text-sm group-hover:text-green-400 transition-colors">Find Investors</h3>
-                  <p className="text-xs text-gray-400 mt-1">Raise funding</p>
+                  <h3 className="font-medium text-white text-sm group-hover:text-green-400 transition-colors">Investor Radar</h3>
+                  <p className="text-xs text-gray-400 mt-1">Find funding</p>
                 </div>
               </Link>
             </div>
@@ -1466,6 +1632,97 @@ const Workspace = () => {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-400 mx-auto mb-4"></div>
               <h3 className="text-white font-semibold mb-2">Validating Your Idea</h3>
               <p className="text-gray-400">AI is analyzing your startup concept...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Templates Modal */}
+        {showTemplates && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-black/90 backdrop-blur-xl rounded-2xl border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-white">Prompt Templates</h2>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowTemplates(false)}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[
+                    {
+                      title: "Market Research",
+                      description: "Analyze market size, trends, and opportunities",
+                      template: "Conduct comprehensive market research for [your product/service] targeting [customer segment] in the [industry] market. Include market size, trends, competitors, and opportunities.",
+                      category: "Research"
+                    },
+                    {
+                      title: "Competitive Analysis",
+                      description: "Compare competitors and find positioning",
+                      template: "Analyze the competitive landscape for [product description] competing against [list competitors] in [market segment]. Create a comparison with features, pricing, strengths, and weaknesses.",
+                      category: "Analysis"
+                    },
+                    {
+                      title: "Business Model Canvas",
+                      description: "Create a structured business model",
+                      template: "Help me create a business model canvas for [startup idea]. Include value propositions, customer segments, revenue streams, key partnerships, and cost structure.",
+                      category: "Planning"
+                    },
+                    {
+                      title: "MVP Feature List",
+                      description: "Define minimum viable product features",
+                      template: "Help me define MVP features for [startup concept]. Prioritize features by importance and development effort. Focus on core value proposition and user needs.",
+                      category: "Development"
+                    },
+                    {
+                      title: "Pitch Deck Outline",
+                      description: "Structure your investor presentation",
+                      template: "Create a pitch deck outline for [startup name] that [brief description]. Include problem, solution, market, business model, traction, team, and funding ask.",
+                      category: "Fundraising"
+                    },
+                    {
+                      title: "User Persona Creation",
+                      description: "Define your target customers",
+                      template: "Create detailed user personas for [product/service]. Include demographics, pain points, goals, behaviors, and how they would use the product.",
+                      category: "Research"
+                    }
+                  ].map((template, index) => (
+                    <div key={index} className="bg-black/20 backdrop-blur-xl rounded-xl p-4 border border-white/10 hover:border-green-500/30 transition-all duration-300">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h3 className="font-semibold text-white mb-1">{template.title}</h3>
+                          <p className="text-sm text-gray-400 mb-2">{template.description}</p>
+                          <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">
+                            {template.category}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="bg-gray-900/50 rounded-lg p-3 mb-3">
+                        <p className="text-sm text-gray-300 font-mono">{template.template}</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setGptInput(template.template);
+                          setShowTemplates(false);
+                          toast({
+                            title: "Template Applied",
+                            description: `${template.title} template has been loaded into the AI assistant.`
+                          });
+                        }}
+                        className="w-full bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        Use Template
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         )}

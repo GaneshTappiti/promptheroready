@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle2, Circle, Clock, Plus, Flag, Calendar, Menu } from "lucide-react";
+import { CheckCircle2, Circle, Clock, Plus, Flag, Calendar, Menu, ChevronLeft } from "lucide-react";
 import {
   WorkspaceContainer,
   WorkspaceCard,
@@ -15,8 +16,11 @@ import WorkspaceSidebar, { SidebarToggle } from "@/components/WorkspaceSidebar";
 import AddPhaseModal from "@/components/blueprint/AddPhaseModal";
 import TaskModal from "@/components/blueprint/TaskModal";
 import PhaseCard, { Phase, Task } from "@/components/blueprint/PhaseCard";
+import { blueprintZoneHelpers } from "@/lib/supabase-connection-helpers";
+import { useAuth } from "@/contexts/AuthContext";
 
 const BlueprintZone = () => {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("roadmap");
   const [phases, setPhases] = useState<Phase[]>([]);
@@ -25,12 +29,36 @@ const BlueprintZone = () => {
   const [selectedPhaseId, setSelectedPhaseId] = useState<string | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [taskModalMode, setTaskModalMode] = useState<"add" | "edit">("add");
-  
-  // Start with empty phases - users will create their own project phases
+  const [loading, setLoading] = useState(true);
+
+  // Load phases from database
+  const loadPhases = async () => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      const { data, error } = await blueprintZoneHelpers.getProjectPhases(user.id);
+
+      if (error) throw error;
+
+      setPhases(data || []);
+    } catch (error: any) {
+      console.error('Error loading phases:', error);
+      toast({
+        title: "Error Loading Phases",
+        description: "Failed to load your project phases. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Phases will be created by the user or loaded from their project data
-    setPhases([]);
-  }, []);
+    if (user) {
+      loadPhases();
+    }
+  }, [user]);
   
   // Calculate progress for each phase
   useEffect(() => {
@@ -148,6 +176,13 @@ const BlueprintZone = () => {
         {/* Top navigation with hamburger menu */}
         <div className="flex items-center gap-4 mb-6">
           <SidebarToggle onClick={() => setSidebarOpen(true)} />
+          <Link
+            to="/workspace"
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            <span>Back to Workspace</span>
+          </Link>
           <div className="flex-1">
             {/* Page-specific navigation can go here */}
           </div>

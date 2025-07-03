@@ -27,6 +27,21 @@ import EnhancedUpgradePrompt from "@/components/EnhancedUpgradePrompt";
 import BreadcrumbNavigation from "@/components/BreadcrumbNavigation";
 import { useNavigation } from "@/contexts/AppStateContext";
 
+// Define IdeaProps interface for export
+export interface IdeaProps {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  status: string;
+  tags: string[];
+  votes: number;
+  comments: number;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
+}
+
 const IdeaVault = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

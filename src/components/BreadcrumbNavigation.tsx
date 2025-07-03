@@ -9,17 +9,18 @@ import {
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
 import { cn } from '@/lib/utils';
-import { 
-  Home, 
-  Lightbulb, 
-  Archive, 
-  Hammer, 
-  Rocket, 
-  Settings, 
-  User, 
+import {
+  Home,
+  Lightbulb,
+  Archive,
+  Hammer,
+  Rocket,
+  Settings,
+  User,
   BookOpen,
   Presentation,
-  Zap
+  Zap,
+  Shield
 } from 'lucide-react';
 
 export interface BreadcrumbItem {
@@ -68,7 +69,14 @@ const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({
       account: { name: 'Account', icon: <User className="h-4 w-4" /> },
       'ai-tools': { name: 'AI Tools', icon: <Zap className="h-4 w-4" /> },
       docs: { name: 'Documentation', icon: <BookOpen className="h-4 w-4" /> },
-      decks: { name: 'Pitch Decks', icon: <Presentation className="h-4 w-4" /> }
+      decks: { name: 'Pitch Decks', icon: <Presentation className="h-4 w-4" /> },
+      // Admin routes
+      admin: { name: 'Admin Panel', icon: <Shield className="h-4 w-4" /> },
+      users: { name: 'User Analytics', icon: <User className="h-4 w-4" /> },
+      subscriptions: { name: 'Subscriptions', icon: <Settings className="h-4 w-4" /> },
+      prompts: { name: 'Prompt Templates', icon: <BookOpen className="h-4 w-4" /> },
+      tools: { name: 'AI Tools Directory', icon: <Zap className="h-4 w-4" /> },
+      roles: { name: 'Role Management', icon: <Shield className="h-4 w-4" /> }
     };
 
     pathSegments.forEach((segment, index) => {

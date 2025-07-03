@@ -28,14 +28,15 @@ import {
   Target,
   Rocket
 } from 'lucide-react';
-import { 
-  aiToolsDatabase, 
-  aiToolsCategories, 
-  getToolsByCategory, 
-  searchTools, 
+import {
+  aiToolsDatabase,
+  aiToolsCategories,
+  getToolsByCategory,
+  searchTools,
   getRecommendedTools,
-  AITool 
+  AITool
 } from '@/data/aiToolsDatabase';
+import { aiToolsSyncService } from '@/services/aiToolsSyncService';
 
 interface AIToolRecommenderProps {
   onToolSelect?: (tool: AITool) => void;
@@ -71,7 +72,9 @@ export const AIToolRecommender: React.FC<AIToolRecommenderProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [priceFilter, setPriceFilter] = useState('any');
-  const [filteredTools, setFilteredTools] = useState<AITool[]>(aiToolsDatabase);
+  const [filteredTools, setFilteredTools] = useState<AITool[]>([]);
+  const [allTools, setAllTools] = useState<AITool[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showRecommendationDialog, setShowRecommendationDialog] = useState(false);
   const [recommendationForm, setRecommendationForm] = useState<RecommendationForm>({
     idea: '',
@@ -92,15 +95,41 @@ export const AIToolRecommender: React.FC<AIToolRecommenderProps> = ({
   const [categoryRecommendations, setCategoryRecommendations] = useState<Record<string, AITool[]>>({});
 
   useEffect(() => {
+    loadTools();
+  }, []);
+
+  useEffect(() => {
     filterTools();
-  }, [searchQuery, selectedCategory, priceFilter]);
+  }, [searchQuery, selectedCategory, priceFilter, allTools]);
+
+  const loadTools = async () => {
+    try {
+      setLoading(true);
+      const tools = await aiToolsSyncService.getAllTools();
+      setAllTools(tools);
+      setFilteredTools(tools);
+    } catch (error) {
+      console.error('Error loading tools:', error);
+      // Fallback to static data
+      setAllTools(aiToolsDatabase);
+      setFilteredTools(aiToolsDatabase);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filterTools = () => {
-    let tools = aiToolsDatabase;
+    let tools = allTools;
 
     // Filter by search query
     if (searchQuery) {
-      tools = searchTools(searchQuery);
+      const lowercaseQuery = searchQuery.toLowerCase();
+      tools = tools.filter(tool =>
+        tool.name.toLowerCase().includes(lowercaseQuery) ||
+        tool.description.toLowerCase().includes(lowercaseQuery) ||
+        tool.tags.some(tag => tag.toLowerCase().includes(lowercaseQuery)) ||
+        tool.bestFor.some(use => use.toLowerCase().includes(lowercaseQuery))
+      );
     }
 
     // Filter by category
@@ -120,7 +149,7 @@ export const AIToolRecommender: React.FC<AIToolRecommenderProps> = ({
   const generateSmartRecommendations = (form: RecommendationForm): SmartRecommendation[] => {
     const recommendations: SmartRecommendation[] = [];
 
-    aiToolsDatabase.forEach(tool => {
+    allTools.forEach(tool => {
       let score = 0;
       const reasons: string[] = [];
 
@@ -411,6 +440,26 @@ export const AIToolRecommender: React.FC<AIToolRecommenderProps> = ({
       </CardContent>
     </Card>
   );
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center space-y-4">
+          <h2 className="text-3xl font-bold">🛠️ AI Tool Recommender</h2>
+          <p className="text-muted-foreground">Loading AI tools...</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <Card key={i} className="workspace-card animate-pulse">
+              <CardContent className="p-6">
+                <div className="h-24 bg-white/10 rounded"></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

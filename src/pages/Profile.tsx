@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +23,8 @@ import {
   Shield,
   Bell,
   Globe,
-  Lock
+  Lock,
+  ChevronLeft
 } from "lucide-react";
 
 const Profile = () => {
@@ -74,6 +76,15 @@ const Profile = () => {
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle Sidebar</span>
                 </Button>
+
+                {/* Back to Workspace */}
+                <Link
+                  to="/workspace"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span>Back to Workspace</span>
+                </Link>
               </div>
             </div>
           </div>
