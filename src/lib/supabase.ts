@@ -1,4 +1,4 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
 
 // =====================================================
@@ -23,63 +23,62 @@ try {
   console.error('❌ Invalid Supabase URL format:', supabaseUrl);
 }
 
-// Connection configuration
-const supabaseConfig = {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-    storageKey: 'promptheroready-auth',
-    flowType: 'pkce' as const, // Use PKCE flow for better security
-    debug: import.meta.env.DEV,
-    storage: {
-      getItem: (key: string) => {
-        try {
-          const item = localStorage.getItem(key);
-          return item ? JSON.parse(item) : null;
-        } catch (error) {
-          console.error('Error reading from localStorage:', error);
-          return null;
-        }
-      },
-      setItem: (key: string, value: any) => {
-        try {
-          localStorage.setItem(key, JSON.stringify(value));
-        } catch (error) {
-          console.error('Error writing to localStorage:', error);
-        }
-      },
-      removeItem: (key: string) => {
-        try {
-          localStorage.removeItem(key);
-        } catch (error) {
-          console.error('Error removing from localStorage:', error);
-        }
-      },
-    },
-  },
-  db: {
-    schema: 'public',
-  },
-  global: {
-    headers: {
-      'x-connection-pool': 'true',
-      'x-client-info': 'promptheroready-v1.0',
-      'x-client-version': '1.0.0',
-    },
-  },
-  realtime: {
-    params: {
-      eventsPerSecond: 10, // Rate limiting for realtime events
-    },
-  },
-};
+
 
 // Create typed Supabase client
-export const supabase: SupabaseClient<Database> = createClient<Database>(
+export const supabase = createClient<Database>(
   supabaseUrl,
   supabaseKey,
-  supabaseConfig
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storageKey: 'promptheroready-auth',
+      flowType: 'pkce' as const,
+      debug: import.meta.env.DEV,
+      storage: {
+        getItem: (key: string) => {
+          try {
+            const item = localStorage.getItem(key);
+            return item ? JSON.parse(item) : null;
+          } catch (error) {
+            console.error('Error reading from localStorage:', error);
+            return null;
+          }
+        },
+        setItem: (key: string, value: any) => {
+          try {
+            localStorage.setItem(key, JSON.stringify(value));
+          } catch (error) {
+            console.error('Error writing to localStorage:', error);
+          }
+        },
+        removeItem: (key: string) => {
+          try {
+            localStorage.removeItem(key);
+          } catch (error) {
+            console.error('Error removing from localStorage:', error);
+          }
+        },
+      },
+    },
+    db: {
+      schema: 'public' as const,
+    },
+    global: {
+      headers: {
+        'x-connection-pool': 'true',
+        'x-client-info': 'promptheroready-v1.0',
+        'x-client-version': '1.0.0',
+      },
+    },
+    realtime: {
+      params: {
+        eventsPerSecond: 10,
+      },
+    },
+  }
 );
 
 // =====================================================
@@ -358,7 +357,7 @@ export const supabaseHelpers = {
       logPerformanceMetric(operation, duration, !error);
 
       return {
-        data,
+        data: null,
         error,
         performance: { duration, operation }
       };
@@ -434,7 +433,7 @@ export const supabaseHelpers = {
           project:projects(id, name),
           assignee:user_profiles!tasks_assigned_to_fkey(id, username, avatar_url)
         `)
-        .order('due_date', { ascending: true, nullsLast: true });
+        .order('due_date', { ascending: true, nullsFirst: false });
 
       if (projectId) {
         query = query.eq('project_id', projectId);

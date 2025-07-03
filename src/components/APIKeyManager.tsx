@@ -166,7 +166,7 @@ const APIKeyManager: React.FC<APIKeyManagerProps> = ({ className }) => {
     setTestingKeys(prev => ({ ...prev, [providerId]: true }));
     
     try {
-      const result = await aiProviderService.testConnection({
+      const result = await aiProviderService.testConnection(user.id, {
         provider: providerId as any,
         apiKey: key,
         modelName: 'default'

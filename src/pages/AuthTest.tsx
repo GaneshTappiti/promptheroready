@@ -6,15 +6,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  testSupabaseConnection, 
-  testSignUp, 
-  testSignIn, 
-  testSignOut, 
+import {
+  testSupabaseConnection,
+  testSignUp,
+  testSignIn,
+  testSignOut,
   getCurrentSession,
   runAuthTests,
-  AuthTestResult 
+  AuthTestResult
 } from '@/utils/authTest';
+
+interface ExtendedAuthTestResult extends AuthTestResult {
+  name?: string;
+}
 import { Loader2, CheckCircle, XCircle, Play, User, LogOut } from 'lucide-react';
 
 export default function AuthTest() {
@@ -22,7 +26,7 @@ export default function AuthTest() {
   const [email, setEmail] = useState('test@example.com');
   const [password, setPassword] = useState('testpassword123');
   const [loading, setLoading] = useState(false);
-  const [testResults, setTestResults] = useState<any[]>([]);
+  const [testResults, setTestResults] = useState<ExtendedAuthTestResult[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<AuthTestResult | null>(null);
 
   useEffect(() => {

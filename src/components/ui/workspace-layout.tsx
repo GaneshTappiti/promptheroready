@@ -11,18 +11,18 @@ interface WorkspaceLayoutProps {
   showSidebar?: boolean;
 }
 
-export function WorkspaceLayout({ 
-  children, 
-  className, 
+export function WorkspaceLayout({
+  children,
+  className,
   variant = 'default',
-  showSidebar = true 
+  showSidebar = true
 }: WorkspaceLayoutProps) {
-  const backgroundClass = variant === 'alt' 
-    ? 'workspace-background-alt' 
+  const backgroundClass = variant === 'alt'
+    ? 'workspace-background-alt'
     : 'workspace-background';
-    
+
   return (
-    <div className={cn(backgroundClass, className)}>
+    <div className={cn(backgroundClass, 'layout-container', className)}>
       {children}
     </div>
   );
@@ -61,7 +61,7 @@ export function WorkspaceContainer({
 
   return (
     <div className={cn(
-      'mx-auto',
+      'layout-content mx-auto',
       maxWidthClasses[maxWidth],
       paddingClasses[padding],
       className

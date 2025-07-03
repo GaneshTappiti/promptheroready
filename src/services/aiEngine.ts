@@ -1,5 +1,5 @@
 // AI Prompt Engine - Core AI breakdown system
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
 import { aiProviderService } from './aiProviderService';
 import { AIRequest } from '@/types/aiProvider';
 
@@ -84,7 +84,7 @@ export interface LaunchStep {
 
 class AIEngine {
   private genAI: GoogleGenerativeAI;
-  private model: any;
+  private model: GenerativeModel;
   private userId?: string;
 
   constructor(userId?: string) {
@@ -179,7 +179,7 @@ class AIEngine {
     }
   }
 
-  private async extractIntent(prompt: string): Promise<any> {
+  private async extractIntent(prompt: string): Promise<Record<string, unknown>> {
     const systemPrompt = `
     You are an expert startup analyst. Extract the following from the user's idea:
     - Intent (what they want to build)
@@ -220,7 +220,7 @@ class AIEngine {
     }
   }
 
-  private async generateStartupAnalysis(prompt: string, intent: any): Promise<StartupAnalysis> {
+  private async generateStartupAnalysis(prompt: string, intent: Record<string, unknown>): Promise<StartupAnalysis> {
     const systemPrompt = `
     You are a senior startup consultant with expertise in market analysis, business models, and tech stacks.
 
@@ -289,11 +289,11 @@ class AIEngine {
     }
   }
 
-  private generateFallbackAnalysis(prompt: string, intent: any): StartupAnalysis {
+  private generateFallbackAnalysis(prompt: string, intent: Record<string, unknown>): StartupAnalysis {
     return {
       problemStatement: prompt,
       targetMarket: {
-        primary: intent.audience || 'General users',
+        primary: (intent.audience as string) || 'General users',
         secondary: ['Early adopters', 'Tech-savvy users'],
         size: 'Medium market opportunity',
         demographics: 'Ages 25-45, tech-comfortable'
@@ -311,12 +311,12 @@ class AIEngine {
         hosting: ['Vercel', 'Railway'],
         analytics: ['Google Analytics', 'Mixpanel']
       },
-      vertical: intent.vertical || 'General',
-      format: intent.format || 'Web App',
+      vertical: (intent.vertical as string) || 'General',
+      format: (intent.format as string) || 'Web App',
       complexity: 'medium',
       timeToMarket: '3-6 months',
       estimatedCost: '$5,000-15,000',
-      keyFeatures: [intent.functionality || 'Core functionality', 'User authentication', 'Dashboard'],
+      keyFeatures: [(intent.functionality as string) || 'Core functionality', 'User authentication', 'Dashboard'],
       competitorAnalysis: {
         direct: ['Similar apps in market'],
         indirect: ['Alternative solutions'],
@@ -484,7 +484,7 @@ class AIEngine {
     return Math.min(95, Math.max(40, score));
   }
 
-  private getToolDatabase(): any[] {
+  private getToolDatabase(): Record<string, unknown>[] {
     return [
       // Web App MVP Tools
       {

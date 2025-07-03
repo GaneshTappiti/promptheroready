@@ -57,9 +57,9 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="layout-container">
       <WorkspaceSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <main className="flex-1 transition-all duration-300">
+      <main className="layout-main transition-all duration-300">
         <div className="flex flex-col w-full">
           {/* Enhanced Top Navigation Bar */}
           <div className="workspace-nav-enhanced">

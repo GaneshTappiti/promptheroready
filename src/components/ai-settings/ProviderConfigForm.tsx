@@ -53,7 +53,7 @@ export const ProviderConfigForm: React.FC<ProviderConfigFormProps> = ({
   const form = useForm<ConfigFormData>({
     resolver: zodResolver(configSchema),
     defaultValues: {
-      provider: preferences?.provider || 'gemini',
+      provider: (preferences?.provider && preferences.provider !== 'none') ? preferences.provider : 'gemini',
       apiKey: '',
       modelName: preferences?.modelName || '',
       customEndpoint: preferences?.customEndpoint || '',
@@ -210,6 +210,13 @@ export const ProviderConfigForm: React.FC<ProviderConfigFormProps> = ({
           "Ensure it accepts HTTP POST requests",
           "Get your API key if required",
           "Configure the endpoint URL below"
+        ],
+        keyUrl: "#"
+      },
+      none: {
+        steps: [
+          "No AI provider configured",
+          "Select a provider above to get started"
         ],
         keyUrl: "#"
       }

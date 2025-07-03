@@ -191,9 +191,9 @@ const TeamSpace = () => {
   // Video call and analytics functionality will be implemented in future updates
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-green-950 flex">
+    <div className="layout-container bg-gradient-to-br from-black via-gray-900 to-green-950">
       <WorkspaceSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <main className="flex-1 transition-all duration-300">
+      <main className="layout-main transition-all duration-300">
         {/* Top Navigation Bar */}
         <div className="sticky top-0 z-10 bg-black/80 backdrop-blur-xl border-b border-white/10">
           <div className="px-6 py-4">

@@ -38,7 +38,7 @@ import {
   Code,
   Download,
   Upload,
-  Sync,
+  RotateCcw as Sync,
   Database,
 } from 'lucide-react';
 
@@ -109,16 +109,27 @@ const AIToolsDirectory: React.FC = () => {
   const [editingTool, setEditingTool] = useState<AITool | null>(null);
   const [syncInProgress, setSyncInProgress] = useState(false);
   const [syncStats, setSyncStats] = useState<{staticCount: number; databaseCount: number; lastSync?: string} | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    description: string;
+    category: string;
+    url: string;
+    pricing_model: 'free' | 'paid' | 'freemium';
+    pricing_inr: string;
+    is_recommended: boolean;
+    supported_platforms: string[];
+    input_types: string[];
+    tags: string;
+  }>({
     name: '',
     description: '',
     category: '',
     url: '',
-    pricing_model: 'freemium' as const,
+    pricing_model: 'freemium',
     pricing_inr: '',
     is_recommended: false,
-    supported_platforms: [] as string[],
-    input_types: [] as string[],
+    supported_platforms: [],
+    input_types: [],
     tags: '',
   });
 
@@ -748,7 +759,7 @@ const AIToolsDirectory: React.FC = () => {
               <Checkbox
                 id="recommended-only"
                 checked={showRecommendedOnly}
-                onCheckedChange={setShowRecommendedOnly}
+                onCheckedChange={(checked) => setShowRecommendedOnly(!!checked)}
                 className="border-white/20"
               />
               <Label htmlFor="recommended-only" className="text-sm text-gray-300">
@@ -984,4 +995,4 @@ const AIToolsDirectory: React.FC = () => {
   );
 };
 
-export default withAdminAuth(AIToolsDirectory, 'canManageTools');
+export default AIToolsDirectory;

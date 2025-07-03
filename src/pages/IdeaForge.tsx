@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { useIdeaStore } from "@/stores/ideaStore";
-import UpgradePrompt from "@/components/UpgradePrompt";
-import AIResponseFormatter from "@/components/AIResponseFormatter";
+// Removed unused imports
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+// Removed unused DropdownMenu imports
 import WorkspaceSidebar, { SidebarToggle } from "@/components/WorkspaceSidebar";
 import {
   PlusCircle,
   ChevronLeft,
-  Edit,
-  Download,
+  // Removed unused icons
   Lightbulb,
   BookOpen,
   Layers,
@@ -41,6 +38,50 @@ import IdeaSummaryModal from "@/components/ideaforge/IdeaSummaryModal";
 // IdeaForge Types
 type IdeaStatus = 'draft' | 'researching' | 'validated' | 'building';
 type IdeaForgeTab = 'overview' | 'wiki' | 'blueprint' | 'journey' | 'feedback';
+
+interface ExportData {
+  idea?: {
+    title?: string;
+    description?: string;
+    status?: string;
+    tags?: string[];
+    createdAt?: string;
+  };
+  wiki?: {
+    sections?: Array<{
+      title?: string;
+      content?: string;
+    }>;
+  };
+  blueprint?: {
+    appType?: string;
+    features?: Array<{
+      name?: string;
+      description?: string;
+      priority?: string;
+    }>;
+    techStack?: Array<{
+      name?: string;
+      description?: string;
+      category?: string;
+    }>;
+  };
+  journey?: {
+    entries?: Array<{
+      title?: string;
+      content?: string;
+      date?: string;
+      type?: string;
+    }>;
+  };
+  feedback?: {
+    items?: Array<{
+      title?: string;
+      content?: string;
+      author?: string;
+    }>;
+  };
+}
 
 interface IdeaOverview {
   id: string;
@@ -75,11 +116,12 @@ const IdeaForge = () => {
   const [ideas, setIdeas] = useState<StoredIdea[]>([]);
   const [currentIdea, setCurrentIdea] = useState<StoredIdea | null>(null);
   const [activeTab, setActiveTab] = useState<IdeaForgeTab>('overview');
-  const [isEditingIdea, setIsEditingIdea] = useState(false);
+  // Removed unused isEditingIdea state
   const [showShareModal, setShowShareModal] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isEditingIdea, setIsEditingIdea] = useState(false);
 
   // Sidebar configuration
   const sidebarItems: IdeaForgeSidebarItem[] = [
@@ -128,7 +170,7 @@ const IdeaForge = () => {
           description: `"${newIdea.title}" has been added to your IdeaForge.`,
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating idea:', error);
       toast({
         title: "Error Creating Idea",
@@ -160,7 +202,10 @@ const IdeaForge = () => {
         favorited: false,
         createdAt: idea.created_at,
         updatedAt: idea.updated_at,
-        progress: idea.progress || {
+        progress: (typeof idea.progress === 'object' && idea.progress &&
+                  typeof idea.progress === 'object' &&
+                  'wiki' in idea.progress) ?
+                  idea.progress as { wiki: number; blueprint: number; journey: number; feedback: number } : {
           wiki: 0,
           blueprint: 0,
           journey: 0,
@@ -169,7 +214,7 @@ const IdeaForge = () => {
       }));
 
       setIdeas(convertedIdeas);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error loading ideas:', error);
       toast({
         title: "Error Loading Ideas",
@@ -251,7 +296,7 @@ const IdeaForge = () => {
         title: "Export Successful",
         description: `Your IdeaForge data has been exported.`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Export Failed",
         description: "There was an error exporting your data. Please try again.",
@@ -261,7 +306,7 @@ const IdeaForge = () => {
   };
 
   // Generate HTML display export content
-  const generateDisplayExport = (data: any) => {
+  const generateDisplayExport = (data: ExportData) => {
     return `
       <!DOCTYPE html>
       <html lang="en">
@@ -385,12 +430,12 @@ const IdeaForge = () => {
         ${data.wiki?.sections ? `
         <div class="section">
           <h2 class="section-title">📚 Wiki Knowledge Base</h2>
-          ${data.wiki.sections.map((section: any) => `
+          ${(data.wiki as Record<string, unknown>)?.sections && Array.isArray((data.wiki as Record<string, unknown>).sections) ? ((data.wiki as Record<string, unknown>).sections as Record<string, unknown>[]).map((section: Record<string, unknown>) => `
             <div class="subsection">
               <h3 class="subsection-title">${section.title}</h3>
               <div class="content">${section.content}</div>
             </div>
-          `).join('')}
+          `).join('') : ''}
         </div>
         ` : ''}
 
@@ -461,7 +506,7 @@ const IdeaForge = () => {
   };
 
   // Generate markdown export content
-  const generateMarkdownExport = (data: any) => {
+  const generateMarkdownExport = (data: ExportData) => {
     let markdown = `# ${data.idea?.title || 'Untitled Idea'}\n\n`;
     markdown += `**Description:** ${data.idea?.description || 'No description'}\n\n`;
     markdown += `**Status:** ${data.idea?.status || 'Draft'}\n\n`;
@@ -471,7 +516,7 @@ const IdeaForge = () => {
 
     if (data.wiki?.sections) {
       markdown += `## 📚 Wiki\n\n`;
-      data.wiki.sections.forEach((section: any) => {
+      data.wiki.sections.forEach((section) => {
         markdown += `### ${section.title}\n\n${section.content}\n\n`;
       });
     }
@@ -482,7 +527,7 @@ const IdeaForge = () => {
 
       if (data.blueprint.features?.length) {
         markdown += `### Features\n\n`;
-        data.blueprint.features.forEach((feature: any) => {
+        data.blueprint.features.forEach((feature) => {
           markdown += `- **${feature.name}** (${feature.priority}): ${feature.description}\n`;
         });
         markdown += `\n`;
@@ -490,7 +535,7 @@ const IdeaForge = () => {
 
       if (data.blueprint.techStack?.length) {
         markdown += `### Tech Stack\n\n`;
-        data.blueprint.techStack.forEach((tech: any) => {
+        data.blueprint.techStack.forEach((tech) => {
           markdown += `- **${tech.category}**: ${tech.name} - ${tech.description}\n`;
         });
         markdown += `\n`;
@@ -499,7 +544,7 @@ const IdeaForge = () => {
 
     if (data.journey?.entries?.length) {
       markdown += `## 📍 Journey\n\n`;
-      data.journey.entries.forEach((entry: any) => {
+      data.journey.entries.forEach((entry) => {
         markdown += `### ${entry.title} (${new Date(entry.date).toLocaleDateString()})\n\n`;
         markdown += `**Type:** ${entry.type}\n\n`;
         markdown += `${entry.content}\n\n`;
@@ -629,9 +674,9 @@ const IdeaForge = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-green-950 flex">
+    <div className="layout-container bg-gradient-to-br from-black via-gray-900 to-green-950">
       <WorkspaceSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <main className="flex-1 transition-all duration-300">
+      <main className="layout-main transition-all duration-300">
         {currentIdea ? (
           <>
             {/* Top Navigation Bar */}

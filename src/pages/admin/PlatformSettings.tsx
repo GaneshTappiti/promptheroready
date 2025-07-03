@@ -355,4 +355,4 @@ const PlatformSettings: React.FC = () => {
   );
 };
 
-export default withAdminAuth(PlatformSettings, 'canManageSettings');
+export default PlatformSettings;

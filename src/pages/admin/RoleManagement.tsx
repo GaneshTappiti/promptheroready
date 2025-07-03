@@ -64,9 +64,12 @@ const RoleManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingAdmin, setEditingAdmin] = useState<AdminUser | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    email: string;
+    role: 'admin' | 'super_admin';
+  }>({
     email: '',
-    role: 'admin' as const,
+    role: 'admin',
   });
 
   useEffect(() => {
@@ -686,4 +689,4 @@ const RoleManagement: React.FC = () => {
   );
 };
 
-export default withAdminAuth(RoleManagement, 'canManageRoles');
+export default RoleManagement;

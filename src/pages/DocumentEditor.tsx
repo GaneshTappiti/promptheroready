@@ -4,28 +4,21 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   ChevronLeft,
-  Download,
-  Share,
   Copy,
   Save,
   Eye,
-  Edit,
   FileText,
-  Presentation,
   Sparkles,
-  Palette,
   Type,
   Image,
   BarChart3,
-  Settings,
   Play,
-  Pause,
   SkipBack,
   SkipForward,
   X
@@ -147,10 +140,10 @@ const DocumentEditor = () => {
   const currentSlide = slides[currentSlideIndex];
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-black via-gray-900 to-green-950">
+    <div className="layout-container bg-gradient-to-br from-black via-gray-900 to-green-950">
       <WorkspaceSidebar />
 
-      <main className="flex-1 p-4 md:p-6 md:ml-64 transition-all duration-300">
+      <main className="layout-main p-4 md:p-6 md:ml-64 transition-all duration-300">
         <div className="container mx-auto max-w-7xl">
           {/* Header */}
           <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -311,7 +304,7 @@ const DocumentEditor = () => {
                                 .replace(/^# /gm, '<h1>')
                                 .replace(/^## /gm, '<h2>')
                                 .replace(/^### /gm, '<h3>')
-                                .replace(/^\- /gm, '<li>')
+                                .replace(/^- /gm, '<li>')
                                 .replace(/\n/g, '<br>')
                             }}
                           />
@@ -459,7 +452,7 @@ const DocumentEditor = () => {
                         .replace(/^# /gm, '<h1 class="text-4xl font-bold mb-8">')
                         .replace(/^## /gm, '<h2 class="text-2xl font-semibold mb-6">')
                         .replace(/^### /gm, '<h3 class="text-xl font-medium mb-4">')
-                        .replace(/^\- /gm, '<li class="text-lg mb-2">')
+                        .replace(/^- /gm, '<li class="text-lg mb-2">')
                         .replace(/\n/g, '<br>')
                     }}
                   />

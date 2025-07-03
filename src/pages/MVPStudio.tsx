@@ -7,21 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import WorkspaceSidebar, { SidebarToggle } from "@/components/WorkspaceSidebar";
 import {
   Plus,
-  Code,
-  LayoutGrid,
   Brain,
-  Palette,
   Sparkles,
   Zap,
   Users,
   Star,
   ExternalLink,
-  Target,
   Rocket,
-  TrendingUp,
   ArrowRight,
-  Menu,
-  ChevronLeft
+  ChevronLeft,
+  Target
 } from "lucide-react";
 import { Layers } from "lucide-react";
 import MVPWizard from "@/components/mvp-studio/MVPWizard";
@@ -104,14 +99,14 @@ const MVPStudio = () => {
     try {
       await mvpStudioHelpers.savePromptHistory({
         idea_id: activeIdea.id,
-        section,
-        section_key: sectionKey,
-        prompt,
-        response,
+        prompt_text: prompt,
+        response_text: response,
+        prompt_type: section,
         ai_provider: 'gemini',
         model_used: 'gemini-2.0-flash',
         user_id: user.id,
         metadata: {
+          section_key: sectionKey,
           app_type: selectedAppType,
           tools: selectedTools.map(t => t.name)
         }
@@ -300,9 +295,9 @@ const MVPStudio = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="layout-container">
       <WorkspaceSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <main className="flex-1 transition-all duration-300">
+      <main className="layout-main transition-all duration-300">
         {/* Top Navigation Bar */}
         <div className="sticky top-0 z-10 bg-black/80 backdrop-blur-xl border-b border-white/10">
           <div className="px-6 py-4">
@@ -433,9 +428,7 @@ const MVPStudio = () => {
                       <div>
                         <h4 className="text-white font-medium mb-4">Recommended Tools for {selectedAppType} apps:</h4>
                         <AIToolRecommender
-                          selectedCategory="all"
-                          onToolSelect={(tools) => setSelectedTools(tools)}
-                          appType={selectedAppType}
+                          onToolSelect={(tool) => setSelectedTools(prev => [...prev, tool])}
                         />
                       </div>
                     )}

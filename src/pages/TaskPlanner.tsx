@@ -151,9 +151,9 @@ const TaskPlanner = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="layout-container">
       <WorkspaceSidebar />
-      <main className="flex-1 p-4 md:p-6 md:ml-64 transition-all duration-300">
+      <main className="layout-main p-4 md:p-6 md:ml-64 transition-all duration-300">
         <div className="w-full max-w-7xl mx-auto bg-black/80 rounded-2xl shadow-lg p-8 flex flex-col">
           {/* Header */}
           <div className="mb-6">

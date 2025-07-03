@@ -1,6 +1,6 @@
 // AI Provider Types and Interfaces
 
-export type AIProvider = 'openai' | 'gemini' | 'deepseek' | 'claude' | 'mistral' | 'custom';
+export type AIProvider = 'openai' | 'gemini' | 'deepseek' | 'claude' | 'mistral' | 'custom' | 'none';
 
 export type ConnectionStatus = 'untested' | 'connected' | 'error' | 'quota_exceeded';
 

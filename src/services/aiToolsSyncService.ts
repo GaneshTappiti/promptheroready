@@ -1,6 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { aiToolsDatabase, aiToolsCategories, AITool } from '@/data/aiToolsDatabase';
-import { useToast } from '@/hooks/use-toast';
+import { aiToolsDatabase, AITool } from '@/data/aiToolsDatabase';
 
 // Database interface matching Supabase schema
 export interface DatabaseAITool {

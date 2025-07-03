@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { ChevronLeft, PlusCircle, Search, Menu, BookOpen } from "lucide-react";
+import { ChevronLeft, PlusCircle, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import WorkspaceSidebar, { SidebarToggle } from "@/components/WorkspaceSidebar";
 
 const IdeaWiki = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-green-950 flex">
+    <div className="layout-container bg-gradient-to-br from-black via-gray-900 to-green-950">
       <WorkspaceSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
       <main className="flex-1 transition-all duration-300">
         {/* Top Navigation Bar */}

@@ -1,3 +1,6 @@
+/* Tailwind CSS directives - IDE warnings are expected and can be ignored */
+/* @tailwind directives are processed by PostCSS and Tailwind CSS */
+/* These are not standard CSS rules, so IDEs may show warnings */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -69,23 +72,34 @@
   body {
     @apply bg-gradient-to-br from-black via-gray-900 to-green-950 text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    min-height: 100vh;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;
-    /* Prevent elastic scroll showing empty canvas */
-    overscroll-behavior: contain;
+    /* Comprehensive overscroll prevention */
+    overscroll-behavior: none;
+    overscroll-behavior-x: none;
+    overscroll-behavior-y: none;
     /* Smooth scrolling for better UX */
     scroll-behavior: smooth;
-    /* Prevent horizontal overscroll on mobile */
-    overscroll-behavior-x: none;
+    /* Prevent touch actions that cause overscroll */
+    touch-action: pan-x pan-y;
+    /* Prevent rubber band effect on iOS */
+    -webkit-overflow-scrolling: touch;
   }
 
-  /* Ensure root container extends full height */
+  /* Ensure root container is fixed height */
   #root {
-    min-height: 100vh;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
+    position: relative;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -96,37 +110,194 @@
 @layer utilities {
   /* Workspace Design System */
   .workspace-background {
-    @apply min-h-screen bg-transparent;
+    @apply h-screen w-screen overflow-hidden bg-transparent;
     /* Background is now handled at root level for seamless coverage */
   }
 
   .workspace-background-alt {
-    @apply min-h-screen bg-transparent;
+    @apply h-screen w-screen overflow-hidden bg-transparent;
     /* Background is now handled at root level for seamless coverage */
   }
 
+  /* Layout utilities for overscroll prevention */
+  .layout-container {
+    @apply h-screen w-screen overflow-hidden flex flex-col;
+  }
+
+  .layout-main {
+    @apply flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar;
+  }
+
+  .layout-sidebar {
+    @apply h-full overflow-y-auto overflow-x-hidden custom-scrollbar;
+  }
+
+  .layout-content {
+    @apply h-full overflow-y-auto overflow-x-hidden custom-scrollbar;
+  }
+
+  /* Enhanced mobile-specific utilities */
+  .mobile-safe-area {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .mobile-scroll-container {
+    @apply overflow-y-auto overflow-x-hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+  }
+
+  /* Enhanced mobile viewport utilities */
+  .mobile-viewport {
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
+  }
+
+  .mobile-container {
+    @apply w-full max-w-none px-4 sm:px-6 lg:px-8;
+  }
+
+  .mobile-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
+  }
+
+  .mobile-flex {
+    @apply flex flex-col sm:flex-row gap-4 sm:gap-6;
+  }
+
+  /* Enhanced workspace cards with better glass effects */
   .workspace-card {
     @apply bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 shadow-lg transition-all duration-300;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+
+  .workspace-card:hover {
+    @apply bg-black/30 border-white/20 shadow-xl;
+    transform: translateY(-2px);
   }
 
   .workspace-card-solid {
     @apply bg-black/80 rounded-2xl shadow-lg border border-white/10 transition-all duration-300;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 
   .glass-effect {
     @apply border border-white/10 bg-black/20 backdrop-blur-xl;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
   }
 
   .glass-effect-light {
     @apply border border-white/5 bg-black/10 backdrop-blur-lg;
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
   }
 
   .glass-effect-strong {
-    @apply border border-white/20 bg-black/30 backdrop-blur-2xl;
+    @apply border border-white/15 bg-black/30 backdrop-blur-2xl;
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
   }
 
+  /* Enhanced responsive and mobile utilities */
   .workspace-hover {
-    @apply hover:border-green-500/30 hover:bg-black/30 hover:shadow-xl hover:shadow-green-500/10;
+    @apply hover:border-green-500/30 hover:bg-black/30 hover:shadow-xl hover:shadow-green-500/10 transition-all duration-300;
+  }
+
+  .mobile-touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+    touch-action: manipulation; /* Prevents double-tap zoom */
+  }
+
+  .mobile-touch-large {
+    @apply min-h-[48px] min-w-[48px] flex items-center justify-center;
+    touch-action: manipulation;
+  }
+
+  .mobile-padding {
+    @apply px-4 py-3 sm:px-6 sm:py-4;
+  }
+
+  .mobile-padding-sm {
+    @apply px-3 py-2 sm:px-4 sm:py-3;
+  }
+
+  .mobile-padding-lg {
+    @apply px-6 py-4 sm:px-8 sm:py-6;
+  }
+
+  .mobile-text {
+    @apply text-sm sm:text-base;
+  }
+
+  .mobile-text-sm {
+    @apply text-xs sm:text-sm;
+  }
+
+  .mobile-text-lg {
+    @apply text-base sm:text-lg;
+  }
+
+  .mobile-heading {
+    @apply text-lg sm:text-xl md:text-2xl;
+  }
+
+  .mobile-heading-sm {
+    @apply text-base sm:text-lg md:text-xl;
+  }
+
+  .mobile-heading-lg {
+    @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl;
+  }
+
+  /* Mobile-specific button styles */
+  .mobile-button {
+    @apply min-h-[44px] px-6 py-3 text-sm font-medium rounded-lg transition-all duration-200;
+    touch-action: manipulation;
+  }
+
+  .mobile-button:active {
+    transform: scale(0.98);
+  }
+
+  /* Mobile card styles */
+  .mobile-card {
+    @apply bg-black/20 backdrop-blur-xl rounded-xl border border-white/10 p-4 sm:p-6;
+    touch-action: manipulation;
+  }
+
+  .mobile-card:active {
+    @apply bg-black/30;
+  }
+
+  /* Improved scrollbar styling for better UX */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
   }
 
   .workspace-button {
@@ -473,5 +644,113 @@
 
   .animate-ai-bar-5 {
     animation: aiBar5 4s infinite;
+  }
+
+  /* Mobile-specific responsive utilities */
+  @media (max-width: 767px) {
+    .mobile-hide {
+      display: none !important;
+    }
+
+    .mobile-full-width {
+      width: 100% !important;
+    }
+
+    .mobile-stack {
+      flex-direction: column !important;
+    }
+
+    .mobile-center {
+      text-align: center !important;
+    }
+
+    .mobile-no-padding {
+      padding: 0 !important;
+    }
+
+    .mobile-small-text {
+      font-size: 0.875rem !important;
+    }
+
+    /* Mobile navigation improvements */
+    .mobile-nav-item {
+      @apply w-full py-3 px-4 text-left border-b border-white/10 last:border-b-0;
+    }
+
+    .mobile-nav-item:active {
+      @apply bg-white/10;
+    }
+
+    /* Mobile form improvements */
+    .mobile-form-group {
+      @apply mb-4 w-full;
+    }
+
+    .mobile-form-input {
+      @apply w-full min-h-[44px] px-4 py-3 text-base rounded-lg;
+    }
+
+    .mobile-form-button {
+      @apply w-full min-h-[48px] text-base font-medium rounded-lg;
+    }
+  }
+
+  /* Tablet-specific utilities */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .tablet-hide {
+      display: none !important;
+    }
+
+    .tablet-grid-2 {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .tablet-flex-row {
+      flex-direction: row !important;
+    }
+  }
+
+  /* Desktop-specific utilities */
+  @media (min-width: 1024px) {
+    .desktop-show {
+      display: block !important;
+    }
+
+    .desktop-grid-3 {
+      grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    .desktop-grid-4 {
+      grid-template-columns: repeat(4, 1fr) !important;
+    }
+  }
+
+  /* Touch device optimizations */
+  @media (hover: none) and (pointer: coarse) {
+    .touch-device .hover\:scale-105:hover {
+      transform: none;
+    }
+
+    .touch-device .hover\:shadow-lg:hover {
+      box-shadow: none;
+    }
+
+    .touch-device button:active,
+    .touch-device .mobile-touch-target:active {
+      transform: scale(0.95);
+      transition: transform 0.1s ease;
+    }
+  }
+
+  /* High DPI display optimizations */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .high-dpi-border {
+      border-width: 0.5px;
+    }
+
+    .high-dpi-text {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
   }
 }

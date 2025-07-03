@@ -293,7 +293,7 @@ const Workspace = () => {
 
     setActiveIdea(validationResult.idea);
     setHasActiveIdea(true);
-    setCurrentStep('idea-vault');
+    setCurrentStep('vault');
 
     toast({
       title: "Idea Saved!",
@@ -709,10 +709,10 @@ const Workspace = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="layout-container">
       <WorkspaceSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <main className="flex-1 transition-all duration-300">
-        <div className="flex flex-col w-full">
+      <main className="layout-main transition-all duration-300">
+        <div className="flex flex-col w-full h-full">
         {/* Enhanced Top Navigation Bar */}
         <div className="workspace-nav-enhanced">
           <div className="flex items-center justify-between w-full px-4 md:px-6 py-3 md:py-4">

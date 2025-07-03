@@ -10,15 +10,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import {
   CreditCard,
-  Calendar,
   Download,
-  Star,
   Check,
   Zap,
   Crown,
   Menu,
-  AlertCircle,
-  ExternalLink,
   RefreshCw,
   ChevronLeft
 } from "lucide-react";
@@ -27,7 +23,7 @@ const Account = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentPlan] = useState("Pro");
   const [billingCycle] = useState("monthly");
-  const { user } = useAuth();
+  // Removed unused user variable
   const { toast } = useToast();
 
   const plans = [
@@ -118,9 +114,9 @@ const Account = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="layout-container">
       <WorkspaceSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <main className="flex-1 transition-all duration-300">
+      <main className="layout-main transition-all duration-300">
         <div className="flex flex-col w-full">
           {/* Top Navigation */}
           <div className="workspace-nav-enhanced">

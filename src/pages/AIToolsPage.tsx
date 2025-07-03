@@ -3,25 +3,20 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+// Removed unused Tabs imports
 import { useToast } from '@/hooks/use-toast';
 import {
   Brain,
   Sparkles,
-  TrendingUp,
   Users,
   Zap,
-  Target,
   Rocket,
   Star,
   ExternalLink,
-  ArrowRight,
   Lightbulb,
-  Code,
-  Palette,
-  Database,
-  Globe,
-  ChevronLeft
+  ChevronLeft,
+  Target,
+  Code
 } from 'lucide-react';
 import WorkspaceSidebar, { SidebarToggle } from '@/components/WorkspaceSidebar';
 import AIToolRecommender from '@/components/ai-tools/AIToolRecommender';
@@ -29,7 +24,7 @@ import { aiToolsCategories, aiToolsDatabase } from '@/data/aiToolsDatabase';
 
 const AIToolsPage: React.FC = () => {
   const { toast } = useToast();
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  // Removed unused selectedCategory state
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const categoryStats = aiToolsCategories.map(category => ({
@@ -51,7 +46,7 @@ const AIToolsPage: React.FC = () => {
     .filter(tool => tool.pricing.model === 'free')
     .slice(0, 4);
 
-  const handleToolSelect = (tool: any) => {
+  const handleToolSelect = (tool: { name: string; officialUrl?: string }) => {
     toast({
       title: "Tool Selected",
       description: `Opening ${tool.name} in a new tab`
@@ -59,9 +54,9 @@ const AIToolsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="layout-container">
       <WorkspaceSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <main className="flex-1 transition-all duration-300">
+      <main className="layout-main transition-all duration-300">
         {/* Top Navigation Bar */}
         <div className="sticky top-0 z-10 bg-black/80 backdrop-blur-xl border-b border-white/10">
           <div className="px-6 py-4">

@@ -1,12 +1,10 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ThumbsUp, MessageSquare, Tag, ArrowLeft, Edit, Trash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { WorkspaceLayout } from "@/components/ui/workspace-layout";
-import WorkspaceSidebar from "@/components/WorkspaceSidebar";
-
 interface IdeaComment {
   id: number;
   author: string;
@@ -15,7 +13,7 @@ interface IdeaComment {
 }
 
 const IdeaDetails = () => {
-  const { ideaId } = useParams<{ ideaId: string }>();
+  const { ideaId: _ideaId } = useParams<{ ideaId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
 

@@ -17,7 +17,7 @@ const WikiPageEditor = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-black via-gray-900 to-green-950">
+    <div className="layout-container bg-gradient-to-br from-black via-gray-900 to-green-950">
       <WorkspaceSidebar />
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 md:py-0 md:ml-64 transition-all duration-300">
         <div className="w-full max-w-3xl mx-auto bg-black/80 rounded-2xl shadow-lg p-8 flex flex-col">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,37 +8,23 @@ import {
   Presentation,
   FileSpreadsheet,
   FilePieChart,
-  Search,
-  Filter,
   MoreHorizontal,
   Eye,
   Edit,
   Share,
   Download,
-  Trash2,
   Users,
-  Clock,
-  Star,
-  Copy,
-  History,
   BarChart3,
   Sparkles,
   Video,
   MessageSquare,
-  Calendar,
-  Globe,
-  Lock,
-  Unlock,
   UserPlus,
-  Settings,
-  Archive,
   RefreshCw,
-  ExternalLink,
-  Zap,
-  TrendingUp,
-  Target,
-  Brain,
-  ChevronLeft
+  ChevronLeft,
+  Wand2,
+  Grid,
+  List,
+  TrendingUp
 } from "lucide-react";
 import WorkspaceSidebar, { SidebarToggle } from "@/components/WorkspaceSidebar";
 import DocumentModal from "@/components/docs-decks/DocumentModal";
@@ -46,41 +32,43 @@ import PitchDeckCard from "@/components/docs-decks/PitchDeckCard";
 import DocumentCard from "@/components/docs-decks/DocumentCard";
 import TemplateCard from "@/components/docs-decks/TemplateCard";
 import EmptyState from "@/components/docs-decks/EmptyState";
+import PresentationGenerator from "@/components/presentation/PresentationGenerator";
+import PresentationCard from "@/components/presentation/PresentationCard";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { docsDecksHelpers } from "@/lib/supabase-connection-helpers";
 import { useAuth } from "@/contexts/AuthContext";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+// Removed unused Badge and Progress imports
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+// Removed unused Textarea import
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+// Removed unused DropdownMenu imports
+import { presentationService } from "@/services/presentationService";
+import { Presentation as PresentationType } from "@/types/presentation";
 
 const DocsDecks = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("pitch-decks");
+  const [activeTab, setActiveTab] = useState("presentations");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isGeneratorModalOpen, setIsGeneratorModalOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isCollaborationModalOpen, setIsCollaborationModalOpen] = useState(false);
   const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
   const [isVersionHistoryModalOpen, setIsVersionHistoryModalOpen] = useState(false);
   const [isAIAssistantModalOpen, setIsAIAssistantModalOpen] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState<any>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [sortBy, setSortBy] = useState("recent");
-  const [filterBy, setFilterBy] = useState("all");
   const [isGeneratingContent, setIsGeneratingContent] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<PresentationType | null>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   // Database state
-  const [pitchDecks, setPitchDecks] = useState<any[]>([]);
-  const [documents, setDocuments] = useState<any[]>([]);
+  const [presentations, setPresentations] = useState<PresentationType[]>([]);
+  const [pitchDecks, setPitchDecks] = useState<PresentationType[]>([]);
+  const [documents, setDocuments] = useState<PresentationType[]>([]);
   
   const templates = [
     {
@@ -114,25 +102,44 @@ const DocsDecks = () => {
   ];
 
   // Database helper functions
-  const loadDocuments = async () => {
+  const loadPresentations = async () => {
     if (!user) return;
 
     try {
       setLoading(true);
+      const { data, error } = await presentationService.getUserPresentations(user.id, {
+        limit: 50
+      });
+
+      if (error) throw error;
+
+      setPresentations(data || []);
+    } catch (error) {
+      console.error('Error loading presentations:', error);
+      toast({
+        title: "Error Loading Presentations",
+        description: "Failed to load your presentations. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const loadDocuments = async () => {
+    if (!user) return;
+
+    try {
       const { data, error } = await docsDecksHelpers.getDocuments(user.id);
 
       if (error) throw error;
 
       setDocuments(data || []);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error loading documents:', error);
       toast({
         title: "Error Loading Documents",
         description: "Failed to load your documents. Please try again.",
         variant: "destructive"
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -145,7 +152,7 @@ const DocsDecks = () => {
       if (error) throw error;
 
       setPitchDecks(data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error loading pitch decks:', error);
     }
   };
@@ -153,6 +160,7 @@ const DocsDecks = () => {
   // Load data on component mount
   React.useEffect(() => {
     if (user) {
+      loadPresentations();
       loadDocuments();
       loadPitchDecks();
     }
@@ -166,7 +174,8 @@ const DocsDecks = () => {
         // Create pitch deck
         const { data: newDeck, error } = await docsDecksHelpers.createPitchDeck({
           title: data.title,
-          description: data.description,
+          content: data.description || '',
+          document_type: 'pitch_deck',
           user_id: user.id
         });
 
@@ -180,7 +189,7 @@ const DocsDecks = () => {
         // Create document
         const { data: newDoc, error } = await docsDecksHelpers.createDocument({
           title: data.title,
-          description: data.description,
+          content: data.description || '',
           document_type: 'other',
           user_id: user.id
         });
@@ -197,7 +206,7 @@ const DocsDecks = () => {
         title: "Document created",
         description: `Your ${data.type === "deck" ? "pitch deck" : "document"} was created successfully`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating document:', error);
       toast({
         title: "Error Creating Document",
@@ -215,22 +224,22 @@ const DocsDecks = () => {
     navigate(`/workspace/docs-decks/editor/${id}`);
   };
 
-  const handleCollaboration = (document: any) => {
+  const handleCollaboration = (document: PresentationType) => {
     setSelectedDocument(document);
     setIsCollaborationModalOpen(true);
   };
 
-  const handleAnalytics = (document: any) => {
+  const handleAnalytics = (document: PresentationType) => {
     setSelectedDocument(document);
     setIsAnalyticsModalOpen(true);
   };
 
-  const handleVersionHistory = (document: any) => {
+  const handleVersionHistory = (document: PresentationType) => {
     setSelectedDocument(document);
     setIsVersionHistoryModalOpen(true);
   };
 
-  const handleAIAssistant = (document: any) => {
+  const handleAIAssistant = (document: PresentationType) => {
     setSelectedDocument(document);
     setIsAIAssistantModalOpen(true);
   };
@@ -248,7 +257,7 @@ const DocsDecks = () => {
     });
   };
 
-  const handleShare = (document: any) => {
+  const handleShare = (document: PresentationType) => {
     navigator.clipboard.writeText(`https://app.example.com/share/${document.id}`);
     toast({
       title: "Link copied",
@@ -256,10 +265,10 @@ const DocsDecks = () => {
     });
   };
 
-  const handleDuplicate = (document: any) => {
+  const handleDuplicate = (document: PresentationType) => {
     toast({
       title: "Document duplicated",
-      description: `${document.name} has been duplicated.`,
+      description: `${document.title} has been duplicated.`,
     });
   };
 
@@ -267,10 +276,91 @@ const DocsDecks = () => {
     setIsModalOpen(true);
   };
 
+  const handleOpenGeneratorModal = () => {
+    setIsGeneratorModalOpen(true);
+  };
+
+  // Presentation handlers
+  const handlePresentationClick = (presentation: PresentationType) => {
+    navigate(`/workspace/docs-decks/presentation/${presentation.id}`);
+  };
+
+  const handlePresentationEdit = (presentation: PresentationType) => {
+    navigate(`/workspace/docs-decks/presentation/${presentation.id}/edit`);
+  };
+
+  const handlePresentationDuplicate = async (presentation: PresentationType) => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await presentationService.duplicatePresentation(
+        presentation.id,
+        user.id,
+        `${presentation.title} (Copy)`
+      );
+
+      if (error) throw error;
+
+      await loadPresentations();
+      toast({
+        title: "Presentation Duplicated",
+        description: `"${presentation.title}" has been duplicated successfully.`,
+      });
+    } catch (error: unknown) {
+      console.error('Error duplicating presentation:', error);
+      toast({
+        title: "Error",
+        description: "Failed to duplicate presentation. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handlePresentationDelete = async (presentation: PresentationType) => {
+    if (!user) return;
+
+    try {
+      const { success, error } = await presentationService.deletePresentation(
+        presentation.id,
+        user.id
+      );
+
+      if (!success || error) throw error;
+
+      await loadPresentations();
+      toast({
+        title: "Presentation Deleted",
+        description: `"${presentation.title}" has been deleted.`,
+      });
+    } catch (error: unknown) {
+      console.error('Error deleting presentation:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete presentation. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handlePresentationShare = (presentation: PresentationType) => {
+    const shareUrl = `${window.location.origin}/presentation/${presentation.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast({
+      title: "Link Copied",
+      description: "Presentation share link copied to clipboard.",
+    });
+  };
+
+  const handlePresentationGenerated = async (presentationId: string) => {
+    setIsGeneratorModalOpen(false);
+    await loadPresentations();
+    navigate(`/workspace/docs-decks/presentation/${presentationId}`);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-green-950 flex">
+    <div className="layout-container bg-gradient-to-br from-black via-gray-900 to-green-950">
       <WorkspaceSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <main className="flex-1 transition-all duration-300">
+      <main className="layout-main transition-all duration-300">
         {/* Top Navigation Bar */}
         <div className="sticky top-0 z-10 bg-black/80 backdrop-blur-xl border-b border-white/10">
           <div className="px-6 py-4">
@@ -282,13 +372,22 @@ const DocsDecks = () => {
                   <span>Back to Workspace</span>
                 </div>
               </div>
-              <Button
-                onClick={handleOpenModal}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                New Document
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleOpenGeneratorModal}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <Wand2 className="h-4 w-4 mr-2" />
+                  AI Presentation
+                </Button>
+                <Button
+                  onClick={handleOpenModal}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Document
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -315,54 +414,136 @@ const DocsDecks = () => {
             </p>
           </header>
           <div className="mb-6 md:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
-            <div>
+            <div className="flex items-center gap-4">
               <h2 className="text-xl md:text-2xl font-semibold">Document Center</h2>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={viewMode === 'grid' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('grid')}
+                >
+                  <Grid className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === 'list' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setViewMode('list')}
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-            <Button onClick={handleOpenModal} className="w-full sm:w-auto">
-              <Plus className="h-4 w-4 mr-2" />
-              New Document
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={handleOpenGeneratorModal} className="bg-purple-600 hover:bg-purple-700">
+                <Wand2 className="h-4 w-4 mr-2" />
+                AI Presentation
+              </Button>
+              <Button onClick={handleOpenModal} className="w-full sm:w-auto">
+                <Plus className="h-4 w-4 mr-2" />
+                New Document
+              </Button>
+            </div>
           </div>
-          <Tabs 
-            defaultValue="pitch-decks" 
-            value={activeTab} 
-            onValueChange={setActiveTab} 
+          <Tabs
+            defaultValue="presentations"
+            value={activeTab}
+            onValueChange={setActiveTab}
             className="mb-6 md:mb-8"
           >
             <TabsList className="mb-2 w-full sm:w-auto">
-              <TabsTrigger 
+              <TabsTrigger
+                value="presentations"
+                className={`transition-all duration-300 ${activeTab === "presentations" ? "tab-active" : ""}`}
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                AI Presentations
+              </TabsTrigger>
+              <TabsTrigger
                 value="pitch-decks"
                 className={`transition-all duration-300 ${activeTab === "pitch-decks" ? "tab-active" : ""}`}
               >
                 Pitch Decks
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="documents"
                 className={`transition-all duration-300 ${activeTab === "documents" ? "tab-active" : ""}`}
               >
                 Documents
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="templates"
                 className={`transition-all duration-300 ${activeTab === "templates" ? "tab-active" : ""}`}
               >
                 Templates
               </TabsTrigger>
             </TabsList>
-            
+
+            <TabsContent value="presentations" className="mt-4 md:mt-6 transition-all duration-300 animate-fade-in">
+              {presentations.length > 0 ? (
+                <div className={viewMode === 'grid'
+                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+                  : "space-y-4"
+                }>
+                  {presentations.map(presentation => (
+                    <PresentationCard
+                      key={presentation.id}
+                      presentation={presentation}
+                      viewMode={viewMode}
+                      onClick={() => handlePresentationClick(presentation)}
+                      onEdit={() => handlePresentationEdit(presentation)}
+                      onDuplicate={() => handlePresentationDuplicate(presentation)}
+                      onShare={() => handlePresentationShare(presentation)}
+                      onDelete={() => handlePresentationDelete(presentation)}
+                    />
+                  ))}
+
+                  {viewMode === 'grid' && (
+                    <div
+                      className="workspace-card border-dashed border-2 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-purple-500/50"
+                      onClick={handleOpenGeneratorModal}
+                    >
+                      <div className="flex flex-col items-center justify-center p-4 md:p-6 h-full">
+                        <div className="rounded-full bg-purple-500/10 p-3 mb-4">
+                          <Wand2 className="h-6 w-6 text-purple-500" />
+                        </div>
+                        <p className="font-medium">Generate with AI</p>
+                        <p className="text-sm text-muted-foreground text-center mt-2">
+                          Create professional presentations with AI assistance
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="mx-auto w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                    <Sparkles className="h-12 w-12 text-purple-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">No presentations yet</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Create your first AI-powered presentation to get started
+                  </p>
+                  <Button onClick={handleOpenGeneratorModal} className="bg-purple-600 hover:bg-purple-700">
+                    <Wand2 className="h-4 w-4 mr-2" />
+                    Generate AI Presentation
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
+
             <TabsContent value="pitch-decks" className="mt-4 md:mt-6 transition-all duration-300 animate-fade-in">
               {pitchDecks.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                   {pitchDecks.map(deck => (
                     <PitchDeckCard
                       key={deck.id}
-                      id={deck.id}
-                      name={deck.name}
-                      description={deck.description}
-                      lastEdited={deck.lastEdited}
-                      slides={deck.slides}
-                      template={deck.template}
-                      onClick={() => handleDeckClick(deck.id)}
+                      id={parseInt(deck.id)}
+                      name={deck.title}
+                      description={deck.description || 'No description'}
+                      lastEdited={new Date(deck.updatedAt).toLocaleDateString()}
+                      slides={deck.totalSlides}
+                      template={deck.theme}
+                      onClick={() => handleDeckClick(parseInt(deck.id))}
                     />
                   ))}
                   
@@ -392,13 +573,13 @@ const DocsDecks = () => {
                   {documents.map(doc => (
                     <DocumentCard
                       key={doc.id}
-                      id={doc.id}
-                      name={doc.name}
-                      description={doc.description}
-                      type={doc.type}
-                      lastEdited={doc.lastEdited}
-                      pages={doc.pages}
-                      onClick={() => handleDocumentClick(doc.id)}
+                      id={parseInt(doc.id)}
+                      name={doc.title}
+                      description={doc.description || 'No description'}
+                      type={doc.status}
+                      lastEdited={new Date(doc.updatedAt).toLocaleDateString()}
+                      pages={doc.totalSlides}
+                      onClick={() => handleDocumentClick(parseInt(doc.id))}
                     />
                   ))}
                   
@@ -447,6 +628,26 @@ const DocsDecks = () => {
             onSave={handleCreateDocument}
           />
 
+        </div>
+
+          {/* AI Presentation Generator Modal */}
+          <Dialog open={isGeneratorModalOpen} onOpenChange={setIsGeneratorModalOpen}>
+            <DialogContent className="bg-black/90 backdrop-blur-xl border-white/10 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Wand2 className="h-5 w-5 text-purple-400" />
+                  AI Presentation Generator
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="py-4">
+                <PresentationGenerator
+                  onPresentationGenerated={handlePresentationGenerated}
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
+
           {/* Collaboration Modal */}
           <Dialog open={isCollaborationModalOpen} onOpenChange={setIsCollaborationModalOpen}>
             <DialogContent className="bg-black/90 backdrop-blur-xl border-white/10 text-white max-w-2xl">
@@ -460,29 +661,14 @@ const DocsDecks = () => {
               {selectedDocument && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="font-semibold text-lg mb-2">{selectedDocument.name}</h3>
+                    <h3 className="font-semibold text-lg mb-2">{selectedDocument.title}</h3>
                     <p className="text-gray-400">{selectedDocument.description}</p>
                   </div>
 
                   <div>
                     <Label className="text-sm font-medium">Current Collaborators</Label>
                     <div className="space-y-2 mt-2">
-                      {selectedDocument.collaborators?.map((email: string, index: number) => (
-                        <div key={index} className="flex items-center justify-between bg-black/40 rounded-lg p-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-sm font-medium">
-                              {email.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <div className="font-medium text-sm">{email}</div>
-                              <div className="text-xs text-gray-400">Editor</div>
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
+                      <div className="text-sm text-muted-foreground">No collaborators added yet</div>
                     </div>
                   </div>
 
@@ -560,29 +746,29 @@ const DocsDecks = () => {
               {selectedDocument && (
                 <div className="space-y-6">
                   <div>
-                    <h3 className="font-semibold text-lg mb-2">{selectedDocument.name}</h3>
+                    <h3 className="font-semibold text-lg mb-2">{selectedDocument.title}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                       <div className="bg-black/40 rounded-lg p-4 text-center">
                         <div className="text-2xl font-bold text-green-400">
-                          {selectedDocument.analytics?.totalViews || 0}
+                          0
                         </div>
                         <div className="text-sm text-gray-400">Total Views</div>
                       </div>
                       <div className="bg-black/40 rounded-lg p-4 text-center">
                         <div className="text-2xl font-bold text-blue-400">
-                          {selectedDocument.analytics?.uniqueViewers || 0}
+                          0
                         </div>
                         <div className="text-sm text-gray-400">Unique Viewers</div>
                       </div>
                       <div className="bg-black/40 rounded-lg p-4 text-center">
                         <div className="text-2xl font-bold text-yellow-400">
-                          {selectedDocument.analytics?.avgTimeSpent || "0:00"}
+                          0:00
                         </div>
                         <div className="text-sm text-gray-400">Avg. Time Spent</div>
                       </div>
                       <div className="bg-black/40 rounded-lg p-4 text-center">
                         <div className="text-2xl font-bold text-purple-400">
-                          {selectedDocument.analytics?.completionRate || 0}%
+                          0%
                         </div>
                         <div className="text-sm text-gray-400">Completion Rate</div>
                       </div>
@@ -640,7 +826,6 @@ const DocsDecks = () => {
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          </div>
         </div>
       </main>
     </div>

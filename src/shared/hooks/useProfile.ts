@@ -5,7 +5,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useApi } from './useApi';
 
 // Profile data interfaces
 interface ProfileData {

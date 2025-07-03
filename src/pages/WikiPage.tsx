@@ -35,9 +35,9 @@ const WikiPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-black via-gray-900 to-green-950">
+    <div className="layout-container bg-gradient-to-br from-black via-gray-900 to-green-950">
       <WorkspaceSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 md:py-0 transition-all duration-300">
+      <main className="layout-main flex flex-col items-center justify-center px-4 py-8 md:py-0 transition-all duration-300">
         {/* Top navigation with hamburger menu */}
         <div className="flex items-center gap-4 mb-6 w-full max-w-3xl mx-auto">
           <Button

@@ -404,4 +404,4 @@ const UserAnalytics: React.FC = () => {
   );
 };
 
-export default withAdminAuth(UserAnalytics, 'canViewAnalytics');
+export default UserAnalytics;

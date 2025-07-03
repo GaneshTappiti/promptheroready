@@ -344,6 +344,23 @@ export const ideaForgeHelpers = {
       .single();
 
     return { data, error };
+  },
+
+  // Idea management operations (delegated to ideaVaultHelpers)
+  async getIdeas(userId: string, filters?: any) {
+    return ideaVaultHelpers.getIdeas(userId, filters);
+  },
+
+  async createIdea(ideaData: any) {
+    return ideaVaultHelpers.createIdea(ideaData);
+  },
+
+  async updateIdea(ideaId: string, updates: any) {
+    return ideaVaultHelpers.updateIdea(ideaId, updates);
+  },
+
+  async deleteIdea(ideaId: string) {
+    return ideaVaultHelpers.deleteIdea(ideaId);
   }
 };
 
@@ -394,7 +411,18 @@ export const mvpStudioHelpers = {
   },
 
   // Save prompt history
-  async savePromptHistory(promptData: Omit<PromptHistory, 'id' | 'created_at'>) {
+  async savePromptHistory(promptData: {
+    user_id: string;
+    prompt_text: string;
+    response_text?: string;
+    prompt_type?: string;
+    ai_provider?: string;
+    model_used?: string;
+    tokens_used?: number;
+    idea_id?: string;
+    mvp_id?: string;
+    metadata?: any;
+  }) {
     const { data, error } = await supabase
       .from('prompt_history')
       .insert([promptData])
@@ -593,6 +621,24 @@ export const docsDecksHelpers = {
     return { data, error };
   },
 
+  // Get single document
+  async getDocument(documentId: string, userId: string) {
+    const { data, error } = await supabase
+      .from('documents')
+      .select(`
+        *,
+        ideas (
+          id,
+          title
+        )
+      `)
+      .eq('id', documentId)
+      .eq('user_id', userId)
+      .single();
+
+    return { data, error };
+  },
+
   // Create document
   async createDocument(documentData: Omit<Tables['documents']['Insert'], 'id' | 'created_at' | 'updated_at'>) {
     const { data, error } = await supabase
@@ -628,6 +674,174 @@ export const docsDecksHelpers = {
     }
 
     const { data, error } = await query.order('name');
+    return { data, error };
+  },
+
+  // Get pitch decks (documents with type 'pitch_deck')
+  async getPitchDecks(userId: string) {
+    const { data, error } = await supabase
+      .from('documents')
+      .select(`
+        *,
+        ideas (
+          id,
+          title
+        )
+      `)
+      .eq('user_id', userId)
+      .eq('document_type', 'pitch_deck')
+      .order('created_at', { ascending: false });
+
+    return { data, error };
+  },
+
+  // Create pitch deck
+  async createPitchDeck(deckData: Omit<Tables['documents']['Insert'], 'id' | 'created_at' | 'updated_at'>) {
+    const { data, error } = await supabase
+      .from('documents')
+      .insert([{
+        ...deckData,
+        document_type: 'pitch_deck'
+      }])
+      .select()
+      .single();
+
+    return { data, error };
+  },
+
+  // Presentation-specific helpers
+  async createPresentation(presentationData: {
+    title: string;
+    content: string; // JSON stringified presentation data
+    user_id: string;
+    idea_id?: string;
+    metadata?: any;
+  }) {
+    const { data, error } = await supabase
+      .from('documents')
+      .insert([{
+        ...presentationData,
+        document_type: 'pitch_deck',
+        format: 'json',
+        status: 'draft'
+      }])
+      .select()
+      .single();
+
+    return { data, error };
+  },
+
+  async updatePresentation(id: string, updates: {
+    title?: string;
+    content?: string;
+    status?: string;
+    metadata?: any;
+  }) {
+    const { data, error } = await supabase
+      .from('documents')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .eq('document_type', 'pitch_deck')
+      .select()
+      .single();
+
+    return { data, error };
+  },
+
+  async getPresentation(id: string, userId: string) {
+    const { data, error } = await supabase
+      .from('documents')
+      .select(`
+        *,
+        ideas (
+          id,
+          title,
+          description
+        )
+      `)
+      .eq('id', id)
+      .eq('user_id', userId)
+      .eq('document_type', 'pitch_deck')
+      .single();
+
+    return { data, error };
+  },
+
+  async getPresentations(userId: string, options?: {
+    limit?: number;
+    offset?: number;
+    status?: string;
+    search?: string;
+  }) {
+    let query = supabase
+      .from('documents')
+      .select(`
+        *,
+        ideas (
+          id,
+          title
+        )
+      `)
+      .eq('user_id', userId)
+      .eq('document_type', 'pitch_deck');
+
+    if (options?.status) {
+      query = query.eq('status', options.status);
+    }
+
+    if (options?.search) {
+      query = query.or(`title.ilike.%${options.search}%,content.ilike.%${options.search}%`);
+    }
+
+    if (options?.limit) {
+      query = query.limit(options.limit);
+    }
+
+    if (options?.offset) {
+      query = query.range(options.offset, (options.offset + (options.limit || 10)) - 1);
+    }
+
+    const { data, error } = await query.order('updated_at', { ascending: false });
+    return { data, error };
+  },
+
+  async deletePresentation(id: string, userId: string) {
+    const { data, error } = await supabase
+      .from('documents')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', userId)
+      .eq('document_type', 'pitch_deck')
+      .select()
+      .single();
+
+    return { data, error };
+  },
+
+  async duplicatePresentation(id: string, userId: string, newTitle?: string) {
+    // First get the original presentation
+    const { data: original, error: fetchError } = await this.getPresentation(id, userId);
+
+    if (fetchError || !original) {
+      return { data: null, error: fetchError || new Error('Presentation not found') };
+    }
+
+    // Create a copy with new title
+    const { data, error } = await this.createPresentation({
+      title: newTitle || `${original.title} (Copy)`,
+      content: original.content,
+      user_id: userId,
+      idea_id: original.idea_id,
+      metadata: {
+        ...original.metadata,
+        originalId: original.id,
+        duplicatedAt: new Date().toISOString()
+      }
+    });
+
     return { data, error };
   }
 };
@@ -1049,6 +1263,16 @@ export const investorRadarHelpers = {
       .single();
 
     return { data, error };
+  },
+
+  // Delete investor
+  async deleteInvestor(investorId: string) {
+    const { error } = await supabase
+      .from('investors')
+      .delete()
+      .eq('id', investorId);
+
+    return { error };
   }
 };
 

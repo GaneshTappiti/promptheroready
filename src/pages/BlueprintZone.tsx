@@ -1,17 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Progress } from "@/components/ui/progress";
-import { CheckCircle2, Circle, Clock, Plus, Flag, Calendar, Menu, ChevronLeft } from "lucide-react";
-import {
-  WorkspaceContainer,
-  WorkspaceCard,
-  WorkspaceHeader
-} from "@/components/ui/workspace-layout";
+import { Plus, Flag, Calendar, ChevronLeft } from "lucide-react";
 import WorkspaceSidebar, { SidebarToggle } from "@/components/WorkspaceSidebar";
 import AddPhaseModal from "@/components/blueprint/AddPhaseModal";
 import TaskModal from "@/components/blueprint/TaskModal";
@@ -29,36 +22,33 @@ const BlueprintZone = () => {
   const [selectedPhaseId, setSelectedPhaseId] = useState<string | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [taskModalMode, setTaskModalMode] = useState<"add" | "edit">("add");
-  const [loading, setLoading] = useState(true);
+  // Removed unused loading state
 
   // Load phases from database
-  const loadPhases = async () => {
+  const loadPhases = useCallback(async () => {
     if (!user) return;
 
     try {
-      setLoading(true);
       const { data, error } = await blueprintZoneHelpers.getProjectPhases(user.id);
 
       if (error) throw error;
 
       setPhases(data || []);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error loading phases:', error);
       toast({
         title: "Error Loading Phases",
         description: "Failed to load your project phases. Please try again.",
         variant: "destructive"
       });
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (user) {
       loadPhases();
     }
-  }, [user]);
+  }, [user, loadPhases]);
   
   // Calculate progress for each phase
   useEffect(() => {
@@ -170,9 +160,9 @@ const BlueprintZone = () => {
   ];
 
   return (
-    <div className="min-h-screen flex">
+    <div className="layout-container">
       <WorkspaceSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
-      <main className="flex-1 p-6 transition-all duration-300">
+      <main className="layout-main p-6 transition-all duration-300">
         {/* Top navigation with hamburger menu */}
         <div className="flex items-center gap-4 mb-6">
           <SidebarToggle onClick={() => setSidebarOpen(true)} />

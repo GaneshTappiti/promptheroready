@@ -152,10 +152,11 @@ export class DataMigrationService {
 
       // For each user, look for potential relationships
       for (const [userId, userIdeaList] of Object.entries(userIdeas)) {
-        for (let i = 0; i < userIdeaList.length; i++) {
-          for (let j = i + 1; j < userIdeaList.length; j++) {
-            const idea1 = userIdeaList[i];
-            const idea2 = userIdeaList[j];
+        const ideaList = userIdeaList as any[];
+        for (let i = 0; i < ideaList.length; i++) {
+          for (let j = i + 1; j < ideaList.length; j++) {
+            const idea1 = ideaList[i];
+            const idea2 = ideaList[j];
 
             // Check if ideas are similar (simple heuristic)
             const similarity = this.calculateSimilarity(idea1.title, idea2.title);

@@ -3,27 +3,47 @@
  * Centralized configuration management with environment-specific settings
  */
 
-// Environment variables with defaults
+// Helper function to get environment variable with fallback
+const getEnvVar = (reactKey: string, viteKey: string, defaultValue: string = '') => {
+  return import.meta.env[reactKey] || import.meta.env[viteKey] || defaultValue;
+};
+
+// Environment variables with defaults - supporting both REACT_APP_ and VITE_ prefixes
 const env = {
   NODE_ENV: import.meta.env.NODE_ENV || 'development',
-  VITE_APP_NAME: import.meta.env.VITE_APP_NAME || 'Pitch Perfect Engine',
-  VITE_APP_VERSION: import.meta.env.VITE_APP_VERSION || '1.0.0',
-  VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
-  VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL || '',
-  VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-  VITE_DATABASE_URL: import.meta.env.VITE_DATABASE_URL || '',
-  VITE_ENCRYPTION_KEY: import.meta.env.VITE_ENCRYPTION_KEY || '',
-  VITE_SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN || '',
-  VITE_ANALYTICS_ID: import.meta.env.VITE_ANALYTICS_ID || '',
-  VITE_FEATURE_FLAGS: import.meta.env.VITE_FEATURE_FLAGS || '',
+  APP_NAME: getEnvVar('REACT_APP_NAME', 'VITE_APP_NAME', 'Pitch Perfect Engine'),
+  APP_VERSION: getEnvVar('REACT_APP_VERSION', 'VITE_APP_VERSION', '1.0.0'),
+  APP_ENVIRONMENT: getEnvVar('REACT_APP_ENVIRONMENT', 'VITE_APP_ENVIRONMENT', 'development'),
+  API_BASE_URL: getEnvVar('REACT_APP_API_BASE_URL', 'VITE_API_BASE_URL', 'http://localhost:3000'),
+  API_TIMEOUT: getEnvVar('REACT_APP_API_TIMEOUT', 'VITE_API_TIMEOUT', '30000'),
+  SUPABASE_URL: getEnvVar('REACT_APP_SUPABASE_URL', 'VITE_SUPABASE_URL', ''),
+  SUPABASE_ANON_KEY: getEnvVar('REACT_APP_SUPABASE_ANON_KEY', 'VITE_SUPABASE_ANON_KEY', ''),
+  DATABASE_URL: getEnvVar('REACT_APP_DATABASE_URL', 'VITE_DATABASE_URL', ''),
+  ENCRYPTION_KEY: getEnvVar('REACT_APP_ENCRYPTION_KEY', 'VITE_ENCRYPTION_KEY', ''),
+  SENTRY_DSN: getEnvVar('REACT_APP_SENTRY_DSN', 'VITE_SENTRY_DSN', ''),
+  ANALYTICS_ID: getEnvVar('REACT_APP_ANALYTICS_ID', 'VITE_ANALYTICS_ID', ''),
+  GOOGLE_ANALYTICS_ID: getEnvVar('REACT_APP_GOOGLE_ANALYTICS_ID', 'VITE_GOOGLE_ANALYTICS_ID', ''),
+  FEATURE_FLAGS: getEnvVar('REACT_APP_FEATURE_FLAGS', 'VITE_FEATURE_FLAGS', ''),
+  ENABLE_ANALYTICS: getEnvVar('REACT_APP_ENABLE_ANALYTICS', 'VITE_ENABLE_ANALYTICS', 'true'),
+  ENABLE_ERROR_REPORTING: getEnvVar('REACT_APP_ENABLE_ERROR_REPORTING', 'VITE_ENABLE_ERROR_REPORTING', 'true'),
+  ENABLE_PERFORMANCE_MONITORING: getEnvVar('REACT_APP_ENABLE_PERFORMANCE_MONITORING', 'VITE_ENABLE_PERFORMANCE_MONITORING', 'true'),
+  ENABLE_PWA: getEnvVar('REACT_APP_ENABLE_PWA', 'VITE_ENABLE_PWA', 'true'),
+  ENABLE_OFFLINE_MODE: getEnvVar('REACT_APP_ENABLE_OFFLINE_MODE', 'VITE_ENABLE_OFFLINE_MODE', 'false'),
+  MOBILE_OPTIMIZATIONS: getEnvVar('REACT_APP_MOBILE_OPTIMIZATIONS', 'VITE_MOBILE_OPTIMIZATIONS', 'true'),
+  // AI Provider Keys
+  OPENAI_API_KEY: getEnvVar('REACT_APP_OPENAI_API_KEY', 'VITE_OPENAI_API_KEY', ''),
+  GEMINI_API_KEY: getEnvVar('REACT_APP_GEMINI_API_KEY', 'VITE_GEMINI_API_KEY', ''),
+  CLAUDE_API_KEY: getEnvVar('REACT_APP_CLAUDE_API_KEY', 'VITE_CLAUDE_API_KEY', ''),
+  ANTHROPIC_API_KEY: getEnvVar('REACT_APP_ANTHROPIC_API_KEY', 'VITE_ANTHROPIC_API_KEY', ''),
+  DEEPSEEK_API_KEY: getEnvVar('REACT_APP_DEEPSEEK_API_KEY', 'VITE_DEEPSEEK_API_KEY', ''),
 } as const;
 
 // Validate required environment variables
-const requiredEnvVars = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'] as const;
+const requiredEnvVars = ['SUPABASE_URL', 'SUPABASE_ANON_KEY'] as const;
 
 const validateEnvironment = () => {
   const missing = requiredEnvVars.filter(key => !env[key]);
-  
+
   if (missing.length > 0) {
     console.error('Missing required environment variables:', missing);
     if (env.NODE_ENV === 'production') {
@@ -39,9 +59,10 @@ validateEnvironment();
 export const config = {
   // App metadata
   app: {
-    name: env.VITE_APP_NAME,
-    version: env.VITE_APP_VERSION,
-    environment: env.NODE_ENV,
+    name: env.APP_NAME,
+    version: env.APP_VERSION,
+    environment: env.APP_ENVIRONMENT,
+    nodeEnv: env.NODE_ENV,
     isDevelopment: env.NODE_ENV === 'development',
     isProduction: env.NODE_ENV === 'production',
     isTest: env.NODE_ENV === 'test',
@@ -49,15 +70,15 @@ export const config = {
 
   // API configuration
   api: {
-    baseUrl: env.VITE_API_BASE_URL,
-    timeout: 30000,
+    baseUrl: env.API_BASE_URL,
+    timeout: parseInt(env.API_TIMEOUT) || 30000,
     retryAttempts: 3,
     retryDelay: 1000,
   },
 
   // Database configuration
   database: {
-    url: env.VITE_DATABASE_URL,
+    url: env.DATABASE_URL,
     connectionTimeout: 5000,
     queryTimeout: 30000,
     maxConnections: 20,
@@ -66,8 +87,8 @@ export const config = {
 
   // Supabase configuration
   supabase: {
-    url: env.VITE_SUPABASE_URL,
-    anonKey: env.VITE_SUPABASE_ANON_KEY,
+    url: env.SUPABASE_URL,
+    anonKey: env.SUPABASE_ANON_KEY,
     auth: {
       autoRefreshToken: true,
       persistSession: true,
@@ -77,7 +98,7 @@ export const config = {
 
   // Security configuration
   security: {
-    encryptionKey: env.VITE_ENCRYPTION_KEY,
+    encryptionKey: env.ENCRYPTION_KEY,
     sessionTimeout: 24 * 60 * 60 * 1000, // 24 hours
     maxLoginAttempts: 5,
     lockoutDuration: 15 * 60 * 1000, // 15 minutes
@@ -185,6 +206,95 @@ export const config = {
         models: ['claude-3-opus', 'claude-3-sonnet'],
         defaultModel: 'claude-3-sonnet',
       },
+    },
+  },
+
+  // Mobile & PWA configuration
+  mobile: {
+    optimizations: env.MOBILE_OPTIMIZATIONS === 'true',
+    touchTargetSize: 44, // Minimum touch target size in pixels
+    breakpoints: {
+      mobile: 768,
+      tablet: 1024,
+      desktop: 1280,
+      wide: 1536,
+    },
+    gestures: {
+      swipeThreshold: 50,
+      longPressDelay: 500,
+      doubleTapDelay: 300,
+    },
+    performance: {
+      lazyLoadImages: true,
+      prefetchCritical: true,
+      bundleSplitting: true,
+    },
+  },
+
+  // PWA configuration
+  pwa: {
+    enabled: env.ENABLE_PWA === 'true',
+    offlineMode: env.ENABLE_OFFLINE_MODE === 'true',
+    cacheStrategy: 'networkFirst',
+    updatePrompt: true,
+    workboxOptions: {
+      skipWaiting: true,
+      clientsClaim: true,
+    },
+  },
+
+  // Analytics configuration
+  analytics: {
+    enabled: env.ENABLE_ANALYTICS === 'true',
+    googleAnalyticsId: env.GOOGLE_ANALYTICS_ID,
+    trackPageViews: true,
+    trackUserInteractions: true,
+    trackPerformance: env.ENABLE_PERFORMANCE_MONITORING === 'true',
+  },
+
+  // Error reporting configuration
+  errorReporting: {
+    enabled: env.ENABLE_ERROR_REPORTING === 'true',
+    sentryDsn: env.SENTRY_DSN,
+    environment: env.APP_ENVIRONMENT,
+    sampleRate: env.NODE_ENV === 'production' ? 0.1 : 1.0,
+    beforeSend: (event: any) => {
+      // Filter out sensitive information
+      if (event.exception) {
+        const error = event.exception.values?.[0];
+        if (error?.value?.includes('API_KEY') || error?.value?.includes('password')) {
+          return null; // Don't send sensitive errors
+        }
+      }
+      return event;
+    },
+  },
+
+  // AI Provider configuration
+  aiProviders: {
+    openai: {
+      apiKey: env.OPENAI_API_KEY,
+      baseUrl: 'https://api.openai.com/v1',
+      models: ['gpt-4', 'gpt-3.5-turbo'],
+      defaultModel: 'gpt-3.5-turbo',
+    },
+    gemini: {
+      apiKey: env.GEMINI_API_KEY,
+      baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
+      models: ['gemini-pro', 'gemini-pro-vision'],
+      defaultModel: 'gemini-pro',
+    },
+    claude: {
+      apiKey: env.CLAUDE_API_KEY || env.ANTHROPIC_API_KEY,
+      baseUrl: 'https://api.anthropic.com/v1',
+      models: ['claude-3-opus', 'claude-3-sonnet', 'claude-3-haiku'],
+      defaultModel: 'claude-3-sonnet',
+    },
+    deepseek: {
+      apiKey: env.DEEPSEEK_API_KEY,
+      baseUrl: 'https://api.deepseek.com/v1',
+      models: ['deepseek-chat', 'deepseek-coder'],
+      defaultModel: 'deepseek-chat',
     },
   },
 

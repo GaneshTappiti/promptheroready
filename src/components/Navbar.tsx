@@ -1,19 +1,23 @@
 
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
-import { 
-  Search, 
-  Bell, 
-  Settings, 
+import {
+  Search,
+  Bell,
+  Settings,
   User,
-  Menu
+  Menu,
+  X
 } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useState } from "react";
+import { MobileButton } from "@/components/ui/mobile-responsive";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const isMobile = useIsMobile();
   
   // Check if the current path matches the given path
   const isActive = (path: string) => {
@@ -86,51 +90,104 @@ export const Navbar = () => {
           
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="md:hidden"
+              <MobileButton
+                variant="ghost"
+                size="md"
+                className="md:hidden min-w-[44px] min-h-[44px] p-2"
                 onClick={() => setIsMobileMenuOpen(true)}
               >
-                <Menu className="h-5 w-5" />
-              </Button>
+                <Menu className="h-6 w-6" />
+              </MobileButton>
             </SheetTrigger>
-            <SheetContent side="right" className="bg-background border-l border-white/10">
-              <div className="flex flex-col gap-6 pt-6">
-                <Link 
-                  to="/" 
-                  className={`text-sm font-medium py-2 ${isActive('/') ? 'text-primary' : 'hover:text-primary'}`}
+            <SheetContent
+              side="right"
+              className="bg-background border-l border-white/10 w-[300px] sm:w-[350px]"
+            >
+              <SheetHeader className="pb-6">
+                <SheetTitle className="text-left text-lg font-semibold">
+                  Navigation
+                </SheetTitle>
+                <button
                   onClick={() => setIsMobileMenuOpen(false)}
+                  className="absolute right-4 top-4 mobile-touch-target rounded-full hover:bg-muted"
                 >
-                  Home
-                </Link>
-                <Link 
-                  to="/workspace" 
-                  className={`text-sm font-medium py-2 ${isActive('/workspace') ? 'text-primary' : 'hover:text-primary'}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Workspace
-                </Link>
-                <Link 
-                  to="/features" 
-                  className={`text-sm font-medium py-2 ${isActive('/features') ? 'text-primary' : 'hover:text-primary'}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Features
-                </Link>
-                <Link 
-                  to="/about" 
-                  className={`text-sm font-medium py-2 ${isActive('/about') ? 'text-primary' : 'hover:text-primary'}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  About
-                </Link>
-                <div className="flex flex-col gap-4 pt-4 border-t border-white/10">
-                  <Button asChild className="bg-primary hover:bg-primary/90">
-                    <Link to="/workspace" onClick={() => setIsMobileMenuOpen(false)}>
+                  <X className="h-5 w-5" />
+                </button>
+              </SheetHeader>
+
+              <div className="flex flex-col gap-2">
+                {/* Main Navigation */}
+                <div className="space-y-1">
+                  <Link
+                    to="/"
+                    className={`mobile-nav-item transition-colors ${
+                      isActive('/') ? 'text-primary bg-primary/10' : 'hover:text-primary hover:bg-muted/50'
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    to="/workspace"
+                    className={`mobile-nav-item transition-colors ${
+                      isActive('/workspace') ? 'text-primary bg-primary/10' : 'hover:text-primary hover:bg-muted/50'
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Workspace
+                  </Link>
+                  <Link
+                    to="/features"
+                    className={`mobile-nav-item transition-colors ${
+                      isActive('/features') ? 'text-primary bg-primary/10' : 'hover:text-primary hover:bg-muted/50'
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Features
+                  </Link>
+                  <Link
+                    to="/about"
+                    className={`mobile-nav-item transition-colors ${
+                      isActive('/about') ? 'text-primary bg-primary/10' : 'hover:text-primary hover:bg-muted/50'
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    About
+                  </Link>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="pt-6 border-t border-white/10 space-y-4">
+                  <MobileButton
+                    variant="primary"
+                    fullWidth
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Link to="/workspace" className="w-full">
                       Get Started
                     </Link>
-                  </Button>
+                  </MobileButton>
+
+                  {/* Quick Actions */}
+                  <div className="grid grid-cols-4 gap-3 pt-2">
+                    <button className="mobile-touch-target rounded-lg hover:bg-muted/50 flex flex-col items-center gap-1">
+                      <Search className="h-5 w-5" />
+                      <span className="text-xs">Search</span>
+                    </button>
+                    <button className="mobile-touch-target rounded-lg hover:bg-muted/50 flex flex-col items-center gap-1 relative">
+                      <Bell className="h-5 w-5" />
+                      <span className="text-xs">Alerts</span>
+                      <span className="absolute top-1 right-2 w-2 h-2 bg-primary rounded-full"></span>
+                    </button>
+                    <button className="mobile-touch-target rounded-lg hover:bg-muted/50 flex flex-col items-center gap-1">
+                      <Settings className="h-5 w-5" />
+                      <span className="text-xs">Settings</span>
+                    </button>
+                    <button className="mobile-touch-target rounded-lg hover:bg-muted/50 flex flex-col items-center gap-1">
+                      <User className="h-5 w-5" />
+                      <span className="text-xs">Profile</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </SheetContent>

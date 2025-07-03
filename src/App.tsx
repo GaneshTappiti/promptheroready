@@ -13,6 +13,7 @@ import { BreadcrumbProvider } from "@/components/BreadcrumbNavigation";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
+import { DeviceInfoProvider } from "@/components/ui/mobile-responsive";
 import { config } from "@/config";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
@@ -29,6 +30,7 @@ const IdeaForge = lazy(() => import("@/pages/IdeaForge"));
 const MVPStudio = lazy(() => import("@/pages/MVPStudio"));
 const DocsDecks = lazy(() => import("@/pages/DocsDecks"));
 const DocumentEditor = lazy(() => import("@/pages/DocumentEditor"));
+const PresentationViewer = lazy(() => import("@/components/presentation/PresentationViewer"));
 const TeamSpace = lazy(() => import("@/pages/TeamSpace"));
 const InvestorRadar = lazy(() => import("@/pages/InvestorRadar"));
 const PitchPerfect = lazy(() => import("@/pages/PitchPerfect"));
@@ -46,12 +48,17 @@ const FeaturesPage = lazy(() => import("@/pages/Features"));
 const About = lazy(() => import("@/pages/About"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const SignupTest = lazy(() => import("@/pages/SignupTest"));
+const AdminPermissionTest = lazy(() => import("@/pages/AdminPermissionTest"));
+const AIIntegrationTest = lazy(() => import("@/pages/AIIntegrationTest"));
+const RealtimeTest = lazy(() => import("@/pages/RealtimeTest"));
+const PerformanceTest = lazy(() => import("@/pages/PerformanceTest"));
 
 const PromptGuide = lazy(() => import("@/components/prompting/PromptGuide"));
 const PromptBuilder = lazy(() => import("@/components/prompting/PromptBuilder"));
 
 // Admin Components
 const AdminLayout = lazy(() => import("@/components/admin/AdminLayout"));
+const ProtectedAdminRoute = lazy(() => import("@/components/admin/ProtectedAdminRoute"));
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const UserAnalytics = lazy(() => import("@/pages/admin/UserAnalytics"));
 const SubscriptionAnalytics = lazy(() => import("@/pages/admin/SubscriptionAnalytics"));
@@ -61,6 +68,7 @@ const PlatformSettings = lazy(() => import("@/pages/admin/PlatformSettings"));
 const AdminSetupDemo = lazy(() => import("@/components/admin/AdminSetupDemo"));
 const AdminTest = lazy(() => import("@/pages/AdminTest"));
 const AuthTest = lazy(() => import("@/pages/AuthTest"));
+const DatabaseTest = lazy(() => import("@/pages/DatabaseTest"));
 const RoleManagement = lazy(() => import("@/pages/admin/RoleManagement"));
 
 // Create QueryClient with optimized configuration
@@ -154,6 +162,16 @@ function AppRoutes() {
           <DocumentEditor />
         </ProtectedRoute>
       } />
+      <Route path="/workspace/docs-decks/presentation/:id" element={
+        <ProtectedRoute>
+          <PresentationViewer />
+        </ProtectedRoute>
+      } />
+      <Route path="/workspace/docs-decks/presentation/:id/edit" element={
+        <ProtectedRoute>
+          <PresentationViewer />
+        </ProtectedRoute>
+      } />
       <Route path="/workspace/teamspace" element={
         <ProtectedRoute>
           <TeamSpace />
@@ -233,18 +251,23 @@ function AppRoutes() {
       <Route path="/admin-setup" element={<AdminSetupDemo />} />
       <Route path="/admin-test" element={<AdminTest />} />
       <Route path="/auth-test" element={<AuthTest />} />
+      <Route path="/database-test" element={<DatabaseTest />} />
+      <Route path="/admin-permission-test" element={<AdminPermissionTest />} />
+      <Route path="/ai-integration-test" element={<AIIntegrationTest />} />
+      <Route path="/realtime-test" element={<RealtimeTest />} />
+      <Route path="/performance-test" element={<PerformanceTest />} />
 
       {/* Admin Routes */}
       <Route path="/admin/*" element={
         <AdminLayout>
           <Routes>
             <Route index element={<AdminDashboard />} />
-            <Route path="users" element={<UserAnalytics />} />
-            <Route path="subscriptions" element={<SubscriptionAnalytics />} />
-            <Route path="prompts" element={<PromptTemplates />} />
-            <Route path="tools" element={<AIToolsDirectory />} />
-            <Route path="settings" element={<PlatformSettings />} />
-            <Route path="roles" element={<RoleManagement />} />
+            <Route path="users" element={<ProtectedAdminRoute requiredPermission="canViewAnalytics" superAdminOnly><UserAnalytics /></ProtectedAdminRoute>} />
+            <Route path="subscriptions" element={<ProtectedAdminRoute requiredPermission="canViewAnalytics"><SubscriptionAnalytics /></ProtectedAdminRoute>} />
+            <Route path="prompts" element={<ProtectedAdminRoute requiredPermission="canManagePrompts"><PromptTemplates /></ProtectedAdminRoute>} />
+            <Route path="tools" element={<ProtectedAdminRoute requiredPermission="canManageTools"><AIToolsDirectory /></ProtectedAdminRoute>} />
+            <Route path="settings" element={<ProtectedAdminRoute requiredPermission="canManageSettings" superAdminOnly><PlatformSettings /></ProtectedAdminRoute>} />
+            <Route path="roles" element={<ProtectedAdminRoute requiredPermission="canManageRoles" superAdminOnly><RoleManagement /></ProtectedAdminRoute>} />
           </Routes>
         </AdminLayout>
       } />
@@ -264,18 +287,20 @@ const App = () => {
           <AdminProvider>
             <AppStateProvider>
               <BreadcrumbProvider>
-              <TooltipProvider>
-                <Router>
-                  <Suspense fallback={<LoadingSpinner fullScreen text="Loading application..." />}>
-                    <AppRoutes />
-                  </Suspense>
-                  <Toaster />
-                  <Sonner />
-                </Router>
-              </TooltipProvider>
-            </BreadcrumbProvider>
-          </AppStateProvider>
-        </AdminProvider>
+                <TooltipProvider>
+                  <DeviceInfoProvider>
+                    <Router>
+                      <Suspense fallback={<LoadingSpinner fullScreen text="Loading application..." />}>
+                        <AppRoutes />
+                      </Suspense>
+                      <Toaster />
+                      <Sonner />
+                    </Router>
+                  </DeviceInfoProvider>
+                </TooltipProvider>
+              </BreadcrumbProvider>
+            </AppStateProvider>
+          </AdminProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>

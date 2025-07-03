@@ -15,71 +15,75 @@ import {
   profileHelpers,
   adminHelpers,
   subscriptionHelpers,
+  blueprintZoneHelpers as blueprintZoneHelpersOriginal,
   allHelpers
 } from './database-helpers';
 
 // Re-export all helpers for backward compatibility
-export const blueprintZoneHelpers = ideaForgeHelpers;
-export const docsDecksHelpers = docsDecksHelpers;
-export const ideaForgeHelpers = ideaForgeHelpers;
+export const blueprintZoneHelpers = blueprintZoneHelpersOriginal;
+export { docsDecksHelpers };
+export { ideaForgeHelpers };
 export const investorRadarHelpers = {
   // Investor-specific helpers
-  async getInvestors() {
-    return allHelpers.getInvestors();
+  async getInvestors(userId: string, filters?: any) {
+    return allHelpers.investorRadar.getInvestors(userId, filters);
   },
   async createInvestor(data: any) {
-    return allHelpers.createInvestor(data);
+    return allHelpers.investorRadar.createInvestor(data);
   },
   async updateInvestor(id: string, data: any) {
-    return allHelpers.updateInvestor(id, data);
+    return allHelpers.investorRadar.updateInvestor(id, data);
   },
   async deleteInvestor(id: string) {
-    return allHelpers.deleteInvestor(id);
+    return allHelpers.investorRadar.deleteInvestor(id);
+  },
+  async getFundingRounds(userId: string) {
+    return allHelpers.investorRadar.getFundingRounds(userId);
   }
 };
 
-export const mvpStudioHelpers = mvpStudioHelpers;
+export { mvpStudioHelpers };
 export const pitchPerfectHelpers = {
   // Pitch Perfect specific helpers
-  async getPitchScripts() {
-    return allHelpers.getPitchScripts();
+  async getPitchScripts(userId: string, scriptType?: string) {
+    return allHelpers.pitchPerfect.getPitchScripts(userId, scriptType);
   },
   async createPitchScript(data: any) {
-    return allHelpers.createPitchScript(data);
+    return allHelpers.pitchPerfect.createPitchScript(data);
   },
-  async getPitchDecks() {
-    return allHelpers.getPitchDecks();
+  async getPitchDecks(userId: string, deckType?: string) {
+    return allHelpers.pitchPerfect.getPitchDecks(userId, deckType);
   },
   async createPitchDeck(data: any) {
-    return allHelpers.createPitchDeck(data);
+    return allHelpers.pitchPerfect.createPitchDeck(data);
   },
-  async getPitchVideos() {
-    return allHelpers.getPitchVideos();
+  async getPitchVideos(userId: string, videoType?: string) {
+    return allHelpers.pitchPerfect.getPitchVideos(userId, videoType);
   },
   async createPitchVideo(data: any) {
-    return allHelpers.createPitchVideo(data);
+    return allHelpers.pitchPerfect.createPitchVideo(data);
   }
 };
 
 export const taskPlannerHelpers = {
   // Task Planner specific helpers
-  async getTasks(projectId?: string) {
-    return allHelpers.getTasks(projectId);
+  async getTasks(userId: string, filters?: { status?: string; priority?: string; projectId?: string }) {
+    return allHelpers.taskPlanner.getTasks(userId, filters);
   },
   async createTask(data: any) {
-    return allHelpers.createTask(data);
+    return allHelpers.taskPlanner.createTask(data);
   },
   async updateTask(id: string, data: any) {
-    return allHelpers.updateTask(id, data);
+    return allHelpers.taskPlanner.updateTask(id, data);
   },
   async deleteTask(id: string) {
-    return allHelpers.deleteTask(id);
+    return allHelpers.taskPlanner.deleteTask(id);
   },
-  async getProjects() {
-    return allHelpers.getProjects();
+  async getProjects(userId: string) {
+    return allHelpers.taskPlanner.getProjects(userId);
   },
   async createProject(data: any) {
-    return allHelpers.createProject(data);
+    return allHelpers.taskPlanner.createProject(data);
   }
 };
 

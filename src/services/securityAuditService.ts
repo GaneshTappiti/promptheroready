@@ -1,5 +1,4 @@
 // Security Audit Service - Monitor and audit security-related activities
-import { supabase } from '@/lib/supabase';
 
 export interface SecurityEvent {
   id?: string;

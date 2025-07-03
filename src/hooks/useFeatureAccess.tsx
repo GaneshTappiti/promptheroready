@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useSubscription } from './useSubscription';
 import { useToast } from './use-toast';
-import EnhancedUpgradePrompt from '@/components/EnhancedUpgradePrompt';
+import { ToastAction } from '@/components/ui/toast';
 
 interface UseFeatureAccessReturn {
   checkAndExecute: (
@@ -55,17 +55,21 @@ export const useFeatureAccess = (): UseFeatureAccessReturn => {
             title: "Upgrade Required",
             description: accessResult.reason || `${feature} requires a Pro subscription. Click here to upgrade.`,
             variant: "destructive",
-            action: {
-              label: "Upgrade",
-              onClick: () => {
-                // This would open the upgrade modal
-                // For now, just show a message
-                toast({
-                  title: "Upgrade Coming Soon!",
-                  description: "Payment integration will be available soon.",
-                });
-              }
-            }
+            action: (
+              <ToastAction
+                altText="Upgrade to Pro"
+                onClick={() => {
+                  // This would open the upgrade modal
+                  // For now, just show a message
+                  toast({
+                    title: "Upgrade Coming Soon!",
+                    description: "Payment integration will be available soon.",
+                  });
+                }}
+              >
+                Upgrade
+              </ToastAction>
+            )
           });
         } else {
           toast({

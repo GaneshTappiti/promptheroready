@@ -4,7 +4,7 @@
 // This service provides a centralized interface for all database operations
 // with enhanced error handling, caching, and performance monitoring
 
-import { supabase, testSupabaseConnection, checkSupabaseConnection } from '@/lib/supabase';
+import { testSupabaseConnection, checkSupabaseConnection } from '@/lib/supabase';
 import { 
   workspaceHelpers, 
   ideaVaultHelpers, 

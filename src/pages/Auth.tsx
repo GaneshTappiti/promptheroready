@@ -200,8 +200,8 @@ export default function Auth() {
 
   if (isResetPassword) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-green-glass">
-        <div className="w-full max-w-md p-8 space-y-8 workspace-card">
+      <div className="layout-container items-center justify-center bg-green-glass">
+        <div className="w-full max-w-md p-8 space-y-8 workspace-card m-auto">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-white mb-2">Reset Password</h1>
             <p className="text-gray-400">Enter your new password</p>
@@ -273,8 +273,8 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-glass">
-      <div className="w-full max-w-md space-y-8 workspace-card p-8">
+    <div className="layout-container items-center justify-center bg-green-glass">
+      <div className="w-full max-w-md space-y-8 workspace-card p-8 m-auto">
         <div className="text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Sparkles className="h-8 w-8 text-green-400" />

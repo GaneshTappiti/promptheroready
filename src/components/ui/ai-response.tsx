@@ -180,7 +180,7 @@ const AIResponse: React.FC<AIResponseProps> = ({
           variant="ghost"
           size="sm"
           className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-          onClick={handleCopy}
+          onClick={() => handleCopy()}
         >
           {copied ? (
             <Check className="h-4 w-4 text-green-500" />
@@ -240,37 +240,25 @@ const AIResponse: React.FC<AIResponseProps> = ({
                 {children}
               </ol>
             ),
-            li: ({ children, ordered, ...props }) => (
-              <li className={cn(
-                "flex items-start text-foreground",
-                ordered ? "counter-increment-item" : ""
-              )} {...props}>
-                <span className={cn(
-                  "flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium mr-3 mt-0.5",
-                  ordered
-                    ? "bg-primary text-primary-foreground counter-item"
-                    : "bg-primary/20 text-primary"
-                )}>
-                  {ordered ? (
-                    <span className="counter-item">•</span>
-                  ) : (
-                    "•"
-                  )}
+            li: ({ children, ...props }) => (
+              <li className="flex items-start text-foreground" {...props}>
+                <span className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium mr-3 mt-0.5 bg-primary/20 text-primary">
+                  •
                 </span>
                 <div className="flex-1">{children}</div>
               </li>
             ),
             // Enhanced blockquote
             blockquote: ({ children, ...props }) => (
-              <div className="my-6 border-l-4 border-primary bg-muted/30 rounded-r-lg" {...props}>
+              <blockquote className="my-6 border-l-4 border-primary bg-muted/30 rounded-r-lg" {...props}>
                 <div className="p-4">
                   <div className="text-primary text-sm font-medium mb-2">💡 Key Insight</div>
                   {children}
                 </div>
-              </div>
+              </blockquote>
             ),
             // Enhanced code blocks with syntax highlighting
-            code: ({ inline, className, children, ...props }) => {
+            code: ({ inline, className, children, ...props }: any) => {
               const match = /language-(\w+)/.exec(className || '');
               const language = match ? match[1] : '';
 

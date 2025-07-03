@@ -7,9 +7,9 @@ import { Link } from "react-router-dom";
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="layout-container bg-background text-foreground">
       <Navbar />
-      <main className="flex-grow">
+      <main className="layout-main">
         {/* Hero Section */}
         <section className="w-full pt-28 pb-20 md:pt-32 md:pb-28 relative overflow-hidden">
           <div className="container px-4 md:px-6">

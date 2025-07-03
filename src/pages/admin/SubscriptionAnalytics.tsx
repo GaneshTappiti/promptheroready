@@ -376,4 +376,4 @@ const SubscriptionAnalytics: React.FC = () => {
   );
 };
 
-export default withAdminAuth(SubscriptionAnalytics, 'canViewAnalytics');
+export default SubscriptionAnalytics;

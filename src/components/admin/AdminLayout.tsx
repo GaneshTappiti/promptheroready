@@ -3,7 +3,7 @@ import { Outlet, Link, useLocation, Navigate } from 'react-router-dom';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import BreadcrumbNavigation from '@/components/BreadcrumbNavigation';
+import BreadcrumbNavigation, { BreadcrumbItem } from '@/components/BreadcrumbNavigation';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -43,9 +43,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Generate admin-specific breadcrumbs
-  const generateAdminBreadcrumbs = () => {
+  const generateAdminBreadcrumbs = (): BreadcrumbItem[] => {
     const pathSegments = location.pathname.split('/').filter(Boolean);
-    const breadcrumbs = [
+    const breadcrumbs: BreadcrumbItem[] = [
       {
         label: 'Workspace',
         href: '/workspace',

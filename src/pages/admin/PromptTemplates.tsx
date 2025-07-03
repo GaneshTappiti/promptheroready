@@ -76,14 +76,22 @@ const PromptTemplates: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<PromptTemplate | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    title: string;
+    content: string;
+    category: string;
+    tags: string;
+    use_case: string;
+    output_type: string;
+    status: 'draft' | 'published' | 'archived';
+  }>({
     title: '',
     content: '',
     category: '',
     tags: '',
     use_case: '',
     output_type: '',
-    status: 'draft' as const,
+    status: 'draft',
   });
 
   useEffect(() => {
@@ -686,4 +694,4 @@ const PromptTemplates: React.FC = () => {
   );
 };
 
-export default withAdminAuth(PromptTemplates, 'canManagePrompts');
+export default PromptTemplates;

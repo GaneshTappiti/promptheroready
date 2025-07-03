@@ -1,5 +1,4 @@
 // Encryption Service - Secure API key encryption/decryption
-import { supabase } from '@/lib/supabase';
 
 export class EncryptionService {
   private static readonly ALGORITHM = 'AES-GCM';

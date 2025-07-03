@@ -24,10 +24,10 @@ const NotFound = () => {
   ];
 
   return (
-    <div className="min-h-screen flex">
+    <div className="layout-container">
       <WorkspaceSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
-      <main className="flex-1 flex items-center justify-center p-6 transition-all duration-300">
+      <main className="layout-main flex items-center justify-center p-6 transition-all duration-300">
         {/* Top navigation with hamburger menu */}
         <div className="absolute top-4 left-4">
           <Button

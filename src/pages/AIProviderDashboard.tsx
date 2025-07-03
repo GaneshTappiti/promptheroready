@@ -1,24 +1,21 @@
 // AI Provider Dashboard - Standalone page for monitoring AI usage and status
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Brain, 
-  Settings, 
-  BarChart3, 
-  AlertCircle, 
-  CheckCircle, 
+import {
+  Brain,
+  Settings,
+  BarChart3,
+  AlertCircle,
+  CheckCircle,
   XCircle,
   RefreshCw,
-  TrendingUp,
   Activity,
-  DollarSign,
   Zap,
-  Clock,
   Menu
 } from 'lucide-react';
 import { UserAIPreferences } from '@/types/aiProvider';
@@ -33,28 +30,22 @@ export default function AIProviderDashboard() {
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [preferences, setPreferences] = useState<UserAIPreferences | null>(null);
-  const [usageStats, setUsageStats] = useState<any>(null);
+  const [usageStats, setUsageStats] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
 
-  useEffect(() => {
-    if (user) {
-      loadData();
-    }
-  }, [user]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!user) return;
-    
+
     setLoading(true);
     try {
       const [prefsData, statsData] = await Promise.all([
         getUserPreferences(user.id),
         getUsageStats(user.id)
       ]);
-      
+
       setPreferences(prefsData);
       setUsageStats(statsData);
     } catch (error) {
@@ -62,7 +53,13 @@ export default function AIProviderDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadData();
+    }
+  }, [user, loadData]);
 
   const handleRefresh = async () => {
     setRefreshing(true);

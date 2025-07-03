@@ -1,12 +1,13 @@
 // AI Provider Service - Dynamic routing to different AI providers
-import { 
-  AIProvider, 
-  AIProviderConfig, 
-  AIRequest, 
-  AIResponse, 
+import {
+  AIProvider,
+  AIProviderConfig,
+  AIRequest,
+  AIResponse,
   AIError,
   UserAIPreferences,
-  ConnectionStatus 
+  ConnectionStatus,
+  AIProviderCapabilities
 } from '@/types/aiProvider';
 import { supabase } from '@/lib/supabase';
 import { encryptApiKey, decryptApiKey } from './encryptionService';
@@ -18,8 +19,13 @@ import { ClaudeProvider } from './providers/claudeProvider';
 import { MistralProvider } from './providers/mistralProvider';
 import { CustomProvider } from './providers/customProvider';
 
+interface BaseProvider {
+  generateResponse(request: AIRequest, config: AIProviderConfig): Promise<AIResponse>;
+  getCapabilities(): AIProviderCapabilities;
+}
+
 export class AIProviderService {
-  private providers: Map<AIProvider, any> = new Map();
+  private providers: Map<AIProvider, BaseProvider> = new Map();
 
   constructor() {
     // Initialize providers
@@ -143,27 +149,29 @@ export class AIProviderService {
         maxTokens: 10
       };
 
-      const response = await provider.generateResponse(testRequest, testConfig);
+      await provider.generateResponse(testRequest, testConfig);
       
       // Update connection status in database
       await this.updateConnectionStatus(userId, 'connected');
 
       return { success: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Connection test failed:', error);
+
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
       // Log security event
       await SecurityAuditService.logConnectionTestFailed(
         userId,
         testConfig?.provider || 'unknown',
-        error.message || 'Unknown error'
+        errorMessage
       );
 
       // Update connection status in database
-      const status = error.message?.includes('quota') ? 'quota_exceeded' : 'error';
-      await this.updateConnectionStatus(userId, status, error.message);
+      const status = errorMessage.includes('quota') ? 'quota_exceeded' : 'error';
+      await this.updateConnectionStatus(userId, status, errorMessage);
 
-      return { success: false, error: error.message || 'Connection test failed' };
+      return { success: false, error: errorMessage || 'Connection test failed' };
     }
   }
 
@@ -173,7 +181,7 @@ export class AIProviderService {
   async generateResponse(userId: string, request: AIRequest): Promise<AIResponse> {
     // Check if we're in development mode and should use mock responses
     if (process.env.NODE_ENV === 'development' && !userId) {
-      return this.generateMockResponse(request);
+      return this.generateMockResponseInternal(request);
     }
 
     const preferences = await this.getUserPreferences(userId);
@@ -181,13 +189,13 @@ export class AIProviderService {
     if (!preferences || !preferences.apiKeyEncrypted) {
       // In development, return mock response instead of throwing error
       if (process.env.NODE_ENV === 'development') {
-        return this.generateMockResponse(request);
+        return this.generateMockResponseInternal(request);
       }
 
       throw new AIError({
         code: 'NO_API_KEY',
         message: 'No AI provider configured. Please set up your AI provider in settings.',
-        provider: 'none' as AIProvider,
+        provider: 'custom',
         retryable: false
       });
     }
@@ -219,11 +227,12 @@ export class AIProviderService {
       await this.updateUsageStats(userId, response.tokensUsed.total);
       
       return response;
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Update error status
-      const status = error.message?.includes('quota') ? 'quota_exceeded' : 'error';
-      await this.updateConnectionStatus(userId, status, error.message);
-      
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const status = errorMessage.includes('quota') ? 'quota_exceeded' : 'error';
+      await this.updateConnectionStatus(userId, status, errorMessage);
+
       throw error;
     }
   }
@@ -311,6 +320,27 @@ export class AIProviderService {
       model: 'error',
       provider: 'none',
       finishReason: 'error'
+    };
+  }
+
+  /**
+   * Generate mock response for development/testing
+   */
+  private generateMockResponseInternal(request: AIRequest): AIResponse {
+    return {
+      content: `Mock response for: ${request.prompt.substring(0, 100)}...`,
+      tokensUsed: {
+        input: request.prompt.length / 4,
+        output: 50,
+        total: (request.prompt.length / 4) + 50
+      },
+      model: 'mock-model',
+      provider: 'custom',
+      finishReason: 'stop',
+      metadata: {
+        mock: true,
+        timestamp: new Date().toISOString()
+      }
     };
   }
 }

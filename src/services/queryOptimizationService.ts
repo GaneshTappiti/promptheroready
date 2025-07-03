@@ -102,7 +102,7 @@ export class QueryOptimizationService {
       batchDelay = 100,
     } = options;
 
-    let eventQueue: any[] = [];
+    const eventQueue: Record<string, unknown>[] = [];
     let lastProcessTime = 0;
     let batchTimeout: NodeJS.Timeout | null = null;
 
@@ -193,8 +193,12 @@ export class QueryOptimizationService {
     results.forEach((result) => {
       if (result.status === 'fulfilled' && result.value.success) {
         batchResult[result.value.key as keyof T] = result.value.result;
-      } else {
+      } else if (result.status === 'fulfilled') {
         batchResult[result.value.key as keyof T] = null;
+      } else {
+        // Handle rejected promises - we need to extract the key somehow
+        // For now, we'll skip rejected promises
+        console.error('Promise rejected in batch query:', result.reason);
       }
     });
 

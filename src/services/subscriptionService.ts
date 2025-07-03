@@ -1,5 +1,4 @@
 import { supabase } from '@/lib/supabase';
-import { useToast } from '@/hooks/use-toast';
 
 export type SubscriptionTier = 'free' | 'pro' | 'enterprise';
 export type SubscriptionStatus = 'active' | 'inactive' | 'trial' | 'expired' | 'cancelled';
