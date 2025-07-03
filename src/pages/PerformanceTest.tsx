@@ -12,7 +12,6 @@ import {
   Gauge,
   Zap,
   Database,
-  Memory,
   Clock,
   TrendingUp,
   AlertTriangle,
@@ -95,9 +94,9 @@ const PerformanceTest: React.FC = () => {
     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
     if (navigation) {
       return {
-        domContentLoaded: Math.round(navigation.domContentLoadedEventEnd - navigation.navigationStart),
-        loadComplete: Math.round(navigation.loadEventEnd - navigation.navigationStart),
-        firstPaint: Math.round(navigation.responseStart - navigation.navigationStart)
+        domContentLoaded: Math.round(navigation.domContentLoadedEventEnd - navigation.fetchStart),
+        loadComplete: Math.round(navigation.loadEventEnd - navigation.fetchStart),
+        firstPaint: Math.round(navigation.responseStart - navigation.fetchStart)
       };
     }
     return { domContentLoaded: 0, loadComplete: 0, firstPaint: 0 };
@@ -195,7 +194,7 @@ const PerformanceTest: React.FC = () => {
             <Card className="bg-gray-800/50 border-gray-700">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2">
-                  <Memory className="h-5 w-5 text-blue-400" />
+                  <HardDrive className="h-5 w-5 text-blue-400" />
                   <div>
                     <p className="text-sm text-gray-400">Memory Usage</p>
                     <p className="text-lg font-bold text-white">

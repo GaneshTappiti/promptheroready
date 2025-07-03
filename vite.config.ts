@@ -1,20 +1,17 @@
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import autoprefixer from 'autoprefixer'
+import cssnano from 'cssnano'
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command, mode }) => {
-  // Load env file based on `mode` in the current working directory.
-  const env = loadEnv(mode, process.cwd(), '')
-
+export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production'
   const isDevelopment = mode === 'development'
 
   return {
     plugins: [
       react({
-        // Enable Fast Refresh in development
-        fastRefresh: isDevelopment,
         // Optimize JSX in production
         jsxRuntime: 'automatic',
       }),
@@ -39,7 +36,7 @@ export default defineConfig(({ command, mode }) => {
       // Production optimizations
       minify: isProduction ? 'terser' : false,
       sourcemap: isDevelopment ? 'inline' : false,
-      cssMinify: isProduction,
+      cssMinify: false, // Temporarily disabled to fix CSS warnings
       target: 'es2020',
 
       // Terser options for better compression
@@ -176,12 +173,12 @@ export default defineConfig(({ command, mode }) => {
       devSourcemap: isDevelopment,
       postcss: {
         plugins: isProduction ? [
-          require('autoprefixer'),
-          require('cssnano')({
+          autoprefixer(),
+          cssnano({
             preset: 'default',
           }),
         ] : [
-          require('autoprefixer'),
+          autoprefixer(),
         ],
       },
     },

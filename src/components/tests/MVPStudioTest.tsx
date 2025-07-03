@@ -24,13 +24,13 @@ interface TestResult {
 }
 
 interface TestMVP {
-  title: string;
+  name: string;
   description: string;
   idea_id?: string;
-  target_audience: string;
-  key_features: string[];
+  app_type: string;
+  features: string[];
   tech_stack: string[];
-  timeline: string;
+  estimated_timeline: string;
   budget_range: string;
 }
 
@@ -38,12 +38,12 @@ const MVPStudioTest: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [results, setResults] = useState<TestResult[]>([]);
   const [testMVP, setTestMVP] = useState<TestMVP>({
-    title: 'AI Task Manager MVP',
+    name: 'AI Task Manager MVP',
     description: 'A minimal viable product for an AI-powered task management system with smart prioritization.',
-    target_audience: 'Busy professionals and entrepreneurs',
-    key_features: ['Smart task prioritization', 'AI-powered scheduling', 'Team collaboration'],
+    app_type: 'web-app',
+    features: ['Smart task prioritization', 'AI-powered scheduling', 'Team collaboration'],
     tech_stack: ['React', 'Node.js', 'PostgreSQL', 'OpenAI API'],
-    timeline: '3 months',
+    estimated_timeline: '3 months',
     budget_range: '$10,000 - $25,000'
   });
   const [createdMVPId, setCreatedMVPId] = useState<string | null>(null);
@@ -90,11 +90,14 @@ const MVPStudioTest: React.FC = () => {
     try {
       const newMVP = {
         ...testMVP,
+        idea_id: testMVP.idea_id || null,
         user_id: user.id,
         status: 'planning' as const,
-        progress: 0,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        pages: {},
+        framework_prompt: '',
+        ui_prompts: {},
+        linking_prompt: '',
+        recommended_tools: {}
       };
 
       const { data, error } = await mvpStudioHelpers.createMVP(newMVP);
@@ -106,7 +109,7 @@ const MVPStudioTest: React.FC = () => {
           success: true,
           details: {
             mvpId: data.id,
-            title: data.title,
+            name: data.name,
             status: data.status
           }
         });
@@ -269,7 +272,7 @@ const MVPStudioTest: React.FC = () => {
       // Archive the test MVP
       const { error } = await mvpStudioHelpers.updateMVP(createdMVPId, {
         status: 'archived',
-        title: testMVP.title + ' (Test - Archived)',
+        name: testMVP.name + ' (Test - Archived)',
         updated_at: new Date().toISOString()
       });
 
@@ -351,12 +354,12 @@ const MVPStudioTest: React.FC = () => {
             <div className="space-y-4">
               <h3 className="font-semibold">Test MVP Configuration</h3>
               <div className="space-y-2">
-                <Label htmlFor="mvp-title">MVP Title</Label>
+                <Label htmlFor="mvp-name">MVP Name</Label>
                 <Input
-                  id="mvp-title"
-                  value={testMVP.title}
-                  onChange={(e) => setTestMVP(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="Enter test MVP title"
+                  id="mvp-name"
+                  value={testMVP.name}
+                  onChange={(e) => setTestMVP(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Enter test MVP name"
                 />
               </div>
               <div className="space-y-2">
@@ -370,12 +373,12 @@ const MVPStudioTest: React.FC = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="mvp-audience">Target Audience</Label>
+                <Label htmlFor="mvp-app-type">App Type</Label>
                 <Input
-                  id="mvp-audience"
-                  value={testMVP.target_audience}
-                  onChange={(e) => setTestMVP(prev => ({ ...prev, target_audience: e.target.value }))}
-                  placeholder="Enter target audience"
+                  id="mvp-app-type"
+                  value={testMVP.app_type}
+                  onChange={(e) => setTestMVP(prev => ({ ...prev, app_type: e.target.value }))}
+                  placeholder="Enter app type"
                 />
               </div>
             </div>

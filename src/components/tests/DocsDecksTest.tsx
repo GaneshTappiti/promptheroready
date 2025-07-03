@@ -30,7 +30,6 @@ interface TestDocument {
   document_type: 'document' | 'presentation' | 'pitch_deck' | 'business_plan';
   description?: string;
   tags: string[];
-  is_public: boolean;
 }
 
 const DocsDecksTest: React.FC = () => {
@@ -41,8 +40,7 @@ const DocsDecksTest: React.FC = () => {
     content: '# Executive Summary\n\nThis is a test business plan document for our AI-powered task management system.\n\n## Market Analysis\n\nThe market for productivity tools is growing rapidly...',
     document_type: 'business_plan',
     description: 'A comprehensive business plan for testing document functionality.',
-    tags: ['business', 'planning', 'test'],
-    is_public: false
+    tags: ['business', 'planning', 'test']
   });
   const [createdDocumentId, setCreatedDocumentId] = useState<string | null>(null);
   const [createdTemplateId, setCreatedTemplateId] = useState<string | null>(null);
@@ -164,13 +162,11 @@ const DocsDecksTest: React.FC = () => {
       const templateData = {
         name: 'Test Business Plan Template',
         description: 'A template for creating business plans',
-        category: 'business',
-        content: '# Business Plan Template\n\n## Executive Summary\n[Your executive summary here]\n\n## Market Analysis\n[Your market analysis here]',
+        document_type: 'business_plan',
+        template_content: '# Business Plan Template\n\n## Executive Summary\n[Your executive summary here]\n\n## Market Analysis\n[Your market analysis here]',
         tags: ['template', 'business', 'planning'],
         is_public: true,
-        user_id: user.id,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        created_by: user.id
       };
 
       const { data, error } = await supabase
@@ -277,7 +273,7 @@ const DocsDecksTest: React.FC = () => {
       // Archive the test document
       const { error } = await docsDecksHelpers.updateDocument(createdDocumentId, {
         title: testDocument.title + ' (Test - Archived)',
-        is_public: false,
+        status: 'archived',
         updated_at: new Date().toISOString()
       });
 

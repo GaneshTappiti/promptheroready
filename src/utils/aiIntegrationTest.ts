@@ -137,7 +137,7 @@ export class AIIntegrationTester {
         topic: "AI-Powered Fitness App Pitch",
         numSlides: 5,
         language: "en",
-        style: "business",
+        style: "professional",
         targetAudience: "Investors",
         objectives: ["Showcase market opportunity", "Demonstrate product features"],
         duration: 10
@@ -161,8 +161,8 @@ export class AIIntegrationTester {
         data: {
           slideCount: outline.slides.length,
           title: outline.title,
-          hasIntroduction: outline.slides.some(s => s.type === 'title'),
-          hasConclusion: outline.slides.some(s => s.type === 'conclusion')
+          hasIntroduction: outline.slides.some(s => s.layout === 'title'),
+          hasConclusion: outline.slides.some(s => s.layout === 'conclusion')
         }
       };
     } catch (error) {
@@ -230,13 +230,24 @@ export class AIIntegrationTester {
 
       for (const provider of providers) {
         try {
-          const caps = await aiProviderService.getProviderCapabilities(provider);
-          capabilities.push({
-            provider,
-            name: caps.name,
-            modelCount: caps.models.length,
-            features: caps.features.length
-          });
+          const availableProviders = aiProviderService.getAvailableProviders();
+          const caps = availableProviders.find(p => p.provider === provider);
+          if (caps) {
+            capabilities.push({
+              provider,
+              name: caps.name,
+              modelCount: caps.models.length,
+              features: caps.features.length
+            });
+          } else {
+            capabilities.push({
+              provider,
+              name: provider,
+              modelCount: 0,
+              features: 0,
+              error: 'Provider not available'
+            });
+          }
         } catch (error) {
           capabilities.push({
             provider,

@@ -143,7 +143,7 @@ export const config = {
     analytics: env.NODE_ENV === 'production',
     debugging: env.NODE_ENV === 'development',
     betaFeatures: env.NODE_ENV !== 'production',
-    ...parseFeatureFlags(env.VITE_FEATURE_FLAGS),
+    ...parseFeatureFlags(env.FEATURE_FLAGS),
   },
 
   // File upload configuration
@@ -168,19 +168,19 @@ export const config = {
     storage: 'sessionStorage' as 'localStorage' | 'sessionStorage',
   },
 
-  // Analytics configuration
-  analytics: {
-    enabled: env.NODE_ENV === 'production' && !!env.VITE_ANALYTICS_ID,
-    id: env.VITE_ANALYTICS_ID,
+  // Analytics configuration (legacy)
+  analyticsLegacy: {
+    enabled: env.NODE_ENV === 'production' && !!env.ANALYTICS_ID,
+    id: env.ANALYTICS_ID,
     trackPageViews: true,
     trackUserInteractions: true,
     trackErrors: true,
   },
 
-  // Error reporting configuration
-  errorReporting: {
-    enabled: env.NODE_ENV === 'production' && !!env.VITE_SENTRY_DSN,
-    dsn: env.VITE_SENTRY_DSN,
+  // Error reporting configuration (legacy)
+  errorReportingLegacy: {
+    enabled: env.NODE_ENV === 'production' && !!env.SENTRY_DSN,
+    dsn: env.SENTRY_DSN,
     environment: env.NODE_ENV,
     sampleRate: env.NODE_ENV === 'production' ? 0.1 : 1.0,
   },

@@ -1416,3 +1416,5 @@ BEGIN
     RAISE NOTICE '👤 Existing user profiles created';
     RAISE NOTICE '🚀 Ready for application integration!';
 END $$;
+
+

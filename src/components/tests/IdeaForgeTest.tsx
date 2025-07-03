@@ -257,16 +257,16 @@ const IdeaForgeTest: React.FC = () => {
     // Test 6: Test getting idea with all details
     if (createdIdeaId) {
       try {
-        const { data, error } = await ideaForgeHelpers.getIdeaWithDetails(createdIdeaId);
+        const result = await ideaForgeHelpers.getIdeaWithDetails(createdIdeaId);
         testResults.push({
           name: 'Get Idea With Details',
-          success: !error,
-          error: error?.message,
+          success: !result.error,
+          error: result.error?.message,
           details: {
-            hasIdea: !!data?.idea,
-            hasWikiPages: !!data?.wikiPages?.length,
-            hasJourneyEntries: !!data?.journeyEntries?.length,
-            hasFeedback: !!data?.feedback?.length
+            hasIdea: !!result.idea,
+            hasWikiPages: !!result.wiki?.length,
+            hasJourneyEntries: !!result.journey?.length,
+            hasFeedback: !!result.feedback?.length
           }
         });
       } catch (error) {
