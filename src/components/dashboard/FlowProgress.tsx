@@ -80,15 +80,16 @@ const FlowProgress = () => {
   const nextStep = getNextStep();
 
   return (
-    <Card className="bg-black/40 backdrop-blur-sm border-white/10">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-white">Your Progress</CardTitle>
-          <Badge className="bg-green-600/20 text-green-400">
-            {completedSteps}/{flowSteps.length} Complete
-          </Badge>
-        </div>
-      </CardHeader>
+    <div className="w-full max-w-6xl mx-auto">
+      <Card className="workspace-card">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-white text-lg md:text-xl">Your Progress</CardTitle>
+            <Badge className="bg-green-600/20 text-green-400 border border-green-500/20 px-3 py-1">
+              {completedSteps}/{flowSteps.length} Complete
+            </Badge>
+          </div>
+        </CardHeader>
       <CardContent className="space-y-6">
         {/* Progress Bar */}
         <div className="space-y-2">
@@ -222,7 +223,8 @@ const FlowProgress = () => {
           </div>
         )}
       </CardContent>
-    </Card>
+      </Card>
+    </div>
   );
 };
 

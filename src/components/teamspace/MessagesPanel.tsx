@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare, Video, Upload, Settings } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Video, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import RealTimeChat from "./RealTimeChat";
-import SupabaseTestPanel from "../debug/SupabaseTestPanel";
 
 interface MessagesPanelProps {
   teamId: string;
@@ -31,72 +29,55 @@ const MessagesPanel = ({ teamId }: MessagesPanelProps) => {
 
 
   return (
-    <Tabs defaultValue="chat" className="space-y-6">
-      <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="chat">
-          <MessageSquare className="h-4 w-4 mr-2" />
-          Chat
-        </TabsTrigger>
-        <TabsTrigger value="features">
-          <Video className="h-4 w-4 mr-2" />
-          Features
-        </TabsTrigger>
-        <TabsTrigger value="debug">
-          <Settings className="h-4 w-4 mr-2" />
-          Debug
-        </TabsTrigger>
-      </TabsList>
+    <div className="space-y-6">
+      {/* Real-time Chat - Main Feature */}
+      <RealTimeChat teamId={teamId} />
 
-      <TabsContent value="chat" className="space-y-6">
-        <RealTimeChat teamId={teamId} />
-      </TabsContent>
+      {/* Additional Features */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="workspace-card hover:shadow-md transition-all">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-3">
+              <Video className="h-5 w-5 text-green-400" />
+              <h3 className="font-medium text-white">Video Meetings</h3>
+            </div>
+            <p className="text-sm text-gray-400 mb-4">
+              Launch video meetings directly from chat (Coming Soon)
+            </p>
+            <Button
+              variant="outline"
+              className="w-full bg-green-600/20 border-green-500/30 text-green-400 hover:bg-green-600/30"
+              onClick={handleStartMeeting}
+            >
+              <Video className="h-4 w-4 mr-2" />
+              Start Meeting
+            </Button>
+          </CardContent>
+        </Card>
 
-      <TabsContent value="features" className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="workspace-card hover:shadow-md transition-all">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-3">
-                <Video className="h-5 w-5 text-primary" />
-                <h3 className="font-medium">Start Video Call</h3>
-              </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Launch a video meeting with your team members
-              </p>
-              <Button
-                variant="outline"
-                className="w-full hover:bg-primary/10"
-                onClick={handleStartMeeting}
-              >
-                Start Meeting
-              </Button>
-            </CardContent>
-          </Card>
+        <Card className="workspace-card hover:shadow-md transition-all">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-3">
+              <Upload className="h-5 w-5 text-blue-400" />
+              <h3 className="font-medium text-white">File Sharing</h3>
+            </div>
+            <p className="text-sm text-gray-400 mb-4">
+              Share documents and files with your team (Coming Soon)
+            </p>
+            <Button
+              variant="outline"
+              className="w-full bg-blue-600/20 border-blue-500/30 text-blue-400 hover:bg-blue-600/30"
+              onClick={handleShareFiles}
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Upload Files
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
 
-          <Card className="workspace-card hover:shadow-md transition-all">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-3">
-                <Upload className="h-5 w-5 text-primary" />
-                <h3 className="font-medium">Share Files</h3>
-              </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Upload and share documents with your team
-              </p>
-              <Button
-                variant="outline"
-                className="w-full hover:bg-primary/10"
-                onClick={handleShareFiles}
-              >
-                Upload Files
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </TabsContent>
 
-      <TabsContent value="debug" className="space-y-6">
-        <SupabaseTestPanel />
-      </TabsContent>
-    </Tabs>
+    </div>
   );
 };
 

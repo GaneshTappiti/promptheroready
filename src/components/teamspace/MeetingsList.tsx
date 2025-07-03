@@ -1,8 +1,9 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Plus, AlertCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, Plus, AlertCircle, Video, Clock, Users, Sparkles, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Meeting {
@@ -20,122 +21,143 @@ interface MeetingsListProps {
 
 const MeetingsList = ({ meetings }: MeetingsListProps) => {
   const { toast } = useToast();
-  
-  const handleScheduleMeeting = () => {
+
+  const handleComingSoonFeature = (featureName: string) => {
     toast({
-      title: "Schedule Meeting",
-      description: "Calendar interface opening...",
-    });
-  };
-  
-  const handleJoinMeeting = (meetingTitle: string) => {
-    toast({
-      title: "Joining Meeting",
-      description: `Connecting to "${meetingTitle}" meeting...`,
-    });
-  };
-  
-  const handleRescheduleMeeting = (meetingTitle: string) => {
-    toast({
-      title: "Reschedule Meeting",
-      description: `Opening scheduler for "${meetingTitle}"...`,
-    });
-  };
-  
-  const handleSendReminder = () => {
-    toast({
-      title: "Reminders Sent",
-      description: "Meeting reminders have been sent to all attendees.",
+      title: "🚀 Coming Soon!",
+      description: `${featureName} feature is under development and will be available soon.`,
     });
   };
 
   return (
-    <div className="space-y-4">
-      {meetings.map(meeting => (
-        <Card key={meeting.id} className="workspace-card hover:shadow-md transition-all animate-fade-in">
-          <CardContent className="p-4">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="font-medium">{meeting.title}</h3>
-                <div className="flex items-center gap-2 mt-1 text-sm">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>{meeting.date}, {meeting.time}</span>
-                  <span className="text-muted-foreground">({meeting.duration})</span>
-                </div>
-                <div className="flex flex-wrap gap-1 mt-3">
-                  {meeting.attendees.map((attendee, index) => (
-                    <span key={index} className="bg-white/10 px-2 py-1 rounded-full text-xs hover:bg-white/20 transition-colors">
-                      {attendee}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="hover:bg-primary/10"
-                  onClick={() => handleRescheduleMeeting(meeting.title)}
-                >
-                  Reschedule
-                </Button>
-                <Button 
-                  size="sm"
-                  onClick={() => handleJoinMeeting(meeting.title)}
-                >
-                  Join
-                </Button>
+    <div className="space-y-6">
+      {/* Coming Soon Hero Section */}
+      <Card className="workspace-card text-center">
+        <CardContent className="p-8 md:p-12">
+          <div className="flex flex-col items-center space-y-6">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-blue-400/20 rounded-full blur-xl"></div>
+              <div className="relative bg-gradient-to-r from-green-500 to-blue-500 p-4 rounded-full">
+                <Video className="h-8 w-8 text-white" />
               </div>
             </div>
-          </CardContent>
-        </Card>
-      ))}
-      
-      <Button 
-        variant="outline" 
-        className="w-full justify-center hover:bg-primary/10"
-        onClick={handleScheduleMeeting}
-      >
-        <Plus className="h-4 w-4 mr-2" />
-        Schedule New Meeting
-      </Button>
-      
-      <Card className="workspace-card mt-8 hover:shadow-md transition-all">
-        <CardContent className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="rounded-full bg-yellow-500/20 p-2">
-              <AlertCircle className="h-5 w-5 text-yellow-500" />
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-center gap-2">
+                <h2 className="text-2xl md:text-3xl font-bold text-white">Video Meetings</h2>
+                <Badge className="bg-gradient-to-r from-green-500/20 to-blue-500/20 text-green-400 border border-green-500/30">
+                  Coming Soon
+                </Badge>
+              </div>
+              <p className="text-gray-400 max-w-md mx-auto">
+                High-quality video conferencing with screen sharing, recording, and AI-powered meeting summaries.
+              </p>
             </div>
-            <div>
-              <h3 className="font-medium">Upcoming Important Meeting</h3>
-              <p className="text-sm text-muted-foreground">Investor Pitch Rehearsal - Thursday, 10:00 AM</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl">
+              <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                <Video className="h-6 w-6 text-green-400 mb-2 mx-auto" />
+                <h3 className="font-medium text-white text-sm">HD Video Calls</h3>
+                <p className="text-xs text-gray-400 mt-1">Crystal clear video quality</p>
+              </div>
+              <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                <Users className="h-6 w-6 text-blue-400 mb-2 mx-auto" />
+                <h3 className="font-medium text-white text-sm">Team Collaboration</h3>
+                <p className="text-xs text-gray-400 mt-1">Up to 50 participants</p>
+              </div>
+              <div className="bg-black/20 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+                <Sparkles className="h-6 w-6 text-purple-400 mb-2 mx-auto" />
+                <h3 className="font-medium text-white text-sm">AI Summaries</h3>
+                <p className="text-xs text-gray-400 mt-1">Auto-generated notes</p>
+              </div>
             </div>
-          </div>
-          <div className="bg-white/5 p-4 rounded-lg mb-4 hover:bg-white/10 transition-colors">
-            <h4 className="text-sm font-medium mb-2">Meeting Agenda:</h4>
-            <ol className="list-decimal pl-5 text-sm space-y-1 text-muted-foreground">
-              <li>Introduction and company overview (5 min)</li>
-              <li>Product demo (10 min)</li>
-              <li>Market analysis and opportunity (5 min)</li>
-              <li>Business model and traction (5 min)</li>
-              <li>Financial projections (5 min)</li>
-              <li>Team introduction (5 min)</li>
-              <li>Funding ask and use of funds (5 min)</li>
-              <li>Q&A practice (15 min)</li>
-            </ol>
-          </div>
-          <div className="flex justify-between">
-            <Button 
+
+            <Button
               variant="outline"
-              className="hover:bg-primary/10"
-              onClick={handleSendReminder}
+              className="bg-gradient-to-r from-green-600/20 to-blue-600/20 border-green-500/30 text-green-400 hover:bg-gradient-to-r hover:from-green-600/30 hover:to-blue-600/30"
+              onClick={() => handleComingSoonFeature("Video Meetings")}
             >
-              Send Reminder
+              <Zap className="h-4 w-4 mr-2" />
+              Get Notified When Ready
             </Button>
-            <Button onClick={() => handleJoinMeeting("Investor Pitch Rehearsal")}>Join Meeting</Button>
           </div>
         </CardContent>
       </Card>
+
+      {/* Preview Features */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="workspace-card">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <Calendar className="h-5 w-5 text-green-400" />
+              Smart Scheduling
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-gray-400">
+              AI-powered meeting scheduler that finds the best time for all team members.
+            </p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <Clock className="h-3 w-3" />
+                <span>Timezone detection</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <Users className="h-3 w-3" />
+                <span>Availability sync</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <Sparkles className="h-3 w-3" />
+                <span>Smart suggestions</span>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-green-400 hover:bg-green-500/10"
+              onClick={() => handleComingSoonFeature("Smart Scheduling")}
+            >
+              Learn More
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="workspace-card">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <Video className="h-5 w-5 text-blue-400" />
+              Meeting Rooms
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-gray-400">
+              Persistent virtual rooms for your team with custom backgrounds and layouts.
+            </p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <Video className="h-3 w-3" />
+                <span>Screen sharing</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <Users className="h-3 w-3" />
+                <span>Breakout rooms</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <Sparkles className="h-3 w-3" />
+                <span>Recording & transcripts</span>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-blue-400 hover:bg-blue-500/10"
+              onClick={() => handleComingSoonFeature("Meeting Rooms")}
+            >
+              Learn More
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

@@ -52,10 +52,12 @@ import { useToast } from "@/hooks/use-toast";
 import FlowProgress from "@/components/dashboard/FlowProgress";
 import QuickStats from "@/components/dashboard/QuickStats";
 import { useActiveIdea, useIdeaStore } from "@/stores/ideaStore";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AISettingsPanel } from '@/components/ai-settings';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { WorkspaceContainer, WorkspaceHeader } from '@/components/ui/workspace-layout';
+import { useFeatureAccess } from '@/hooks/useFeatureAccess';
+import FeatureGate from '@/components/FeatureGate';
+import EnhancedUpgradePrompt from '@/components/EnhancedUpgradePrompt';
 
 interface Project {
   id: string;
@@ -133,9 +135,29 @@ const Workspace = () => {
   const [showTemplates, setShowTemplates] = useState(false);
 
   const { toast } = useToast();
+  const { checkAndExecute } = useFeatureAccess();
 
   // Idea validation function (from Workshop)
   const validateIdea = async (ideaText: string) => {
+    const canProceed = await checkAndExecute(
+      'create_idea',
+      async () => {
+        await performIdeaValidation(ideaText);
+      },
+      {
+        feature: 'Idea Creation',
+        description: 'Create and validate new startup ideas',
+        showUpgradePrompt: true,
+        trackUsage: true
+      }
+    );
+
+    if (!canProceed) {
+      return;
+    }
+  };
+
+  const performIdeaValidation = async (ideaText: string) => {
     if (!canCreateNewIdea()) {
       toast({
         title: "Cannot Create New Idea",
@@ -302,10 +324,6 @@ const Workspace = () => {
 
   const navigate = useNavigate();
   const { signOut } = useAuth();
-  const { toast } = useToast();
-
-  // Initialize Gemini AI
-  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || "");
 
 
 
@@ -768,16 +786,6 @@ const Workspace = () => {
             title="Dashboard"
             subtitle="Manage your startup journey with AI-powered tools and insights."
           >
-            {/* Quick Stats */}
-            <div className="mb-8">
-              <QuickStats />
-            </div>
-          </WorkspaceHeader>
-
-          {/* Flow Progress */}
-          <div className="mb-8">
-            <FlowProgress />
-          </div>
             <div className="flex items-center gap-3">
                 {isGeneratingIdea && (
                   <div className="flex items-center gap-2 text-green-400 text-sm px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full">
@@ -793,7 +801,7 @@ const Workspace = () => {
                   <Sparkles className="h-4 w-4 mr-2" />
                   Quick Start
                 </Button>
-              </div>
+            </div>
           </WorkspaceHeader>
           
           {/* Founder's GPT - Redesigned as AI Co-founder */}
@@ -944,6 +952,19 @@ const Workspace = () => {
               </div>
             </div>
           </section>
+
+          {/* Quick Stats & Progress - Positioned below AI Co-founder */}
+          <div className="mb-8 md:mb-12 space-y-6 md:space-y-8">
+            {/* Quick Stats */}
+            <div className="px-4 md:px-0">
+              <QuickStats />
+            </div>
+
+            {/* Flow Progress */}
+            <div className="px-4 md:px-0">
+              <FlowProgress />
+            </div>
+          </div>
 
           {/* Enhanced Dashboard Widgets */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">

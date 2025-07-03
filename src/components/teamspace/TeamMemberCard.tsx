@@ -49,7 +49,7 @@ const TeamMemberCard = ({ member }: TeamMemberCardProps) => {
 
   return (
     <>
-      <Card className="hover:shadow-lg transition-all group">
+      <Card className="workspace-card hover:shadow-lg transition-all group">
         <CardContent className="p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -61,20 +61,20 @@ const TeamMemberCard = ({ member }: TeamMemberCardProps) => {
                 ></div>
               </div>
               <div>
-                <h3 className="font-semibold text-lg">{member.name}</h3>
-                <p className="text-sm text-muted-foreground">{member.role}</p>
+                <h3 className="font-semibold text-lg text-white">{member.name}</h3>
+                <p className="text-sm text-gray-400">{member.role}</p>
               </div>
             </div>
           </div>
           
           <div className="space-y-2 mb-4">
             <div className="flex items-center gap-2 text-sm">
-              <Mail className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">{member.email}</span>
+              <Mail className="h-4 w-4 text-gray-400" />
+              <span className="text-gray-400">{member.email}</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <Phone className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">{member.phone}</span>
+              <Phone className="h-4 w-4 text-gray-400" />
+              <span className="text-gray-400">{member.phone}</span>
             </div>
           </div>
           

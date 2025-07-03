@@ -72,20 +72,7 @@ BEGIN
     END IF;
 END $$;
 
--- Step 7: Insert sample messages (only if table is empty)
-DO $$
-BEGIN
-    IF (SELECT COUNT(*) FROM messages) = 0 THEN
-        INSERT INTO messages (username, text, country, is_authenticated) VALUES
-            ('@admin', 'Welcome to the real-time chat! 🎉', 'US', true),
-            ('@user1234', 'Hello everyone! This is amazing!', 'GB', false),
-            ('@developer', 'The chat is working perfectly with Supabase real-time! 🚀', 'CA', true),
-            ('@tester', 'Testing the chat functionality...', 'DE', false);
-        RAISE NOTICE 'Sample messages inserted!';
-    ELSE
-        RAISE NOTICE 'Messages table already contains data. Skipping sample data insertion.';
-    END IF;
-END $$;
+-- Production ready - no sample data inserted
 
 -- Step 8: Verification queries
 SELECT

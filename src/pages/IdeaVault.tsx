@@ -21,6 +21,11 @@ import WorkspaceSidebar, { SidebarToggle } from "@/components/WorkspaceSidebar";
 import { useToast } from "@/hooks/use-toast";
 import { useActiveIdea, useIdeaStore } from "@/stores/ideaStore";
 import { supabaseHelpers } from "@/lib/supabase";
+import { useSubscription } from "@/hooks/useSubscription";
+import FeatureGate from "@/components/FeatureGate";
+import EnhancedUpgradePrompt from "@/components/EnhancedUpgradePrompt";
+import BreadcrumbNavigation from "@/components/BreadcrumbNavigation";
+import { useNavigation } from "@/contexts/AppStateContext";
 
 const IdeaVault = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -28,12 +33,18 @@ const IdeaVault = () => {
 
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   // Use Zustand store
   const { activeIdea, setActiveIdea } = useActiveIdea();
   const setCurrentStep = useIdeaStore((state) => state.setCurrentStep);
   const hasActiveIdea = useIdeaStore((state) => state.hasActiveIdea);
   const setHasActiveIdea = useIdeaStore((state) => state.setHasActiveIdea);
+
+  // Subscription info
+  const { currentPlan, usage, isFreeTier } = useSubscription();
+
+  // Navigation
+  const { setCurrentPage, setBreadcrumbs } = useNavigation();
 
   // Load active idea from database if not in store
   useEffect(() => {
@@ -189,16 +200,37 @@ const IdeaVault = () => {
                 </Button>
               </div>
               {!activeIdea && (
-                <Button
-                  onClick={startNewIdea}
-                  className="bg-green-600 hover:bg-green-700"
+                <FeatureGate
+                  feature="Create New Idea"
+                  action="create_idea"
+                  description="Create and validate new startup ideas"
+                  upgradePromptVariant="inline"
+                  fallback={
+                    <EnhancedUpgradePrompt
+                      feature="Create New Idea"
+                      description="You've reached your idea limit. Upgrade to Pro for unlimited ideas."
+                      variant="inline"
+                      action="create_idea"
+                      showUsageStats={true}
+                    />
+                  }
                 >
-                  <PlusCircle className="h-4 w-4 mr-2" />
-                  Create New Idea
-                </Button>
+                  <Button
+                    onClick={startNewIdea}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <PlusCircle className="h-4 w-4 mr-2" />
+                    Create New Idea
+                  </Button>
+                </FeatureGate>
               )}
             </div>
           </div>
+        </div>
+
+        {/* Breadcrumb Navigation */}
+        <div className="px-6 py-2 border-b border-white/10">
+          <BreadcrumbNavigation />
         </div>
 
         {/* Main Content */}
@@ -212,8 +244,34 @@ const IdeaVault = () => {
               <h1 className="text-3xl md:text-4xl font-bold text-white">Idea Vault</h1>
             </div>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Your unlimited startup idea repository. Store as many ideas as you want - only one can be active at a time on the free plan.
+              {isFreeTier
+                ? "Your startup idea repository. Free plan allows 1 active idea - upgrade to Pro for unlimited ideas."
+                : "Your unlimited startup idea repository. Create and manage as many ideas as you want."
+              }
             </p>
+
+            {/* Usage Stats for Free Tier */}
+            {isFreeTier && usage && currentPlan && (
+              <div className="mt-4 max-w-md mx-auto">
+                <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-400">Ideas Created</span>
+                    <span className="text-sm text-white">
+                      {usage.ideasCreated} / {currentPlan.limits.ideas}
+                    </span>
+                  </div>
+                  <Progress
+                    value={(usage.ideasCreated / (currentPlan.limits.ideas as number)) * 100}
+                    className="h-2"
+                  />
+                  {usage.ideasCreated >= (currentPlan.limits.ideas as number) && (
+                    <p className="text-xs text-yellow-400 mt-2">
+                      You've reached your idea limit. Upgrade to Pro for unlimited ideas.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Active Idea Display */}

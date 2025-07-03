@@ -73,14 +73,6 @@ interface Task {
   priority: string;
 }
 
-interface Message {
-  id: number;
-  sender: string;
-  content: string;
-  time: string;
-  avatar: string;
-}
-
 interface Meeting {
   id: number;
   title: string;
@@ -94,17 +86,8 @@ const TeamSpace = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("team");
   const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
-  const [isVideoCallModalOpen, setIsVideoCallModalOpen] = useState(false);
-  const [isPerformanceModalOpen, setIsPerformanceModalOpen] = useState(false);
-  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
-  const [isInCall, setIsInCall] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOn, setIsVideoOn] = useState(true);
-  const [isScreenSharing, setIsScreenSharing] = useState(false);
-  const [callParticipants, setCallParticipants] = useState<string[]>([]);
   
   // Use a default team ID for now - you can replace this with actual team ID from your data
   const [teamId, setTeamId] = useState<string | null>(null);
@@ -165,32 +148,8 @@ const TeamSpace = () => {
   // Start with empty tasks - will be loaded from database
   const [tasks, setTasks] = useState<Task[]>([]);
   
-  const meetings = [
-    {
-      id: 1,
-      title: "Weekly Team Sync",
-      date: "Today",
-      time: "2:00 PM",
-      attendees: ["Alex Johnson", "Sarah Chen", "Michael Rodriguez"],
-      duration: "60 min"
-    },
-    {
-      id: 2,
-      title: "Investor Pitch Rehearsal",
-      date: "Thursday",
-      time: "10:00 AM",
-      attendees: ["Alex Johnson", "Sarah Chen"],
-      duration: "90 min"
-    },
-    {
-      id: 3,
-      title: "Product Review",
-      date: "Friday",
-      time: "1:30 PM",
-      attendees: ["Sarah Chen", "Michael Rodriguez"],
-      duration: "45 min"
-    }
-  ];
+  // Meetings will be loaded from database when feature is implemented
+  const meetings: any[] = [];
 
   // Add animation class when tab changes
   useEffect(() => {
@@ -229,58 +188,7 @@ const TeamSpace = () => {
     });
   };
 
-  const handleStartVideoCall = (members?: string[]) => {
-    setCallParticipants(members || []);
-    setIsVideoCallModalOpen(true);
-    setIsInCall(true);
-    toast({
-      title: "Video call started",
-      description: "Connecting to team members...",
-    });
-  };
-
-  const handleEndCall = () => {
-    setIsInCall(false);
-    setIsVideoCallModalOpen(false);
-    setCallParticipants([]);
-    toast({
-      title: "Call ended",
-      description: "Video call has been disconnected.",
-    });
-  };
-
-  const handleToggleMute = () => {
-    setIsMuted(!isMuted);
-    toast({
-      title: isMuted ? "Unmuted" : "Muted",
-      description: `Microphone ${isMuted ? "enabled" : "disabled"}.`,
-    });
-  };
-
-  const handleToggleVideo = () => {
-    setIsVideoOn(!isVideoOn);
-    toast({
-      title: isVideoOn ? "Video off" : "Video on",
-      description: `Camera ${isVideoOn ? "disabled" : "enabled"}.`,
-    });
-  };
-
-  const handleToggleScreenShare = () => {
-    setIsScreenSharing(!isScreenSharing);
-    toast({
-      title: isScreenSharing ? "Screen share stopped" : "Screen share started",
-      description: `Screen sharing ${isScreenSharing ? "disabled" : "enabled"}.`,
-    });
-  };
-
-  const handleViewPerformance = (member: TeamMember) => {
-    setSelectedMember(member);
-    setIsPerformanceModalOpen(true);
-  };
-
-  const handleProjectManagement = () => {
-    setIsProjectModalOpen(true);
-  };
+  // Video call and analytics functionality will be implemented in future updates
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-green-950 flex">
@@ -315,13 +223,39 @@ const TeamSpace = () => {
         <div className="px-6 py-8">
           {/* Header Section */}
           <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <Users className="h-8 w-8 text-green-400" />
-              <h1 className="text-3xl md:text-4xl font-bold text-white">TeamSpace</h1>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <Users className="h-8 w-8 text-green-400" />
+                  <h1 className="text-3xl md:text-4xl font-bold text-white">TeamSpace</h1>
+                </div>
+                <p className="text-gray-400 text-lg">
+                  Collaborate and manage your team effectively
+                </p>
+              </div>
+
+              {/* Team Stats */}
+              <div className="flex gap-4">
+                <div className="bg-black/20 backdrop-blur-sm rounded-lg p-3 border border-white/10">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white">{teamMembers.length}</div>
+                    <div className="text-xs text-gray-400">Team Members</div>
+                  </div>
+                </div>
+                <div className="bg-black/20 backdrop-blur-sm rounded-lg p-3 border border-white/10">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white">{tasks.filter(t => t.status === 'completed').length}</div>
+                    <div className="text-xs text-gray-400">Tasks Done</div>
+                  </div>
+                </div>
+                <div className="bg-black/20 backdrop-blur-sm rounded-lg p-3 border border-white/10">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-400">Active</div>
+                    <div className="text-xs text-gray-400">Chat Status</div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <p className="text-gray-400 text-lg">
-              Collaborate and manage your team effectively
-            </p>
           </div>
 
           {/* Main Content Container */}
@@ -340,22 +274,25 @@ const TeamSpace = () => {
                   <Users className="h-4 w-4 mr-2" />
                   Team
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="tasks" 
+                <TabsTrigger
+                  value="tasks"
                     className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-4 md:px-6 h-12 whitespace-nowrap"
                 >
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
                   Tasks
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="messages" 
+                <TabsTrigger
+                  value="messages"
                     className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-4 md:px-6 h-12 whitespace-nowrap"
                 >
-                  Messages
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Chat
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="meetings" 
+                <TabsTrigger
+                  value="meetings"
                     className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-4 md:px-6 h-12 whitespace-nowrap"
                 >
+                  <Video className="h-4 w-4 mr-2" />
                   Meetings
                 </TabsTrigger>
               </TabsList>
@@ -405,199 +342,9 @@ const TeamSpace = () => {
           onAddMember={handleAddMember}
         />
 
-        {/* Video Call Modal */}
-        <Dialog open={isVideoCallModalOpen} onOpenChange={setIsVideoCallModalOpen}>
-          <DialogContent className="bg-black/90 backdrop-blur-xl border-white/10 text-white max-w-4xl h-[80vh]">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Video className="h-5 w-5 text-green-400" />
-                Team Video Call
-              </DialogTitle>
-            </DialogHeader>
 
-            <div className="flex-1 flex flex-col">
-              {/* Video Grid */}
-              <div className="flex-1 grid grid-cols-2 gap-4 mb-4">
-                <div className="bg-black/60 rounded-lg flex items-center justify-center relative">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-xl font-bold mb-2 mx-auto">
-                      {user?.email?.charAt(0).toUpperCase() || 'U'}
-                    </div>
-                    <p className="text-sm">You</p>
-                  </div>
-                  {!isVideoOn && (
-                    <div className="absolute inset-0 bg-black/80 rounded-lg flex items-center justify-center">
-                      <VideoOff className="h-8 w-8 text-gray-400" />
-                    </div>
-                  )}
-                </div>
 
-                {callParticipants.map((participant, index) => (
-                  <div key={index} className="bg-black/60 rounded-lg flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-xl font-bold mb-2 mx-auto">
-                        {participant.charAt(0).toUpperCase()}
-                      </div>
-                      <p className="text-sm">{participant}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
 
-              {/* Call Controls */}
-              <div className="flex items-center justify-center gap-4 p-4 bg-black/40 rounded-lg">
-                <Button
-                  variant={isMuted ? "destructive" : "outline"}
-                  size="lg"
-                  onClick={handleToggleMute}
-                  className="rounded-full w-12 h-12"
-                >
-                  {isMuted ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-                </Button>
-
-                <Button
-                  variant={!isVideoOn ? "destructive" : "outline"}
-                  size="lg"
-                  onClick={handleToggleVideo}
-                  className="rounded-full w-12 h-12"
-                >
-                  {isVideoOn ? <Video className="h-5 w-5" /> : <VideoOff className="h-5 w-5" />}
-                </Button>
-
-                <Button
-                  variant={isScreenSharing ? "default" : "outline"}
-                  size="lg"
-                  onClick={handleToggleScreenShare}
-                  className="rounded-full w-12 h-12"
-                >
-                  <ScreenShare className="h-5 w-5" />
-                </Button>
-
-                <Button
-                  variant="destructive"
-                  size="lg"
-                  onClick={handleEndCall}
-                  className="rounded-full w-12 h-12"
-                >
-                  <Phone className="h-5 w-5 rotate-135" />
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Performance Analytics Modal */}
-        <Dialog open={isPerformanceModalOpen} onOpenChange={setIsPerformanceModalOpen}>
-          <DialogContent className="bg-black/90 backdrop-blur-xl border-white/10 text-white max-w-3xl">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-green-400" />
-                Team Performance Analytics
-              </DialogTitle>
-            </DialogHeader>
-
-            {selectedMember && (
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-xl font-bold">
-                    {selectedMember.avatar}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg">{selectedMember.name}</h3>
-                    <p className="text-gray-400">{selectedMember.role}</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-black/40 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-green-400">92%</div>
-                    <div className="text-sm text-gray-400">Task Completion</div>
-                  </div>
-                  <div className="bg-black/40 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-blue-400">4.8</div>
-                    <div className="text-sm text-gray-400">Team Rating</div>
-                  </div>
-                  <div className="bg-black/40 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-yellow-400">15</div>
-                    <div className="text-sm text-gray-400">Projects</div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-medium mb-3">Recent Achievements</h4>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3 bg-black/40 rounded-lg p-3">
-                        <Award className="h-4 w-4 text-yellow-400" />
-                        <div className="text-sm">Completed MVP milestone</div>
-                        <div className="text-xs text-gray-400 ml-auto">2 days ago</div>
-                      </div>
-                      <div className="flex items-center gap-3 bg-black/40 rounded-lg p-3">
-                        <Target className="h-4 w-4 text-green-400" />
-                        <div className="text-sm">100% sprint completion</div>
-                        <div className="text-xs text-gray-400 ml-auto">1 week ago</div>
-                      </div>
-                      <div className="flex items-center gap-3 bg-black/40 rounded-lg p-3">
-                        <Star className="h-4 w-4 text-purple-400" />
-                        <div className="text-sm">Team player award</div>
-                        <div className="text-xs text-gray-400 ml-auto">2 weeks ago</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium mb-3">Skills & Strengths</h4>
-                    <div className="space-y-3">
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Technical Skills</span>
-                          <span>95%</span>
-                        </div>
-                        <Progress value={95} className="h-2" />
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Communication</span>
-                          <span>88%</span>
-                        </div>
-                        <Progress value={88} className="h-2" />
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Leadership</span>
-                          <span>92%</span>
-                        </div>
-                        <Progress value={92} className="h-2" />
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Problem Solving</span>
-                          <span>96%</span>
-                        </div>
-                        <Progress value={96} className="h-2" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsPerformanceModalOpen(false)}>
-                Close
-              </Button>
-              <Button onClick={() => {
-                toast({
-                  title: "Report Generated",
-                  description: "Performance report has been downloaded.",
-                });
-              }}>
-                <FileText className="h-4 w-4 mr-2" />
-                Export Report
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </main>
     </div>
   );

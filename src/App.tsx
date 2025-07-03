@@ -7,6 +7,8 @@ import React, { Suspense, lazy } from 'react';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { AppStateProvider } from "@/contexts/AppStateContext";
+import { BreadcrumbProvider } from "@/components/BreadcrumbNavigation";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -36,11 +38,12 @@ const TaskPlanner = lazy(() => import("@/pages/TaskPlanner"));
 const BlueprintZone = lazy(() => import("@/pages/BlueprintZone"));
 const Profile = lazy(() => import("@/pages/Profile"));
 const Account = lazy(() => import("@/pages/Account"));
+const Settings = lazy(() => import("@/pages/Settings"));
 const AIToolsPage = lazy(() => import("@/pages/AIToolsPage"));
 const FeaturesPage = lazy(() => import("@/pages/Features"));
 const About = lazy(() => import("@/pages/About"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
-const AIResponseDemo = lazy(() => import("@/components/demo/AIResponseDemo"));
+
 const PromptGuide = lazy(() => import("@/components/prompting/PromptGuide"));
 const PromptBuilder = lazy(() => import("@/components/prompting/PromptBuilder"));
 
@@ -195,9 +198,14 @@ function AppRoutes() {
           <Account />
         </ProtectedRoute>
       } />
+      <Route path="/settings" element={
+        <ProtectedRoute>
+          <Settings />
+        </ProtectedRoute>
+      } />
       <Route path="/features" element={<FeaturesPage />} />
       <Route path="/about" element={<About />} />
-      <Route path="/demo/ai-responses" element={<AIResponseDemo />} />
+
       <Route path="/prompting/guide" element={<PromptGuide />} />
       <Route path="/prompting/builder" element={<PromptBuilder />} />
       <Route path="*" element={<NotFound />} />
@@ -212,15 +220,19 @@ const App = () => {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <TooltipProvider>
-            <Router>
-              <Suspense fallback={<LoadingSpinner fullScreen text="Loading application..." />}>
-                <AppRoutes />
-              </Suspense>
-              <Toaster />
-              <Sonner />
-            </Router>
-          </TooltipProvider>
+          <AppStateProvider>
+            <BreadcrumbProvider>
+              <TooltipProvider>
+                <Router>
+                  <Suspense fallback={<LoadingSpinner fullScreen text="Loading application..." />}>
+                    <AppRoutes />
+                  </Suspense>
+                  <Toaster />
+                  <Sonner />
+                </Router>
+              </TooltipProvider>
+            </BreadcrumbProvider>
+          </AppStateProvider>
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>

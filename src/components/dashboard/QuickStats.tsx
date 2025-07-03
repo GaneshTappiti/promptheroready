@@ -64,32 +64,34 @@ const QuickStats = () => {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {stats.map((stat, index) => (
-        <Card key={index} className="bg-black/40 backdrop-blur-sm border-white/10">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                <div className={stat.color}>
-                  {stat.icon}
+    <div className="w-full max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        {stats.map((stat, index) => (
+          <Card key={index} className="workspace-card hover:shadow-lg transition-all duration-300">
+            <CardContent className="p-4 md:p-5">
+              <div className="flex items-center justify-between mb-3">
+                <div className={`p-2.5 rounded-xl ${stat.bgColor} transition-transform hover:scale-105`}>
+                  <div className={stat.color}>
+                    {stat.icon}
+                  </div>
                 </div>
+                {stat.title === "Plan" && !isPro && (
+                  <Badge className="bg-yellow-600/20 text-yellow-400 text-xs border border-yellow-500/20">
+                    Upgrade
+                  </Badge>
+                )}
               </div>
-              {stat.title === "Plan" && !isPro && (
-                <Badge className="bg-yellow-600/20 text-yellow-400 text-xs">
-                  Upgrade
-                </Badge>
-              )}
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-white">{stat.value}</span>
-                <span className="text-sm text-gray-400">{stat.title}</span>
+              <div className="space-y-2">
+                <div className="flex flex-col gap-1">
+                  <span className="text-2xl md:text-3xl font-bold text-white">{stat.value}</span>
+                  <span className="text-sm font-medium text-gray-300">{stat.title}</span>
+                </div>
+                <p className="text-xs text-gray-400 leading-relaxed">{stat.subtitle}</p>
               </div>
-              <p className="text-xs text-gray-500">{stat.subtitle}</p>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 };

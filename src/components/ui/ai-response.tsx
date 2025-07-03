@@ -4,17 +4,26 @@ import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { cn } from '@/lib/utils';
-import { Copy, Check, ExternalLink } from 'lucide-react';
+import { Copy, Check, ExternalLink, Code, Palette, Smartphone, Monitor, Zap } from 'lucide-react';
 import { Button } from './button';
 import { Badge } from './badge';
 import { useTheme } from 'next-themes';
+import { useToast } from '@/hooks/use-toast';
 
 interface AIResponseProps {
   content: string;
   className?: string;
   showCopyButton?: boolean;
-  variant?: 'default' | 'compact' | 'chat';
+  variant?: 'default' | 'compact' | 'chat' | 'tool-specific';
   title?: string;
+  toolType?: 'framer' | 'flutterflow' | 'uizard' | 'cursor' | 'lovable' | 'general';
+  showToolButtons?: boolean;
+  metadata?: {
+    appType?: string;
+    uiStyle?: string;
+    complexity?: 'simple' | 'medium' | 'complex';
+    estimatedTime?: string;
+  };
 }
 
 const AIResponse: React.FC<AIResponseProps> = ({
@@ -22,18 +31,67 @@ const AIResponse: React.FC<AIResponseProps> = ({
   className,
   showCopyButton = true,
   variant = 'default',
-  title
+  title,
+  toolType = 'general',
+  showToolButtons = false,
+  metadata
 }) => {
   const [copied, setCopied] = useState(false);
+  const [copiedSection, setCopiedSection] = useState<string | null>(null);
   const { theme } = useTheme();
+  const { toast } = useToast();
 
-  const handleCopy = async () => {
+  const handleCopy = async (text: string = content, label: string = 'Content') => {
     try {
-      await navigator.clipboard.writeText(content);
+      await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+
+      toast({
+        title: "Copied!",
+        description: `${label} copied to clipboard`,
+      });
     } catch (error) {
       console.error('Failed to copy text:', error);
+      toast({
+        title: "Copy Failed",
+        description: "Could not copy to clipboard",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const getToolIcon = (tool: string) => {
+    switch (tool) {
+      case 'framer':
+        return <Monitor className="h-4 w-4" />;
+      case 'flutterflow':
+        return <Smartphone className="h-4 w-4" />;
+      case 'uizard':
+        return <Palette className="h-4 w-4" />;
+      case 'cursor':
+        return <Code className="h-4 w-4" />;
+      case 'lovable':
+        return <Zap className="h-4 w-4" />;
+      default:
+        return <Code className="h-4 w-4" />;
+    }
+  };
+
+  const getToolColor = (tool: string) => {
+    switch (tool) {
+      case 'framer':
+        return 'bg-blue-600/20 text-blue-400 border-blue-600/30';
+      case 'flutterflow':
+        return 'bg-purple-600/20 text-purple-400 border-purple-600/30';
+      case 'uizard':
+        return 'bg-green-600/20 text-green-400 border-green-600/30';
+      case 'cursor':
+        return 'bg-yellow-600/20 text-yellow-400 border-yellow-600/30';
+      case 'lovable':
+        return 'bg-pink-600/20 text-pink-400 border-pink-600/30';
+      default:
+        return 'bg-gray-600/20 text-gray-400 border-gray-600/30';
     }
   };
 
@@ -45,14 +103,60 @@ const AIResponse: React.FC<AIResponseProps> = ({
 
   return (
     <div className={cn("relative group bg-card border rounded-lg p-4", className)}>
-      {title && (
+      {(title || metadata || toolType !== 'general') && (
         <div className="flex items-center justify-between mb-4 pb-2 border-b">
-          <h4 className="font-semibold text-foreground">{title}</h4>
+          <div className="flex items-center gap-3">
+            {toolType !== 'general' && getToolIcon(toolType)}
+            <div>
+              {title && <h4 className="font-semibold text-foreground">{title}</h4>}
+              {metadata && (
+                <div className="flex items-center gap-2 mt-1">
+                  {metadata.appType && (
+                    <Badge variant="outline" className="text-xs">
+                      {metadata.appType}
+                    </Badge>
+                  )}
+                  {metadata.uiStyle && (
+                    <Badge variant="outline" className="text-xs">
+                      {metadata.uiStyle}
+                    </Badge>
+                  )}
+                  {metadata.complexity && (
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "text-xs",
+                        metadata.complexity === 'complex' ? 'bg-red-600/20 text-red-400' :
+                        metadata.complexity === 'medium' ? 'bg-yellow-600/20 text-yellow-400' :
+                        'bg-green-600/20 text-green-400'
+                      )}
+                    >
+                      {metadata.complexity}
+                    </Badge>
+                  )}
+                  {metadata.estimatedTime && (
+                    <Badge variant="outline" className="text-xs">
+                      ⏱️ {metadata.estimatedTime}
+                    </Badge>
+                  )}
+                  {toolType !== 'general' && (
+                    <Badge
+                      variant="outline"
+                      className={cn("text-xs", getToolColor(toolType))}
+                    >
+                      {toolType}
+                    </Badge>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
           {showCopyButton && (
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleCopy}
+              onClick={() => handleCopy(content, title || 'AI Response')}
               className="h-8"
             >
               {copied ? (
@@ -63,7 +167,7 @@ const AIResponse: React.FC<AIResponseProps> = ({
               ) : (
                 <>
                   <Copy className="h-4 w-4 mr-1" />
-                  Copy
+                  Copy All
                 </>
               )}
             </Button>
@@ -247,6 +351,39 @@ const AIResponse: React.FC<AIResponseProps> = ({
           {content}
         </ReactMarkdown>
       </div>
+
+      {/* Tool-specific action buttons */}
+      {showToolButtons && toolType !== 'general' && (
+        <div className="flex gap-2 mt-4 pt-4 border-t">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleCopy(content, `${toolType} prompt`)}
+            className={cn("text-xs", getToolColor(toolType))}
+          >
+            <Copy className="h-3 w-3 mr-1" />
+            Copy for {toolType}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const urls = {
+                framer: 'https://framer.com',
+                flutterflow: 'https://flutterflow.io',
+                uizard: 'https://uizard.io',
+                cursor: 'https://cursor.sh',
+                lovable: 'https://lovable.dev'
+              };
+              window.open(urls[toolType] || `https://${toolType}.com`, '_blank');
+            }}
+            className="text-xs"
+          >
+            <ExternalLink className="h-3 w-3 mr-1" />
+            Open {toolType}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
