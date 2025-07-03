@@ -100,6 +100,28 @@ CREATE TABLE IF NOT EXISTS security_audit_log (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Ensure event_type column exists in security_audit_log
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name='security_audit_log' AND column_name='event_type'
+    ) THEN
+        ALTER TABLE security_audit_log ADD COLUMN event_type TEXT;
+    END IF;
+END $$;
+
+-- Ensure severity column exists in security_audit_log
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name='security_audit_log' AND column_name='severity'
+    ) THEN
+        ALTER TABLE security_audit_log ADD COLUMN severity TEXT CHECK (severity IN ('low', 'medium', 'high', 'critical'));
+    END IF;
+END $$;
+
 -- Create indexes for security audit log
 CREATE INDEX IF NOT EXISTS idx_security_audit_user_id ON security_audit_log(user_id);
 CREATE INDEX IF NOT EXISTS idx_security_audit_created_at ON security_audit_log(created_at DESC);
@@ -210,6 +232,26 @@ $$;
 ALTER TABLE security_audit_log ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_mfa_methods ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_password_history ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing RLS policies if they exist before creating new ones
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'security_audit_log' AND policyname = 'security_audit_user_policy'
+    ) THEN
+        EXECUTE 'DROP POLICY security_audit_user_policy ON security_audit_log';
+    END IF;
+    IF EXISTS (
+        SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'user_mfa_methods' AND policyname = 'user_mfa_policy'
+    ) THEN
+        EXECUTE 'DROP POLICY user_mfa_policy ON user_mfa_methods';
+    END IF;
+    IF EXISTS (
+        SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'user_password_history' AND policyname = 'password_history_policy'
+    ) THEN
+        EXECUTE 'DROP POLICY password_history_policy ON user_password_history';
+    END IF;
+END $$;
 
 -- Policy for security audit log (users can only see their own events)
 CREATE POLICY security_audit_user_policy ON security_audit_log

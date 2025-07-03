@@ -4,6 +4,21 @@
 -- This migration populates the ai_tools_directory table with predefined tools
 -- from the static aiToolsDatabase.ts file
 
+-- Ensure unique constraint on name for ai_tools_directory before population
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints tc
+        JOIN information_schema.constraint_column_usage ccu
+        ON tc.constraint_name = ccu.constraint_name
+        WHERE tc.table_name = 'ai_tools_directory'
+        AND tc.constraint_type = 'UNIQUE'
+        AND ccu.column_name = 'name'
+    ) THEN
+        EXECUTE 'ALTER TABLE ai_tools_directory ADD CONSTRAINT unique_ai_tool_name UNIQUE (name)';
+    END IF;
+END $$;
+
 -- Create a temporary function to populate AI tools
 CREATE OR REPLACE FUNCTION populate_ai_tools_directory()
 RETURNS void AS $$
@@ -124,6 +139,12 @@ SELECT populate_ai_tools_directory();
 
 -- Drop the temporary function
 DROP FUNCTION populate_ai_tools_directory();
+
+-- Ensure schema_migrations table exists before inserting
+CREATE TABLE IF NOT EXISTS schema_migrations (
+    version TEXT PRIMARY KEY,
+    applied_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Update migration tracking
 INSERT INTO schema_migrations (version, applied_at) 

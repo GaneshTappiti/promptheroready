@@ -3,6 +3,10 @@
 -- Drop existing problematic policies
 DROP POLICY IF EXISTS "Super admins can view all admin users" ON admin_users;
 DROP POLICY IF EXISTS "Super admins can manage admin users" ON admin_users;
+DROP POLICY IF EXISTS "Users can view their own admin record" ON admin_users;
+DROP POLICY IF EXISTS "Users can update their own admin record" ON admin_users;
+DROP POLICY IF EXISTS "Allow admin record creation" ON admin_users;
+DROP POLICY IF EXISTS "Super admins can manage all admin users" ON admin_users;
 
 -- Create simpler policies that don't cause recursion
 -- Allow users to view their own admin record
