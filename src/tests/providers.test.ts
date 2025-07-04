@@ -175,7 +175,7 @@ describe('AI Providers', () => {
       
       expect(capabilities.provider).toBe('gemini');
       expect(capabilities.name).toBe('Google Gemini');
-      expect(capabilities.pricing.type).toBe('freemium');
+      expect((capabilities.pricing as any).type).toBe('freemium');
       expect(capabilities.features.some(f => f.name === 'Vision')).toBe(true);
     });
   });

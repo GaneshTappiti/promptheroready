@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Edit, Clock } from "lucide-react";
+import { Star, Clock } from "lucide-react";
 import { WikiPage } from "@/types/wiki";
 import { formatDistanceToNow } from "date-fns";
 

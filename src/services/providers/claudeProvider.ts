@@ -57,14 +57,14 @@ export class ClaudeProvider {
           role: data.role
         }
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof AIError) {
         throw error;
       }
 
       throw new AIError({
         code: 'CLAUDE_REQUEST_FAILED',
-        message: error.message || 'Claude request failed',
+        message: (error as any)?.message || 'Claude request failed',
         provider: 'claude',
         retryable: false,
         details: { originalError: error }

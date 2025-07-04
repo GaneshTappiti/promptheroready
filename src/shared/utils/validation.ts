@@ -30,7 +30,7 @@ export const isValidUrl = (url: string): boolean => {
   try {
     new URL(url);
     return true;
-  } catch {
+  } catch (error) {
     return false;
   }
 };
@@ -56,8 +56,9 @@ export const isValidLength = (text: string, min: number, max: number): boolean =
 };
 
 // Number validation
-export const isValidNumber = (value: any): boolean => {
-  return !isNaN(value) && isFinite(value);
+export const isValidNumber = (value: unknown): boolean => {
+  const num = Number(value);
+  return !isNaN(num) && isFinite(num);
 };
 
 export const isPositiveNumber = (value: number): boolean => {
@@ -85,7 +86,7 @@ export const isValidJSON = (str: string): boolean => {
   try {
     JSON.parse(str);
     return true;
-  } catch {
+  } catch (error) {
     return false;
   }
 };
@@ -136,12 +137,12 @@ export const validateForm = (
 
 interface ValidationRule {
   type: 'required' | 'email' | 'minLength' | 'maxLength' | 'pattern' | 'custom';
-  value?: any;
+  value?: unknown;
   message: string;
-  validator?: (value: any) => boolean;
+  validator?: (value: unknown) => boolean;
 }
 
-const validateField = (value: any, rule: ValidationRule): string | null => {
+const validateField = (value: unknown, rule: ValidationRule): string | null => {
   switch (rule.type) {
     case 'required':
       return !value || (typeof value === 'string' && value.trim() === '') 
@@ -149,16 +150,16 @@ const validateField = (value: any, rule: ValidationRule): string | null => {
         : null;
 
     case 'email':
-      return !isValidEmail(value) ? rule.message : null;
+      return !isValidEmail(value as string) ? rule.message : null;
 
     case 'minLength':
-      return value && value.length < rule.value ? rule.message : null;
+      return value && (value as string).length < (rule.value as number) ? rule.message : null;
 
     case 'maxLength':
-      return value && value.length > rule.value ? rule.message : null;
+      return value && (value as string).length > (rule.value as number) ? rule.message : null;
 
     case 'pattern':
-      return value && !rule.value.test(value) ? rule.message : null;
+      return value && !(rule.value as RegExp).test(value as string) ? rule.message : null;
 
     case 'custom':
       return rule.validator && !rule.validator(value) ? rule.message : null;

@@ -24,6 +24,18 @@ export const mockProviderConfigs: Record<AIProvider, Partial<AIProviderConfig>> 
     temperature: 0.7,
     maxTokens: 2000
   },
+  google: {
+    provider: 'google',
+    modelName: 'gemini-2.0-flash',
+    temperature: 0.7,
+    maxTokens: 2000
+  },
+  anthropic: {
+    provider: 'anthropic',
+    modelName: 'claude-3-sonnet',
+    temperature: 0.7,
+    maxTokens: 2000
+  },
   gemini: {
     provider: 'gemini',
     modelName: 'gemini-2.0-flash',

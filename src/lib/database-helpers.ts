@@ -11,13 +11,11 @@ import type { Database } from '@/types/database';
 type Tables = Database['public']['Tables'];
 type Idea = Tables['ideas']['Row'];
 type MVP = Tables['mvps']['Row'];
-type PromptHistory = Tables['prompt_history']['Row'];
-type Team = Tables['teams']['Row'];
 
 // Enhanced response type with performance metrics
 type DatabaseResponse<T> = {
   data: T | null;
-  error: any;
+  error: Error | null;
   performance?: {
     duration: number;
     operation: string;
@@ -26,7 +24,7 @@ type DatabaseResponse<T> = {
 
 // Helper function to handle database operations with consistent error handling
 const handleDatabaseOperation = async <T>(
-  operation: () => Promise<{ data: T | null; error: any }>,
+  operation: () => Promise<{ data: T | null; error: Error | null }>,
   operationName: string,
   retries: number = 2
 ): Promise<DatabaseResponse<T>> => {
@@ -39,7 +37,7 @@ const handleDatabaseOperation = async <T>(
     logPerformanceMetric(operationName, duration, !result.error);
 
     if (result.error) {
-      console.error(`❌ ${operationName} failed:`, result.error.message);
+      console.error(`❌ ${operationName} failed:`, (result.error as Error).message);
     }
 
     return {
@@ -59,7 +57,7 @@ const handleDatabaseOperation = async <T>(
   }
 };
 type TeamMessage = Tables['team_messages']['Row'];
-type UserProfile = Tables['user_profiles']['Row'];
+// type UserProfile = Tables['user_profiles']['Row'];
 
 // =====================================================
 // 1. WORKSPACE PAGE HELPERS
@@ -70,7 +68,7 @@ export const workspaceHelpers = {
   async getDashboardStats(userId: string): Promise<DatabaseResponse<{
     activeIdeas: number;
     totalPrompts: number;
-    subscription: any;
+    subscription: Record<string, unknown> | null;
   }>> {
     return handleDatabaseOperation(
       async () => {
@@ -97,7 +95,7 @@ export const workspaceHelpers = {
   },
 
   // Get recent activity with enhanced error handling
-  async getRecentActivity(userId: string, limit = 10): Promise<DatabaseResponse<any[]>> {
+  async getRecentActivity(userId: string, limit = 10): Promise<DatabaseResponse<Record<string, unknown>[]>> {
     return handleDatabaseOperation(
       async () => {
         const { data, error } = await supabase
@@ -118,7 +116,7 @@ export const workspaceHelpers = {
   },
 
   // Get usage tracking for current period
-  async getUsageTracking(userId: string): Promise<DatabaseResponse<any[]>> {
+  async getUsageTracking(userId: string): Promise<DatabaseResponse<Record<string, unknown>[]>> {
     return handleDatabaseOperation(
       async () => {
         const { data, error } = await supabase
@@ -347,15 +345,15 @@ export const ideaForgeHelpers = {
   },
 
   // Idea management operations (delegated to ideaVaultHelpers)
-  async getIdeas(userId: string, filters?: any) {
+  async getIdeas(userId: string, filters?: Record<string, unknown>) {
     return ideaVaultHelpers.getIdeas(userId, filters);
   },
 
-  async createIdea(ideaData: any) {
-    return ideaVaultHelpers.createIdea(ideaData);
+  async createIdea(ideaData: Record<string, unknown>) {
+    return ideaVaultHelpers.createIdea(ideaData as any);
   },
 
-  async updateIdea(ideaId: string, updates: any) {
+  async updateIdea(ideaId: string, updates: Record<string, unknown>) {
     return ideaVaultHelpers.updateIdea(ideaId, updates);
   },
 
@@ -421,7 +419,7 @@ export const mvpStudioHelpers = {
     tokens_used?: number;
     idea_id?: string;
     mvp_id?: string;
-    metadata?: any;
+    metadata?: Record<string, unknown>;
   }) {
     const { data, error } = await supabase
       .from('prompt_history')
@@ -582,7 +580,7 @@ export const teamSpaceHelpers = {
   },
 
   // Subscribe to team messages
-  subscribeToTeamMessages(teamId: string, callback: (payload: any) => void) {
+  subscribeToTeamMessages(teamId: string, callback: (payload: unknown) => void) {
     return supabase
       .channel(`team_messages_${teamId}`)
       .on('postgres_changes', {
@@ -715,7 +713,7 @@ export const docsDecksHelpers = {
     content: string; // JSON stringified presentation data
     user_id: string;
     idea_id?: string;
-    metadata?: any;
+    metadata?: unknown;
   }) {
     const { data, error } = await supabase
       .from('documents')
@@ -735,7 +733,7 @@ export const docsDecksHelpers = {
     title?: string;
     content?: string;
     status?: string;
-    metadata?: any;
+    metadata?: unknown;
   }) {
     const { data, error } = await supabase
       .from('documents')
@@ -1127,7 +1125,7 @@ export const subscriptionHelpers = {
 
 export const realtimeHelpers = {
   // Subscribe to global messages
-  subscribeToGlobalMessages(callback: (payload: any) => void) {
+  subscribeToGlobalMessages(callback: (payload: unknown) => void) {
     return supabase
       .channel('global_messages')
       .on('postgres_changes', {
@@ -1139,7 +1137,7 @@ export const realtimeHelpers = {
   },
 
   // Subscribe to user activity
-  subscribeToUserActivity(userId: string, callback: (payload: any) => void) {
+  subscribeToUserActivity(userId: string, callback: (payload: unknown) => void) {
     return supabase
       .channel(`user_activity_${userId}`)
       .on('postgres_changes', {
@@ -1152,7 +1150,7 @@ export const realtimeHelpers = {
   },
 
   // Subscribe to team tasks
-  subscribeToTeamTasks(teamId: string, callback: (payload: any) => void) {
+  subscribeToTeamTasks(teamId: string, callback: (payload: unknown) => void) {
     return supabase
       .channel(`team_tasks_${teamId}`)
       .on('postgres_changes', {
@@ -1209,7 +1207,7 @@ export const investorRadarHelpers = {
   },
 
   // Log contact with investor
-  async logContact(investorId: string, contactDetails: any) {
+  async logContact(investorId: string, contactDetails: unknown) {
     const { data: investor, error: fetchError } = await supabase
       .from('investors')
       .select('contact_history')
@@ -1219,7 +1217,7 @@ export const investorRadarHelpers = {
     if (fetchError) return { data: null, error: fetchError };
 
     const updatedHistory = [...(investor.contact_history || []), {
-      ...contactDetails,
+      ...(contactDetails as object),
       timestamp: new Date().toISOString()
     }];
 
@@ -1476,7 +1474,7 @@ export const taskPlannerHelpers = {
   },
 
   // Subscribe to task updates
-  subscribeToTasks(userId: string, callback: (payload: any) => void) {
+  subscribeToTasks(userId: string, callback: (payload: unknown) => void) {
     return supabase
       .channel(`user_tasks_${userId}`)
       .on('postgres_changes', {
@@ -1619,7 +1617,7 @@ export const aiProviderHelpers = {
 
     if (timeframe) {
       const now = new Date();
-      let startDate = new Date();
+      const startDate = new Date();
 
       switch (timeframe) {
         case 'day':
@@ -1653,19 +1651,20 @@ export const aiProviderHelpers = {
     if (error) return { data: null, error };
 
     // Aggregate by provider
-    const aggregated = data.reduce((acc: any, usage: any) => {
-      if (!acc[usage.provider]) {
-        acc[usage.provider] = {
-          provider: usage.provider,
+    const aggregated = data.reduce((acc: unknown, usage: unknown) => {
+      const usageItem = usage as any;
+      if (!acc[usageItem.provider]) {
+        acc[usageItem.provider] = {
+          provider: usageItem.provider,
           total_tokens: 0,
           total_cost: 0,
           request_count: 0
         };
       }
 
-      acc[usage.provider].total_tokens += usage.tokens_used || 0;
-      acc[usage.provider].total_cost += usage.cost_usd || 0;
-      acc[usage.provider].request_count += 1;
+      acc[usageItem.provider].total_tokens += usageItem.tokens_used || 0;
+      acc[usageItem.provider].total_cost += usageItem.cost_usd || 0;
+      acc[usageItem.provider].request_count += 1;
 
       return acc;
     }, {});
@@ -1738,7 +1737,7 @@ export const notificationHelpers = {
   },
 
   // Subscribe to notifications
-  subscribeToNotifications(userId: string, callback: (payload: any) => void) {
+  subscribeToNotifications(userId: string, callback: (payload: unknown) => void) {
     return supabase
       .channel(`user_notifications_${userId}`)
       .on('postgres_changes', {
@@ -1840,12 +1839,12 @@ export const fileHelpers = {
 
 export const workshopHelpers = {
   // Enhanced idea validation (uses existing ideas table)
-  async validateAndSaveIdea(ideaData: any, validationResults: any, userId: string) {
+  async validateAndSaveIdea(ideaData: unknown, validationResults: unknown, userId: string) {
     const { data, error } = await supabase
       .from('ideas')
       .insert([{
-        ...ideaData,
-        ...validationResults,
+        ...(ideaData as object),
+        ...(validationResults as object),
         user_id: userId,
         status: 'validated'
       }])

@@ -10,7 +10,7 @@ import InvestorProfile from "./InvestorProfile";
 
 interface InvestorCardProps {
   investor: Investor;
-  onLogContact: (id: number, contactDetails: any) => void;
+  onLogContact: (id: number, contactDetails: unknown) => void;
   onStatusChange: (id: number, status: string) => void;
 }
 

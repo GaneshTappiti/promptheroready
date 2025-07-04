@@ -28,10 +28,10 @@ export async function quickDatabaseTest() {
         .limit(1);
 
       if (error) {
-        if (error.code === '42P01' || error.message.includes('does not exist')) {
+        if (error.code === '42P01' || (error as Error).message.includes('does not exist')) {
           console.log(`❌ Table '${table}' does not exist`);
         } else {
-          console.log(`⚠️ Table '${table}' exists but has access restrictions:`, error.message);
+          console.log(`⚠️ Table '${table}' exists but has access restrictions:`, (error as Error).message);
         }
       } else {
         console.log(`✅ Table '${table}' exists and accessible`);

@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import SubscriptionService, { 
-  UserSubscription, 
-  UsageStats, 
-  SubscriptionPlan, 
-  SubscriptionTier 
+import SubscriptionService, {
+  UserSubscription,
+  UsageStats,
+  SubscriptionPlan
 } from '@/services/subscriptionService';
 import { useToast } from '@/hooks/use-toast';
 

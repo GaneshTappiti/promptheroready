@@ -156,7 +156,7 @@ const PromptViewer: React.FC<PromptViewerProps> = ({
 
       {/* Sections */}
       <div className="space-y-3">
-        {sections.map((section, index) => (
+        {sections.map((section) => (
           <Card key={section.id} className="overflow-hidden">
             <Collapsible
               open={expandedSections.has(section.id)}

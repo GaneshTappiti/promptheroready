@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+
 
 const StyledForm: React.FC = () => {
   const [isSignIn, setIsSignIn] = useState(true);
-  const navigate = useNavigate();
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

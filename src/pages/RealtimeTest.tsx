@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -105,7 +105,7 @@ const RealtimeTest: React.FC = () => {
       console.error('Test execution failed:', error);
       toast({
         title: "Test Execution Failed",
-        description: error instanceof Error ? error.message : "Unknown error occurred",
+        description: error instanceof Error ? (error as Error).message : "Unknown error occurred",
         variant: "destructive"
       });
     } finally {

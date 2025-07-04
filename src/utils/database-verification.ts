@@ -85,7 +85,7 @@ async function checkTable(tableName: string): Promise<TableInfo> {
 
     if (error) {
       // If error is about table not existing
-      if (error.code === '42P01' || error.message.includes('does not exist')) {
+      if (error.code === '42P01' || (error as Error).message.includes('does not exist')) {
         return {
           table_name: tableName,
           exists: false
@@ -93,7 +93,7 @@ async function checkTable(tableName: string): Promise<TableInfo> {
       }
 
       // If it's an RLS error, table exists but we can't access it
-      if (error.code === '42501' || error.message.includes('permission denied') || error.message.includes('RLS')) {
+      if (error.code === '42501' || (error as Error).message.includes('permission denied') || (error as Error).message.includes('RLS')) {
         return {
           table_name: tableName,
           exists: true,
@@ -105,7 +105,7 @@ async function checkTable(tableName: string): Promise<TableInfo> {
       return {
         table_name: tableName,
         exists: false,
-        error: `Error checking table: ${error.message}`
+        error: `Error checking table: ${(error as Error).message}`
       };
     }
 
@@ -135,7 +135,7 @@ async function checkTable(tableName: string): Promise<TableInfo> {
     return {
       table_name: tableName,
       exists: false,
-      error: `Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      error: `Unexpected error: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`
     };
   }
 }
@@ -248,7 +248,7 @@ export async function testDatabaseOperations(): Promise<{
     operations.push({
       name: 'Basic SELECT query',
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? (error as Error).message : 'Unknown error'
     });
   }
 
@@ -264,7 +264,7 @@ export async function testDatabaseOperations(): Promise<{
     operations.push({
       name: 'Authentication check',
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? (error as Error).message : 'Unknown error'
     });
   }
 
@@ -296,7 +296,7 @@ export async function testDatabaseOperations(): Promise<{
     operations.push({
       name: 'Real-time connection',
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? (error as Error).message : 'Unknown error'
     });
   }
 

@@ -83,21 +83,21 @@ interface ExportData {
   };
 }
 
-interface IdeaOverview {
-  id: string;
-  title: string;
-  description: string;
-  status: IdeaStatus;
-  tags: string[];
-  createdAt: string;
-  updatedAt: string;
-  progress: {
-    wiki: number;
-    blueprint: number;
-    journey: number;
-    feedback: number;
-  };
-}
+// interface IdeaOverview {
+//   id: string;
+//   title: string;
+//   description: string;
+//   status: IdeaStatus;
+//   tags: string[];
+//   createdAt: string;
+//   updatedAt: string;
+//   progress: {
+//     wiki: number;
+//     blueprint: number;
+//     journey: number;
+//     feedback: number;
+//   };
+// }
 
 interface IdeaForgeSidebarItem {
   id: IdeaForgeTab;
@@ -447,7 +447,7 @@ const IdeaForge = () => {
           ${data.blueprint.features?.length ? `
           <div class="subsection">
             <h3 class="subsection-title">Features</h3>
-            ${data.blueprint.features.map((feature: any) => `
+            ${data.blueprint.features.map((feature: unknown) => `
               <div class="feature-item priority-${feature.priority}">
                 <strong>${feature.name}</strong> (${feature.priority} priority)
                 <br>${feature.description}
@@ -459,7 +459,7 @@ const IdeaForge = () => {
           ${data.blueprint.techStack?.length ? `
           <div class="subsection">
             <h3 class="subsection-title">Tech Stack</h3>
-            ${data.blueprint.techStack.map((tech: any) => `
+            ${data.blueprint.techStack.map((tech: unknown) => `
               <div class="feature-item">
                 <strong>${tech.category}:</strong> ${tech.name}
                 <br>${tech.description}
@@ -473,7 +473,7 @@ const IdeaForge = () => {
         ${data.journey?.entries?.length ? `
         <div class="section">
           <h2 class="section-title">📍 Founder's Journey</h2>
-          ${data.journey.entries.map((entry: any) => `
+          ${data.journey.entries.map((entry: unknown) => `
             <div class="subsection">
               <h3 class="subsection-title">${entry.title} (${new Date(entry.date).toLocaleDateString()})</h3>
               <p><strong>Type:</strong> ${entry.type}</p>
@@ -486,7 +486,7 @@ const IdeaForge = () => {
         ${data.feedback?.items?.length ? `
         <div class="section">
           <h2 class="section-title">💬 Feedback & Validation</h2>
-          ${data.feedback.items.map((item: any) => `
+          ${data.feedback.items.map((item: unknown) => `
             <div class="feedback-item priority-${item.priority}">
               <h4>${item.title}</h4>
               <p><strong>Source:</strong> ${item.source} | <strong>Type:</strong> ${item.type} | <strong>Priority:</strong> ${item.priority}</p>
@@ -553,7 +553,7 @@ const IdeaForge = () => {
 
     if (data.feedback?.items?.length) {
       markdown += `## 💬 Feedback\n\n`;
-      data.feedback.items.forEach((item: any) => {
+      data.feedback.items.forEach((item: unknown) => {
         markdown += `### ${item.title}\n\n`;
         markdown += `**Source:** ${item.source} | **Type:** ${item.type} | **Priority:** ${item.priority}\n\n`;
         markdown += `**Author:** ${item.author}\n\n`;

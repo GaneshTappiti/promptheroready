@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 import { useToast } from '@/hooks/use-toast';
 import { 
   Eye, 
@@ -102,19 +102,15 @@ const APIKeyManager: React.FC<APIKeyManagerProps> = ({ className }) => {
   const [keyStatus, setKeyStatus] = useState<Record<string, 'valid' | 'invalid' | 'untested'>>({});
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadAPIKeys();
-  }, [user]);
-
-  const loadAPIKeys = async () => {
+  const loadAPIKeys = useCallback(async () => {
     if (!user?.id) return;
-    
+
     setLoading(true);
     try {
       // Load saved API keys for each provider
       const keys: Record<string, string> = {};
       const status: Record<string, 'valid' | 'invalid' | 'untested'> = {};
-      
+
       for (const provider of API_PROVIDERS) {
         const preferences = await aiProviderService.getUserPreferences(user.id);
         if (preferences && preferences.provider === provider.id) {
@@ -124,7 +120,7 @@ const APIKeyManager: React.FC<APIKeyManagerProps> = ({ className }) => {
           status[provider.id] = 'untested';
         }
       }
-      
+
       setApiKeys(keys);
       setKeyStatus(status);
     } catch (error) {
@@ -137,7 +133,11 @@ const APIKeyManager: React.FC<APIKeyManagerProps> = ({ className }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id, toast]);
+
+  useEffect(() => {
+    loadAPIKeys();
+  }, [user, loadAPIKeys]);
 
   const handleKeyChange = (providerId: string, value: string) => {
     setApiKeys(prev => ({
@@ -167,7 +167,7 @@ const APIKeyManager: React.FC<APIKeyManagerProps> = ({ className }) => {
     
     try {
       const result = await aiProviderService.testConnection(user.id, {
-        provider: providerId as any,
+        provider: providerId as 'openai' | 'anthropic' | 'google' | 'mistral' | 'deepseek' | 'custom',
         apiKey: key,
         modelName: 'default'
       });
@@ -204,7 +204,7 @@ const APIKeyManager: React.FC<APIKeyManagerProps> = ({ className }) => {
 
     try {
       const success = await aiProviderService.saveUserPreferences(user.id, {
-        provider: providerId as any,
+        provider: providerId as 'openai' | 'anthropic' | 'google' | 'mistral' | 'deepseek' | 'custom',
         apiKey: key,
         modelName: 'default'
       });
@@ -303,16 +303,16 @@ const APIKeyManager: React.FC<APIKeyManagerProps> = ({ className }) => {
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge 
-                    variant={provider.pricing.type === 'free' ? 'default' : 'secondary'}
+                    variant={(provider.pricing as any)?.type === 'free' ? 'default' : 'secondary'}
                     className={
-                      provider.pricing.type === 'free' 
-                        ? 'bg-green-600/20 text-green-400' 
-                        : provider.pricing.type === 'freemium'
+                      (provider.pricing as any)?.type === 'free'
+                        ? 'bg-green-600/20 text-green-400'
+                        : (provider.pricing as any)?.type === 'freemium'
                         ? 'bg-blue-600/20 text-blue-400'
                         : 'bg-yellow-600/20 text-yellow-400'
                     }
                   >
-                    {provider.pricing.type}
+                    {(provider.pricing as any)?.type}
                   </Badge>
                   <div className="flex items-center gap-1">
                     {getStatusIcon(keyStatus[provider.id] || 'untested')}

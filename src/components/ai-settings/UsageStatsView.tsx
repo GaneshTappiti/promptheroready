@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   BarChart3, 
@@ -19,7 +19,7 @@ import { UserAIPreferences, ConnectionStatus } from '@/types/aiProvider';
 
 interface UsageStatsViewProps {
   preferences: UserAIPreferences | null;
-  usageStats: any;
+  usageStats?: Record<string, unknown>;
 }
 
 export const UsageStatsView: React.FC<UsageStatsViewProps> = ({

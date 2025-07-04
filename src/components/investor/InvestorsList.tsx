@@ -9,7 +9,7 @@ import EmptyState from "./EmptyState";
 
 interface InvestorsListProps {
   investors: Investor[];
-  onLogContact: (id: number, contactDetails: any) => void;
+  onLogContact: (id: number, contactDetails: unknown) => void;
   onStatusChange: (id: number, status: string) => void;
   onAddInvestor: () => void;
 }

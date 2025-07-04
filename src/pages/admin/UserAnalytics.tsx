@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+// import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { useAdmin, withAdminAuth } from '@/contexts/AdminContext';
+import { useAdmin } from '@/contexts/AdminContext';
 import { supabase } from '@/lib/supabase';
 import {
   Users,
   TrendingUp,
   Activity,
-  Clock,
+
   Target,
   BarChart3,
   Calendar,

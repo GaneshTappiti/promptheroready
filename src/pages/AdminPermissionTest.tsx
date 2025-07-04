@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAdmin } from '@/contexts/AdminContext';
@@ -162,8 +162,8 @@ const AdminPermissionTest: React.FC = () => {
                     </div>
                     <div className="space-y-1">
                       {testResults.results
-                        .filter((r: any) => !r.passed)
-                        .map((r: any, index: number) => (
+                        .filter((r: unknown) => !r.passed)
+                        .map((r: unknown, index: number) => (
                           <p key={index} className="text-red-300 text-sm font-mono">
                             {r.role || 'non-admin'} accessing {r.route}: expected {r.expected.toString()}, got {r.actual.toString()}
                           </p>

@@ -137,7 +137,7 @@ export default function SignupTest() {
                       <div><strong>Status:</strong> {result.success ? 'SUCCESS' : 'FAILED'}</div>
                       <div><strong>Message:</strong> {result.message}</div>
                       {result.error && (
-                        <div><strong>Error:</strong> {result.error.message || JSON.stringify(result.error)}</div>
+                        <div><strong>Error:</strong> {(result.error as Error).message || JSON.stringify(result.error)}</div>
                       )}
                       {result.data && (
                         <div><strong>Data:</strong> <pre className="text-xs mt-2 p-2 bg-black/20 rounded">{JSON.stringify(result.data, null, 2)}</pre></div>

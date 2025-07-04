@@ -200,10 +200,10 @@ describe('AI Tools Integration Tests', () => {
 // Helper function to run integration tests manually
 export async function runAIToolsIntegrationTest(): Promise<{
   success: boolean;
-  results: any[];
+  results: unknown[];
   errors: string[];
 }> {
-  const results: any[] = [];
+  const results: unknown[] = [];
   const errors: string[] = [];
 
   try {
@@ -244,7 +244,7 @@ export async function runAIToolsIntegrationTest(): Promise<{
     };
 
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage = error instanceof Error ? (error as Error).message : 'Unknown error';
     errors.push(errorMessage);
     console.error('❌ Integration test failed:', errorMessage);
 

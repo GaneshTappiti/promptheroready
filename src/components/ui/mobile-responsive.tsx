@@ -5,7 +5,7 @@
 
 import React from 'react'
 import { cn } from '@/lib/utils'
-import { useDeviceInfo, useIsMobile } from '@/hooks/use-mobile'
+import { useDeviceInfo } from '@/hooks/use-mobile'
 
 // Mobile Container Component
 interface MobileContainerProps {

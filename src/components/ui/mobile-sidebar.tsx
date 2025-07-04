@@ -40,7 +40,7 @@ export function MobileSidebar({
   const [isOpen, setIsOpen] = useState(defaultOpen)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const isMobile = useIsMobile()
-  const { isTouch } = useDeviceInfo()
+  useDeviceInfo()
 
   // Auto-close on mobile when clicking outside
   useEffect(() => {

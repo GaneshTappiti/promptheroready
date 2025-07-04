@@ -40,7 +40,7 @@ const InvestorRadar = () => {
       if (error) throw error;
 
       setInvestors(data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error loading investors:', error);
       toast({
         title: "Error Loading Investors",
@@ -61,7 +61,7 @@ const InvestorRadar = () => {
       if (error) throw error;
 
       setFundingRounds(data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error loading funding rounds:', error);
     }
   };
@@ -102,7 +102,7 @@ const InvestorRadar = () => {
           description: "Investor added successfully",
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error adding investor:', error);
       toast({
         title: "Error",
@@ -123,7 +123,7 @@ const InvestorRadar = () => {
     });
   };
 
-  const handleLogContact = (id: number, contactDetails: any) => {
+  const handleLogContact = (id: number, contactDetails: unknown) => {
     // In a real app, this would update the investor with new contact information
     toast({
       title: "Contact Logged",

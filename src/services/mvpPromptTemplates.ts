@@ -285,7 +285,7 @@ Make it visually stunning with smooth animations that enhance the {{designStyle}
    */
   static generatePageUIPrompt(
     pageName: string,
-    pageData: any,
+    pageData: unknown,
     wizardData: MVPWizardData,
     enhancedData: EnhancedWizardData,
     preferredBuilder: string = 'framer'
@@ -705,7 +705,7 @@ ${result.pages.map(page => `- ${page.name}: ${page.description}`).join('\n')}`;
    * Generate navigation prompt using template system
    */
   static generateNavigationPrompt(
-    pages: any[],
+    pages: unknown[],
     wizardData: MVPWizardData,
     navType: string = 'sidebar',
     preferredBuilder: string = 'framer'
@@ -727,7 +727,7 @@ ${result.pages.map(page => `- ${page.name}: ${page.description}`).join('\n')}`;
    * Generate component library prompt
    */
   static generateComponentLibraryPrompt(
-    components: any[],
+    components: unknown[],
     wizardData: MVPWizardData,
     enhancedData: EnhancedWizardData,
     preferredBuilder: string = 'framer'
@@ -758,7 +758,7 @@ ${result.pages.map(page => `- ${page.name}: ${page.description}`).join('\n')}`;
    */
   static generateBuilderSpecificPrompt(
     pageName: string,
-    pageData: any,
+    pageData: unknown,
     wizardData: MVPWizardData,
     enhancedData: EnhancedWizardData,
     builder: string
@@ -793,7 +793,7 @@ ${result.pages.map(page => `- ${page.name}: ${page.description}`).join('\n')}`;
   }
 
   // Keep the original method for backward compatibility
-  private static generateLinkingPrompt(pages: any[], wizardData: MVPWizardData): string {
+  private static generateLinkingPrompt(pages: unknown[], wizardData: MVPWizardData): string {
     const pageNames = pages.map(p => p.pageName || p.name).join(', ');
     const appType = wizardData.step1.appType.replace('-', ' ');
 

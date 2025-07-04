@@ -30,8 +30,8 @@ export const ProviderSelector: React.FC<ProviderSelectorProps> = ({
     }
   };
 
-  const getPricingBadge = (pricing: any) => {
-    switch (pricing.type) {
+  const getPricingBadge = (pricing: unknown) => {
+    switch ((pricing as any).type) {
       case 'free':
         return <Badge variant="secondary" className="bg-green-100 text-green-800">Free</Badge>;
       case 'freemium':

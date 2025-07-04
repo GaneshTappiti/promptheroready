@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -11,15 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
+
 import { Eye, EyeOff, TestTube, Save, AlertCircle, CheckCircle, ExternalLink } from 'lucide-react';
 import { AIProviderConfig, UserAIPreferences, AIProvider } from '@/types/aiProvider';
 import { aiProviderService } from '@/services/aiProviderService';
 import { useToast } from '@/hooks/use-toast';
 
 const configSchema = z.object({
-  provider: z.enum(['openai', 'gemini', 'deepseek', 'claude', 'mistral', 'custom']),
+  provider: z.enum(['openai', 'google', 'gemini', 'anthropic', 'claude', 'deepseek', 'mistral', 'custom']),
   apiKey: z.string().min(1, 'API key is required'),
   modelName: z.string().optional(),
   customEndpoint: z.string().url().optional().or(z.literal('')),
@@ -59,9 +58,9 @@ export const ProviderConfigForm: React.FC<ProviderConfigFormProps> = ({
       customEndpoint: preferences?.customEndpoint || '',
       temperature: preferences?.temperature || 0.7,
       maxTokens: preferences?.maxTokens || 2000,
-      organization: preferences?.providerSettings?.organization || '',
-      version: preferences?.providerSettings?.version || '2023-06-01',
-      requestFormat: preferences?.providerSettings?.requestFormat || 'openai',
+      organization: (preferences?.providerSettings?.organization as string) || '',
+      version: (preferences?.providerSettings?.version as string) || '2023-06-01',
+      requestFormat: (preferences?.providerSettings?.requestFormat as 'openai' | 'custom') || 'openai',
     }
   });
 
@@ -163,6 +162,26 @@ export const ProviderConfigForm: React.FC<ProviderConfigFormProps> = ({
           "Copy and paste it below"
         ],
         keyUrl: "https://platform.openai.com/api-keys"
+      },
+      google: {
+        steps: [
+          "Go to Google AI Studio",
+          "Sign in with your Google account",
+          "Click 'Get API Key'",
+          "Create a new API key",
+          "Copy and paste it below"
+        ],
+        keyUrl: "https://aistudio.google.com/app/apikey"
+      },
+      anthropic: {
+        steps: [
+          "Go to Anthropic Console",
+          "Sign in to your account",
+          "Navigate to API Keys",
+          "Create a new API key",
+          "Copy and paste it below"
+        ],
+        keyUrl: "https://console.anthropic.com/"
       },
       gemini: {
         steps: [

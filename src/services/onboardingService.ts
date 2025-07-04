@@ -45,7 +45,7 @@ class OnboardingService {
 
       if (error) {
         console.error('Error saving onboarding data:', error);
-        return { success: false, error: error.message };
+        return { success: false, error: (error as Error).message };
       }
 
       return { success: true };
@@ -68,7 +68,7 @@ class OnboardingService {
 
       if (error && error.code !== 'PGRST116') { // PGRST116 is "not found"
         console.error('Error fetching onboarding data:', error);
-        return { error: error.message };
+        return { error: (error as Error).message };
       }
 
       return { data: data || undefined };
@@ -109,7 +109,7 @@ class OnboardingService {
 
       if (error) {
         console.error('Error updating onboarding preferences:', error);
-        return { success: false, error: error.message };
+        return { success: false, error: (error as Error).message };
       }
 
       return { success: true };

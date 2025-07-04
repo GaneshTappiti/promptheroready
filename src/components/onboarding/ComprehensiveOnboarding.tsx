@@ -56,7 +56,7 @@ const STEPS: Array<{
   id: OnboardingStep;
   title: string;
   description: string;
-  icon: any;
+  icon: unknown;
 }> = [
   {
     id: 'welcome',
@@ -229,7 +229,7 @@ export const ComprehensiveOnboarding = ({ onComplete }: ComprehensiveOnboardingP
         {/* Step Indicators */}
         <div className="flex justify-center mt-8 gap-2">
           {STEPS.map((step, index) => {
-            const Icon = step.icon;
+            const Icon = step.icon as React.ComponentType<{ className?: string }>;
             const isActive = index === currentStepIndex;
             const isCompleted = index < currentStepIndex;
             

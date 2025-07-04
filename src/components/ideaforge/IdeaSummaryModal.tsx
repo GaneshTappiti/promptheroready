@@ -14,10 +14,56 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+interface IdeaData {
+  idea?: {
+    title?: string;
+    description?: string;
+    status?: string;
+    tags?: string[];
+    createdAt?: string;
+  };
+  wiki?: {
+    sections?: Array<{
+      id?: string;
+      title?: string;
+      content?: string;
+    }>;
+  };
+  blueprint?: {
+    appType?: string;
+    features?: Array<{
+      id?: string;
+      name?: string;
+      priority?: string;
+      description?: string;
+    }>;
+  };
+  journey?: {
+    entries?: Array<{
+      id?: string;
+      title?: string;
+      type?: string;
+      date?: string;
+      content?: string;
+    }>;
+  };
+  feedback?: {
+    items?: Array<{
+      id?: string;
+      title?: string;
+      source?: string;
+      type?: string;
+      priority?: string;
+      author?: string;
+      content?: string;
+    }>;
+  };
+}
+
 interface IdeaSummaryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  ideaData: any;
+  ideaData: IdeaData;
 }
 
 const IdeaSummaryModal: React.FC<IdeaSummaryModalProps> = ({
@@ -49,7 +95,7 @@ const IdeaSummaryModal: React.FC<IdeaSummaryModalProps> = ({
       summary += `${'='.repeat(20)}\n`;
       ideaData.wiki.sections.forEach((section: any) => {
         summary += `\n${section.title}\n`;
-        summary += `${'-'.repeat(section.title.length)}\n`;
+        summary += `${'-'.repeat(section.title?.length || 0)}\n`;
         summary += `${section.content}\n`;
       });
     }
@@ -132,7 +178,7 @@ const IdeaSummaryModal: React.FC<IdeaSummaryModalProps> = ({
                       <div key={section.id} className="border-l-4 border-blue-200 pl-4">
                         <h4 className="font-semibold">{section.title}</h4>
                         <p className="text-sm text-muted-foreground line-clamp-3">
-                          {section.content.replace(/[#*]/g, '').substring(0, 200)}...
+                          {section.content?.replace(/[#*]/g, '').substring(0, 200)}...
                         </p>
                       </div>
                     ))}
@@ -163,8 +209,8 @@ const IdeaSummaryModal: React.FC<IdeaSummaryModalProps> = ({
                       <div className="space-y-2">
                         {ideaData.blueprint.features.slice(0, 5).map((feature: any) => (
                           <div key={feature.id} className="flex items-center gap-2">
-                            <Badge 
-                              variant={feature.priority === 'high' ? 'destructive' : 
+                            <Badge
+                              variant={feature.priority === 'high' ? 'destructive' :
                                      feature.priority === 'medium' ? 'default' : 'secondary'}
                               className="text-xs"
                             >
@@ -228,7 +274,7 @@ const IdeaSummaryModal: React.FC<IdeaSummaryModalProps> = ({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {ideaData.feedback.items.slice(0, 3).map((item: any) => (
+                    {ideaData.feedback.items.slice(0, 3).map((item: unknown) => (
                       <div key={item.id} className="border-l-4 border-purple-200 pl-4">
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-semibold text-sm">{item.title}</h4>

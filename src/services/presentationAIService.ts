@@ -240,7 +240,7 @@ Make this slide engaging and visually appealing while maintaining consistency wi
   /**
    * Process and validate slide elements
    */
-  private processSlideElements(elements: any[]): SlideElement[] {
+  private processSlideElements(elements: unknown[]): SlideElement[] {
     return elements.map((element, index) => ({
       id: element.id || nanoid(),
       type: element.type || 'text',
@@ -259,7 +259,7 @@ Make this slide engaging and visually appealing while maintaining consistency wi
   /**
    * Create a fallback slide when AI generation fails
    */
-  private createFallbackSlide(slideInfo: any, index: number): Slide {
+  private createFallbackSlide(slideInfo: unknown, index: number): Slide {
     return {
       id: nanoid(),
       title: slideInfo.title || `Slide ${index + 1}`,

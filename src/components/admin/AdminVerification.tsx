@@ -18,7 +18,7 @@ import {
 
 const AdminVerification: React.FC = () => {
   const { user } = useAuth();
-  const { isAdmin, isSuperAdmin, adminUser, refreshAdminStatus } = useAdmin();
+  const { isAdmin, isSuperAdmin, refreshAdminStatus } = useAdmin();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -50,11 +50,11 @@ const AdminVerification: React.FC = () => {
           variant: "destructive"
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error setting up predefined admin:', error);
       toast({
         title: "Error",
-        description: error?.message || "Failed to set up admin access",
+        description: (error as Error)?.message || "Failed to set up admin access",
         variant: "destructive"
       });
     } finally {

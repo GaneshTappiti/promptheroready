@@ -550,7 +550,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onStatusCha
 interface TaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (task: any) => void;
+  onSave: (task: unknown) => void;
   task?: Task | null;
   title: string;
 }

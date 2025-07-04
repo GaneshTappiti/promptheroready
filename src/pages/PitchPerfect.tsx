@@ -53,7 +53,7 @@ const PitchPerfect = () => {
       setScripts(scriptsResult.data || []);
       setDecks(decksResult.data || []);
       setVideos(videosResult.data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error loading pitch data:', error);
       toast({
         title: "Error Loading Data",

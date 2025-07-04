@@ -139,7 +139,7 @@ export const formatUrl = (url: string): string => {
 export const extractDomain = (url: string): string => {
   try {
     return new URL(formatUrl(url)).hostname;
-  } catch {
+  } catch (error) {
     return url;
   }
 };
@@ -171,12 +171,12 @@ export const formatList = (items: string[], conjunction: string = 'and'): string
 };
 
 // JSON formatting
-export const formatJSON = (obj: any, indent: number = 2): string => {
+export const formatJSON = (obj: unknown, indent: number = 2): string => {
   return JSON.stringify(obj, null, indent);
 };
 
 // Code formatting
-export const formatCode = (code: string, language: string = 'javascript'): string => {
+export const formatCode = (code: string): string => {
   // Basic code formatting - in a real app, you'd use a proper syntax highlighter
   return code
     .split('\n')
@@ -186,7 +186,7 @@ export const formatCode = (code: string, language: string = 'javascript'): strin
 };
 
 // Template string formatting
-export const template = (str: string, data: Record<string, any>): string => {
+export const template = (str: string, data: Record<string, unknown>): string => {
   return str.replace(/\{\{(\w+)\}\}/g, (match, key) => {
     return data[key] !== undefined ? String(data[key]) : match;
   });

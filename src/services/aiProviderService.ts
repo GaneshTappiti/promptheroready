@@ -158,7 +158,7 @@ export class AIProviderService {
     } catch (error: unknown) {
       console.error('Connection test failed:', error);
 
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage = error instanceof Error ? (error as Error).message : 'Unknown error';
 
       // Log security event
       await SecurityAuditService.logConnectionTestFailed(
@@ -229,7 +229,7 @@ export class AIProviderService {
       return response;
     } catch (error: unknown) {
       // Update error status
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage = error instanceof Error ? (error as Error).message : 'Unknown error';
       const status = errorMessage.includes('quota') ? 'quota_exceeded' : 'error';
       await this.updateConnectionStatus(userId, status, errorMessage);
 
@@ -309,7 +309,7 @@ export class AIProviderService {
   /**
    * Generate error response when no valid provider is available
    */
-  private generateErrorResponse(request: AIRequest): AIResponse {
+  private generateErrorResponse(): AIResponse {
     return {
       content: 'Error: No AI provider configured. Please set up your AI provider in settings.',
       tokensUsed: {

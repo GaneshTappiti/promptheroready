@@ -5,15 +5,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ThumbsUp, MessageSquare, Tag, ArrowLeft, Edit, Trash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { WorkspaceLayout } from "@/components/ui/workspace-layout";
-interface IdeaComment {
-  id: number;
-  author: string;
-  text: string;
-  date: string;
-}
+// interface IdeaComment {
+//   id: number;
+//   author: string;
+//   text: string;
+//   date: string;
+// }
 
 const IdeaDetails = () => {
-  const { ideaId: _ideaId } = useParams<{ ideaId: string }>();
+  useParams<{ ideaId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
 

@@ -1,4 +1,4 @@
-import { Pool, PoolClient } from 'pg';
+import { PoolClient } from 'pg';
 import { query, pool } from '../config/database';
 
 // Transaction helper
@@ -22,7 +22,7 @@ export const withTransaction = async <T>(
 // Query builder helper
 export const buildQuery = (
   table: string,
-  conditions: Record<string, any> = {},
+  conditions: Record<string, unknown> = {},
   options: {
     select?: string[];
     orderBy?: { column: string; direction: 'ASC' | 'DESC' }[];
@@ -33,7 +33,7 @@ export const buildQuery = (
   const { select = ['*'], orderBy = [], limit, offset } = options;
   
   let queryText = `SELECT ${select.join(', ')} FROM ${table}`;
-  const values: any[] = [];
+  const values: unknown[] = [];
   let paramIndex = 1;
 
   // Add WHERE conditions

@@ -47,6 +47,13 @@ import {
 import StartupBriefGenerator from "@/components/StartupBriefGenerator";
 import { supabaseHelpers } from '../lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+
+// Type for Supabase realtime payload
+interface RealtimePayload {
+  eventType: 'INSERT' | 'UPDATE' | 'DELETE';
+  new?: any;
+  old?: any;
+}
 import { useAdmin } from '@/contexts/AdminContext';
 import { aiEngine } from '../services/aiEngine';
 import { useToast } from "@/hooks/use-toast";
@@ -386,22 +393,24 @@ const Workspace = () => {
 
     // Set up real-time subscriptions
     const projectsSubscription = supabaseHelpers.subscribeToProjects((payload) => {
-      if (payload.eventType === 'INSERT') {
-        setProjects(prev => [payload.new, ...prev]);
-      } else if (payload.eventType === 'UPDATE') {
-        setProjects(prev => prev.map(p => p.id === payload.new.id ? payload.new : p));
-      } else if (payload.eventType === 'DELETE') {
-        setProjects(prev => prev.filter(p => p.id !== payload.old.id));
+      const realtimePayload = payload as RealtimePayload;
+      if (realtimePayload.eventType === 'INSERT') {
+        setProjects(prev => [realtimePayload.new, ...prev]);
+      } else if (realtimePayload.eventType === 'UPDATE') {
+        setProjects(prev => prev.map(p => p.id === realtimePayload.new.id ? realtimePayload.new : p));
+      } else if (realtimePayload.eventType === 'DELETE') {
+        setProjects(prev => prev.filter(p => p.id !== realtimePayload.old.id));
       }
     });
 
     const tasksSubscription = supabaseHelpers.subscribeToTasks((payload) => {
-      if (payload.eventType === 'INSERT') {
-        setTasks(prev => [payload.new, ...prev]);
-      } else if (payload.eventType === 'UPDATE') {
-        setTasks(prev => prev.map(t => t.id === payload.new.id ? payload.new : t));
-      } else if (payload.eventType === 'DELETE') {
-        setTasks(prev => prev.filter(t => t.id !== payload.old.id));
+      const realtimePayload = payload as RealtimePayload;
+      if (realtimePayload.eventType === 'INSERT') {
+        setTasks(prev => [realtimePayload.new, ...prev]);
+      } else if (realtimePayload.eventType === 'UPDATE') {
+        setTasks(prev => prev.map(t => t.id === realtimePayload.new.id ? realtimePayload.new : t));
+      } else if (realtimePayload.eventType === 'DELETE') {
+        setTasks(prev => prev.filter(t => t.id !== realtimePayload.old.id));
       }
     });
 
@@ -490,7 +499,7 @@ const Workspace = () => {
 
     } catch (error) {
       console.error("Detailed error:", error);
-      setAiResponse(`Error: ${error instanceof Error ? error.message : "Unknown error occurred"}`);
+      setAiResponse(`Error: ${error instanceof Error ? (error as Error).message : "Unknown error occurred"}`);
     } finally {
       setIsLoading(false);
     }

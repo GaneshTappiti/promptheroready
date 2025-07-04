@@ -131,17 +131,19 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({ children }) => {
       case 'idea-vault':
         return hasActiveIdea ? 'completed' : (stepIndex < currentIndex ? 'completed' : 'pending');
       
-      case 'ideaforge':
+      case 'ideaforge': {
         // Check if user has completed some IdeaForge sections
         const ideaforgePrompts = useIdeaStore.getState().promptHistory.ideaforge;
         const hasIdeaforgeData = Object.keys(ideaforgePrompts).length > 0;
         return hasIdeaforgeData ? 'completed' : (stepIndex < currentIndex ? 'completed' : 'pending');
-      
-      case 'mvp-studio':
+      }
+
+      case 'mvp-studio': {
         // Check if user has generated MVP prompts
         const mvpPrompts = useIdeaStore.getState().promptHistory.mvpStudio;
         const hasMVPData = Object.keys(mvpPrompts).length > 0;
         return hasMVPData ? 'completed' : (stepIndex < currentIndex ? 'completed' : 'pending');
+      }
       
       default:
         return stepIndex < currentIndex ? 'completed' : 'pending';

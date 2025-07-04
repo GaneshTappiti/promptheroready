@@ -59,14 +59,14 @@ export class DeepSeekProvider {
           created: data.created
         }
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof AIError) {
         throw error;
       }
 
       throw new AIError({
         code: 'DEEPSEEK_REQUEST_FAILED',
-        message: error.message || 'DeepSeek request failed',
+        message: (error as any)?.message || 'DeepSeek request failed',
         provider: 'deepseek',
         retryable: false,
         details: { originalError: error }

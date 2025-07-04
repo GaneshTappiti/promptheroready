@@ -11,7 +11,6 @@ import {
   testSignUp,
   testSignIn,
   testSignOut,
-  getCurrentSession,
   runAuthTests,
   AuthTestResult
 } from '@/utils/authTest';
@@ -99,7 +98,7 @@ export default function AuthTest() {
       setTestResults(prev => [...prev, { 
         name: 'Context Sign In', 
         success: !result.error,
-        message: result.error ? result.error.message : 'Sign in successful via context'
+        message: result.error ? (result.error as Error).message : 'Sign in successful via context'
       }]);
     } catch (error) {
       console.error('Context sign in error:', error);
@@ -115,7 +114,7 @@ export default function AuthTest() {
       setTestResults(prev => [...prev, { 
         name: 'Context Sign Up', 
         success: !result.error,
-        message: result.error ? result.error.message : 'Sign up successful via context'
+        message: result.error ? (result.error as Error).message : 'Sign up successful via context'
       }]);
     } catch (error) {
       console.error('Context sign up error:', error);

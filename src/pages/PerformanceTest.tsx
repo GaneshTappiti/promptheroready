@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -85,7 +85,7 @@ const PerformanceTest: React.FC = () => {
         sessionStorage: Object.keys(sessionStorage).length,
         localStorage: Object.keys(localStorage).length
       };
-    } catch {
+    } catch (error) {
       return { size: 0, sessionStorage: 0, localStorage: 0 };
     }
   };
@@ -156,7 +156,7 @@ const PerformanceTest: React.FC = () => {
       console.error('Performance test execution failed:', error);
       toast({
         title: "Test Execution Failed",
-        description: error instanceof Error ? error.message : "Unknown error occurred",
+        description: error instanceof Error ? (error as Error).message : "Unknown error occurred",
         variant: "destructive"
       });
     } finally {
@@ -433,7 +433,7 @@ const PerformanceTest: React.FC = () => {
                     <div className="mt-6">
                       <h4 className="text-white font-semibold mb-3">Slowest Queries</h4>
                       <div className="space-y-2">
-                        {performanceStats.slowestQueries.slice(0, 5).map((query: any, index: number) => (
+                        {performanceStats.slowestQueries.slice(0, 5).map((query: unknown, index: number) => (
                           <div key={index} className="flex items-center justify-between p-2 bg-gray-700/30 rounded">
                             <span className="text-gray-300 font-mono text-sm">{query.queryId}</span>
                             <span className="text-yellow-400">{Math.round(query.executionTime)}ms</span>

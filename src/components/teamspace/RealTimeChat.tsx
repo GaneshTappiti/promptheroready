@@ -103,9 +103,9 @@ const RealTimeChat = ({ teamId }: RealTimeChatProps) => {
         setMessages(data || []);
         setIsInitialLoad(true);
         setIsLoading(false);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Error fetching messages:', error);
-        setError(error.message);
+        setError((error as Error).message);
         setIsLoading(false);
       }
     };
@@ -197,7 +197,7 @@ const RealTimeChat = ({ teamId }: RealTimeChatProps) => {
           scrollAreaRef.current.scrollTop = 1;
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error loading more messages:', error);
       toast({
         title: "Error",
@@ -228,12 +228,12 @@ const RealTimeChat = ({ teamId }: RealTimeChatProps) => {
 
       if (error) throw error;
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error sending message:', error);
       setNewMessage(sanitizedMessage); // Restore message on error
       toast({
         title: "Error",
-        description: error.message || "Failed to send message",
+        description: (error as Error).message || "Failed to send message",
         variant: "destructive"
       });
     } finally {

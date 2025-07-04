@@ -43,7 +43,7 @@ export function MobileImage({
   const [isError, setIsError] = useState(false)
   const [currentSrc, setCurrentSrc] = useState<string>('')
   const imgRef = useRef<HTMLImageElement>(null)
-  const { isMobile, screenSize } = useDeviceInfo()
+  const { isMobile } = useDeviceInfo()
 
   useEffect(() => {
     if (!imgRef.current) return

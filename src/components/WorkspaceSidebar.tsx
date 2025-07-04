@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Lightbulb,
-  Calendar,
   Code,
   Users,
   Search,
-  BarChart,
   Brain,
   MessageSquare,
   X,
@@ -17,7 +15,7 @@ import {
   Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useIsMobile } from "@/hooks/use-mobile";
+
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useAdmin } from "@/contexts/AdminContext";
 
@@ -54,7 +52,7 @@ interface WorkspaceSidebarProps {
 const WorkspaceSidebar = ({ isOpen = false, setIsOpen = () => {} }: WorkspaceSidebarProps) => {
   const location = useLocation();
   const currentPath = location.pathname;
-  const isMobile = useIsMobile();
+
   const { isAdmin } = useAdmin();
 
   const handleLinkClick = () => {

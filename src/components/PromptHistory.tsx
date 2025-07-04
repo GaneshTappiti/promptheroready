@@ -6,7 +6,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Copy,
   Download,
-  Trash2,
   Clock,
   Brain,
   Rocket
@@ -51,7 +50,7 @@ const PromptHistory: React.FC<PromptHistoryProps> = ({ section, className }) => 
 
   const getPrompts = () => {
     if (section) {
-      return Object.entries(promptHistory[section]).filter(([_, prompt]) => prompt);
+      return Object.entries(promptHistory[section]).filter(([, prompt]) => prompt);
     }
     
     // Return all prompts from both sections

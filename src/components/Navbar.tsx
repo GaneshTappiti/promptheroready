@@ -12,12 +12,12 @@ import {
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useState } from "react";
 import { MobileButton } from "@/components/ui/mobile-responsive";
-import { useIsMobile } from "@/hooks/use-mobile";
+
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const isMobile = useIsMobile();
+
   
   // Check if the current path matches the given path
   const isActive = (path: string) => {

@@ -59,14 +59,14 @@ export class OpenAIProvider {
           object: data.object
         }
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof AIError) {
         throw error;
       }
 
       throw new AIError({
         code: 'OPENAI_REQUEST_FAILED',
-        message: error.message || 'OpenAI request failed',
+        message: (error as any)?.message || 'OpenAI request failed',
         provider: 'openai',
         retryable: false,
         details: { originalError: error }

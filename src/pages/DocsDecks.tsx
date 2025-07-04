@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,7 +8,7 @@ import {
   Presentation,
   FileSpreadsheet,
   FilePieChart,
-  MoreHorizontal,
+
   Eye,
   Edit,
   Share,
@@ -35,7 +35,7 @@ import EmptyState from "@/components/docs-decks/EmptyState";
 import PresentationGenerator from "@/components/presentation/PresentationGenerator";
 import PresentationCard from "@/components/presentation/PresentationCard";
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { docsDecksHelpers } from "@/lib/supabase-connection-helpers";
 import { useAuth } from "@/contexts/AuthContext";
 import { Input } from "@/components/ui/input";

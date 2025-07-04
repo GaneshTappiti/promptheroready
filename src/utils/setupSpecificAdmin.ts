@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase';
 export interface AdminSetupResult {
   success: boolean;
   message: string;
-  data?: any;
+  data?: unknown;
 }
 
 /**
@@ -87,7 +87,7 @@ export async function setupAdminByEmail(
     console.error('Error setting up admin by email:', error);
     return {
       success: false,
-      message: `Unexpected error: ${error.message}`
+      message: `Unexpected error: ${(error as Error).message}`
     };
   }
 }

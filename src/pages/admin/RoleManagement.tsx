@@ -49,8 +49,8 @@ interface AuditLogEntry {
   action: string;
   resource_type: string;
   resource_id: string;
-  old_values: any;
-  new_values: any;
+  old_values: unknown;
+  new_values: unknown;
   created_at: string;
   admin_email?: string;
 }
@@ -324,8 +324,8 @@ const RoleManagement: React.FC = () => {
     action: string,
     resourceType: string,
     resourceId: string,
-    oldValues: any,
-    newValues: any
+    oldValues: unknown,
+    newValues: unknown
   ) => {
     try {
       await supabase

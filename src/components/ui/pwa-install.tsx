@@ -39,12 +39,12 @@ export function PWAInstall({
   const [isInstalled, setIsInstalled] = useState(false)
   const [showPrompt, setShowPrompt] = useState(false)
   const [isIOS, setIsIOS] = useState(false)
-  const { isMobile, isTouch } = useDeviceInfo()
+  const { isMobile } = useDeviceInfo()
 
   useEffect(() => {
     // Check if already installed
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-    const isInWebAppiOS = (window.navigator as any).standalone === true
+    const isInWebAppiOS = (window.navigator as { standalone?: boolean }).standalone === true
     setIsInstalled(isStandalone || isInWebAppiOS)
 
     // Check if iOS
@@ -278,7 +278,7 @@ export function usePWAInstall() {
 
   useEffect(() => {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-    const isInWebAppiOS = (window.navigator as any).standalone === true
+    const isInWebAppiOS = (window.navigator as { standalone?: boolean }).standalone === true
     setIsInstalled(isStandalone || isInWebAppiOS)
 
     const handleBeforeInstallPrompt = (e: Event) => {

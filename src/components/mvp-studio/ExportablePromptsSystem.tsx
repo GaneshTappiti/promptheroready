@@ -457,28 +457,18 @@ ${framework.builderTools.map(tool => `${tool.tool.name}: ${tool.tool.officialUrl
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center">
-        <Package className="h-12 w-12 mx-auto mb-4 text-primary" />
-        <h3 className="text-xl font-semibold mb-2">Export Your MVP Blueprint</h3>
-        <p className="text-muted-foreground">
-          Download clean, GPT-ready prompts for your chosen builder tool
-        </p>
-      </div>
-
-      {/* Export Options */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5" />
-            Export Configuration
+            <Download className="h-5 w-5" />
+            Export MVP Prompts
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
               <label className="text-sm font-medium mb-2 block">Export Format</label>
-              <Select value={exportFormat} onValueChange={(value: any) => setExportFormat(value)}>
+              <Select value={exportFormat} onValueChange={(value: string) => setExportFormat(value as any)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

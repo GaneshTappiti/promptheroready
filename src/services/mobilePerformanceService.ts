@@ -103,7 +103,7 @@ class MobilePerformanceService {
    */
   private setupBatteryMonitoring() {
     if ('getBattery' in navigator) {
-      (navigator as any).getBattery().then((battery: any) => {
+      (navigator as any).getBattery().then((battery: unknown) => {
         const updateBatteryInfo = () => {
           this.metrics.batteryLevel = battery.level * 100
         }
@@ -150,7 +150,7 @@ class MobilePerformanceService {
     
     try {
       return canvas.toDataURL(`image/${format}`).indexOf(`data:image/${format}`) === 0
-    } catch {
+    } catch (error) {
       return false
     }
   }
@@ -267,7 +267,7 @@ class MobilePerformanceService {
   /**
    * Report performance metrics
    */
-  private reportMetrics(event: string, data: any) {
+  private reportMetrics(event: string, data: unknown) {
     if (config.analytics.enabled) {
       // Send to analytics service
       console.log(`Performance metric: ${event}`, data)

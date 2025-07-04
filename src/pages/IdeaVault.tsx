@@ -54,7 +54,7 @@ const IdeaVault = () => {
   const { currentPlan, usage, isFreeTier } = useSubscription();
 
   // Navigation
-  const { setCurrentPage, setBreadcrumbs } = useNavigation();
+  useNavigation();
 
   // Load active idea from database if not in store
   useEffect(() => {
@@ -81,7 +81,7 @@ const IdeaVault = () => {
           id: latestIdea.id,
           title: latestIdea.title,
           description: latestIdea.description || '',
-          status: latestIdea.status as any,
+          status: latestIdea.status as 'draft' | 'validated' | 'exploring' | 'archived',
           category: latestIdea.category,
           tags: latestIdea.tags || [],
           validation_score: latestIdea.validation_score,

@@ -66,8 +66,8 @@ export const AIProviderOnboarding: React.FC<AIProviderOnboardingProps> = ({
     
     try {
       return await aiProviderService.testConnection(user.id);
-    } catch (error: any) {
-      return { success: false, error: error.message || 'Connection test failed' };
+    } catch (error: unknown) {
+      return { success: false, error: (error as Error).message || 'Connection test failed' };
     }
   };
 

@@ -40,7 +40,6 @@ export const useFeatureAccess = (): UseFeatureAccessReturn => {
   ): Promise<boolean> => {
     const {
       feature = action.replace('_', ' '),
-      description,
       showUpgradePrompt = true,
       trackUsage: shouldTrackUsage = true
     } = options;

@@ -25,7 +25,7 @@ import {
 interface PlatformSetting {
   id: string;
   key: string;
-  value: any;
+  value: unknown;
   description: string;
   category: string;
   is_public: boolean;
@@ -120,7 +120,7 @@ const PlatformSettings: React.FC = () => {
     }
   };
 
-  const handleInputChange = (key: string, value: any) => {
+  const handleInputChange = (key: string, value: unknown) => {
     setFormData(prev => ({
       ...prev,
       [key]: value

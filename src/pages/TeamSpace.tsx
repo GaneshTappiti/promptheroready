@@ -82,6 +82,15 @@ interface Meeting {
   duration: string;
 }
 
+interface Meeting {
+  id: number;
+  title: string;
+  date: string;
+  time: string;
+  attendees: string[];
+  duration: string;
+}
+
 const TeamSpace = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("team");
@@ -149,7 +158,7 @@ const TeamSpace = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   
   // Meetings will be loaded from database when feature is implemented
-  const meetings: any[] = [];
+  const meetings: Meeting[] = [];
 
   // Add animation class when tab changes
   useEffect(() => {

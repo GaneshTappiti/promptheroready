@@ -23,7 +23,7 @@ export interface DatabaseAITool {
   best_for?: string[];
   popularity_score?: number;
   logo_url?: string;
-  metadata?: any;
+  metadata?: unknown;
 }
 
 // Category mapping between static data and database
@@ -154,7 +154,7 @@ export class AIToolsSyncService {
       console.error('Sync error:', error);
       return {
         success: false,
-        message: `Sync failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        message: `Sync failed: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`,
         synced: 0
       };
     } finally {

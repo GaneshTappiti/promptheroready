@@ -7,19 +7,15 @@ import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { useSubscription } from '@/hooks/useSubscription';
 import { SUBSCRIPTION_PLANS } from '@/services/subscriptionService';
-import { 
-  Crown, 
-  Zap, 
-  Star, 
-  ArrowRight, 
+import {
+  Crown,
+  Zap,
+  Star,
   Check,
-  Sparkles,
   Lock,
-  X,
   Gift,
   Clock,
   TrendingUp,
-  Users,
   Infinity
 } from 'lucide-react';
 
@@ -42,13 +38,12 @@ const EnhancedUpgradePrompt: React.FC<EnhancedUpgradePromptProps> = ({
   showTrialOption = true,
   showUsageStats = true
 }) => {
-  const { 
-    currentPlan, 
-    usage, 
-    isOnTrial, 
-    trialDaysRemaining, 
-    startFreeTrial,
-    loading 
+  const {
+    currentPlan,
+    usage,
+    isOnTrial,
+    trialDaysRemaining,
+    startFreeTrial
   } = useSubscription();
   const { toast } = useToast();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);

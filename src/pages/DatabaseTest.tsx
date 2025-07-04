@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, AlertCircle, Database, Play, Loader2, FileText } from 'lucide-react';
 import { runCompleteVerification } from '@/utils/database-verification';
-import { checkSchemaStatus, getSchemaApplicationInstructions } from '@/utils/apply-schema';
+import { checkSchemaStatus } from '@/utils/apply-schema';
 import AuthTest from '@/components/auth/AuthTest';
 import IdeaVaultTest from '@/components/tests/IdeaVaultTest';
 import IdeaForgeTest from '@/components/tests/IdeaForgeTest';
@@ -68,7 +68,7 @@ const DatabaseTest: React.FC = () => {
       setSchemaStatus({
         isApplied: false,
         missingTables: [],
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
       return null;
     }
@@ -96,7 +96,7 @@ const DatabaseTest: React.FC = () => {
         schema: {
           success: false,
           tables: [],
-          errors: [`Test execution failed: ${error instanceof Error ? error.message : 'Unknown error'}`],
+          errors: [`Test execution failed: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`],
           summary: {
             total_tables: 0,
             existing_tables: 0,

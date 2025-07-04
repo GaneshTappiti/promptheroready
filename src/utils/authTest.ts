@@ -8,8 +8,8 @@ import { supabase } from '@/lib/supabase';
 export interface AuthTestResult {
   success: boolean;
   message: string;
-  data?: any;
-  error?: any;
+  data?: unknown;
+  error?: unknown;
 }
 
 /**
@@ -57,7 +57,7 @@ export const testSignUp = async (email: string, password: string): Promise<AuthT
     if (error) {
       return {
         success: false,
-        message: `Sign up failed: ${error.message}`,
+        message: `Sign up failed: ${(error as Error).message}`,
         error
       };
     }
@@ -89,7 +89,7 @@ export const testSignIn = async (email: string, password: string): Promise<AuthT
     if (error) {
       return {
         success: false,
-        message: `Sign in failed: ${error.message}`,
+        message: `Sign in failed: ${(error as Error).message}`,
         error
       };
     }
@@ -118,7 +118,7 @@ export const testSignOut = async (): Promise<AuthTestResult> => {
     if (error) {
       return {
         success: false,
-        message: `Sign out failed: ${error.message}`,
+        message: `Sign out failed: ${(error as Error).message}`,
         error
       };
     }
@@ -146,7 +146,7 @@ export const getCurrentSession = async (): Promise<AuthTestResult> => {
     if (error) {
       return {
         success: false,
-        message: `Failed to get session: ${error.message}`,
+        message: `Failed to get session: ${(error as Error).message}`,
         error
       };
     }
@@ -177,7 +177,7 @@ export const testPasswordReset = async (email: string): Promise<AuthTestResult> 
     if (error) {
       return {
         success: false,
-        message: `Password reset failed: ${error.message}`,
+        message: `Password reset failed: ${(error as Error).message}`,
         error
       };
     }

@@ -74,7 +74,7 @@ export class TestDataGenerator {
         success: false,
         recordsCreated,
         duration: performance.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -120,7 +120,7 @@ export class TestDataGenerator {
         success: false,
         recordsCreated,
         duration: performance.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -171,7 +171,7 @@ export class TestDataGenerator {
         success: false,
         recordsCreated,
         duration: performance.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -218,7 +218,7 @@ export class TestDataGenerator {
         success: false,
         recordsCreated,
         duration: performance.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }

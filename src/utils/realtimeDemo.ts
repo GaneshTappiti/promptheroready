@@ -24,7 +24,7 @@ export class RealtimeDemo {
   private userId: string;
   private teamId: string;
   private channels: RealtimeChannel[] = [];
-  private demoCallbacks: Map<string, (data: any) => void> = new Map();
+  private demoCallbacks: Map<string, (data: unknown) => void> = new Map();
 
   constructor(userId: string, teamId: string = 'demo-team') {
     this.userId = userId;
@@ -34,7 +34,7 @@ export class RealtimeDemo {
   /**
    * Demo Scenario 1: Global Chat Demonstration
    */
-  async demoGlobalChat(onMessage: (message: any) => void): Promise<void> {
+  async demoGlobalChat(onMessage: (message: unknown) => void): Promise<void> {
     console.log('🌍 Starting Global Chat Demo...');
 
     // Subscribe to global messages
@@ -79,7 +79,7 @@ export class RealtimeDemo {
   /**
    * Demo Scenario 2: Team Collaboration
    */
-  async demoTeamCollaboration(onUpdate: (update: any) => void): Promise<void> {
+  async demoTeamCollaboration(onUpdate: (update: unknown) => void): Promise<void> {
     console.log('👥 Starting Team Collaboration Demo...');
 
     // Ensure demo team exists
@@ -136,7 +136,7 @@ export class RealtimeDemo {
   /**
    * Demo Scenario 3: Presence and Typing Indicators
    */
-  async demoPresenceAndTyping(onPresenceUpdate: (update: any) => void): Promise<void> {
+  async demoPresenceAndTyping(onPresenceUpdate: (update: unknown) => void): Promise<void> {
     console.log('👀 Starting Presence & Typing Demo...');
 
     // Presence tracking
@@ -215,7 +215,7 @@ export class RealtimeDemo {
   /**
    * Demo Scenario 4: Live Notifications
    */
-  async demoLiveNotifications(onNotification: (notification: any) => void): Promise<void> {
+  async demoLiveNotifications(onNotification: (notification: unknown) => void): Promise<void> {
     console.log('🔔 Starting Live Notifications Demo...');
 
     // Subscribe to user notifications
@@ -272,10 +272,10 @@ export class RealtimeDemo {
    * Run complete demo sequence
    */
   async runCompleteDemo(callbacks: {
-    onMessage?: (data: any) => void;
-    onUpdate?: (data: any) => void;
-    onPresence?: (data: any) => void;
-    onNotification?: (data: any) => void;
+    onMessage?: (data: unknown) => void;
+    onUpdate?: (data: unknown) => void;
+    onPresence?: (data: unknown) => void;
+    onNotification?: (data: unknown) => void;
     onProgress?: (step: string, progress: number) => void;
   }): Promise<void> {
     const steps = [

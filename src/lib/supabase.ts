@@ -8,7 +8,7 @@ import type { Database } from '@/types/database';
 // Environment variables with validation
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-const dbConnectionString = import.meta.env.VITE_DATABASE_URL || '';
+// const dbConnectionString = import.meta.env.VITE_DATABASE_URL || '';
 
 // Configuration validation
 if (!supabaseUrl || !supabaseKey) {
@@ -47,7 +47,7 @@ export const supabase = createClient<Database>(
             return null;
           }
         },
-        setItem: (key: string, value: any) => {
+        setItem: (key: string, value: unknown) => {
           try {
             localStorage.setItem(key, JSON.stringify(value));
           } catch (error) {
@@ -106,7 +106,7 @@ export const checkSupabaseConnection = async (): Promise<{
       return {
         isConnected: false,
         latency,
-        error: error.message
+        error: (error as Error).message
       };
     }
 
@@ -118,7 +118,7 @@ export const checkSupabaseConnection = async (): Promise<{
     return {
       isConnected: false,
       latency: performance.now() - startTime,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? (error as Error).message : 'Unknown error'
     };
   }
 };
@@ -195,7 +195,7 @@ export const logPerformanceMetric = (
 // Type definitions for helper responses
 type SupabaseResponse<T> = {
   data: T | null;
-  error: any;
+  error: unknown;
   performance?: {
     duration: number;
     operation: string;
@@ -222,7 +222,7 @@ export const supabaseHelpers = {
       logPerformanceMetric(operation, duration, !error);
 
       if (error) {
-        console.error('❌ Sign in failed:', error.message);
+        console.error('❌ Sign in failed:', (error as Error).message);
       } else {
         console.log('✅ User signed in successfully');
       }
@@ -262,7 +262,7 @@ export const supabaseHelpers = {
       logPerformanceMetric(operation, duration, !error);
 
       if (error) {
-        console.error('❌ Sign up failed:', error.message);
+        console.error('❌ Sign up failed:', (error as Error).message);
       } else {
         console.log('✅ User signed up successfully');
       }
@@ -295,7 +295,7 @@ export const supabaseHelpers = {
       logPerformanceMetric(operation, duration, !error);
 
       if (error) {
-        console.error('❌ Sign out failed:', error.message);
+        console.error('❌ Sign out failed:', (error as Error).message);
       } else {
         console.log('✅ User signed out successfully');
       }
@@ -401,7 +401,7 @@ export const supabaseHelpers = {
       logPerformanceMetric(operation, duration, !error, { count: data?.length });
 
       if (error) {
-        console.error('❌ Failed to fetch projects:', error.message);
+        console.error('❌ Failed to fetch projects:', (error as Error).message);
       }
 
       return {
@@ -449,7 +449,7 @@ export const supabaseHelpers = {
       logPerformanceMetric(operation, duration, !error, { count: data?.length });
 
       if (error) {
-        console.error('❌ Failed to fetch tasks:', error.message);
+        console.error('❌ Failed to fetch tasks:', (error as Error).message);
       }
 
       return {
@@ -491,7 +491,7 @@ export const supabaseHelpers = {
       logPerformanceMetric(operation, duration, !error);
 
       if (error) {
-        console.error('❌ Failed to create project:', error.message);
+        console.error('❌ Failed to create project:', (error as Error).message);
       } else {
         console.log('✅ Project created successfully:', data.name);
       }
@@ -536,7 +536,7 @@ export const supabaseHelpers = {
       logPerformanceMetric(operation, duration, !error);
 
       if (error) {
-        console.error('❌ Failed to create task:', error.message);
+        console.error('❌ Failed to create task:', (error as Error).message);
       } else {
         console.log('✅ Task created successfully:', data.title);
       }
@@ -580,7 +580,7 @@ export const supabaseHelpers = {
       logPerformanceMetric(operation, duration, !error);
 
       if (error) {
-        console.error('❌ Failed to update project:', error.message);
+        console.error('❌ Failed to update project:', (error as Error).message);
       } else {
         console.log('✅ Project updated successfully:', data.name);
       }
@@ -616,7 +616,7 @@ export const supabaseHelpers = {
       logPerformanceMetric(operation, duration, !error);
 
       if (error) {
-        console.error('❌ Failed to delete project:', error.message);
+        console.error('❌ Failed to delete project:', (error as Error).message);
       } else {
         console.log('✅ Project deleted successfully');
       }
@@ -643,8 +643,8 @@ export const supabaseHelpers = {
   // =====================================================
 
   subscribeToProjects(
-    callback: (payload: any) => void,
-    errorCallback?: (error: any) => void
+    callback: (payload: unknown) => void,
+    errorCallback?: (error: unknown) => void
   ) {
     const channel = supabase
       .channel('projects_changes')
@@ -673,8 +673,8 @@ export const supabaseHelpers = {
   },
 
   subscribeToTasks(
-    callback: (payload: any) => void,
-    errorCallback?: (error: any) => void
+    callback: (payload: unknown) => void,
+    errorCallback?: (error: unknown) => void
   ) {
     const channel = supabase
       .channel('tasks_changes')
@@ -706,8 +706,8 @@ export const supabaseHelpers = {
   subscribeToUserData(
     userId: string,
     tables: string[],
-    callback: (payload: any) => void,
-    errorCallback?: (error: any) => void
+    callback: (payload: unknown) => void,
+    errorCallback?: (error: unknown) => void
   ) {
     const channels = tables.map(table => {
       return supabase
@@ -755,7 +755,7 @@ export const supabaseHelpers = {
     return { data, error };
   },
 
-  async createIdea(idea: any) {
+  async createIdea(idea: unknown) {
     const { data, error } = await supabase
       .from('ideas')
       .insert([idea])
@@ -763,7 +763,7 @@ export const supabaseHelpers = {
     return { data, error };
   },
 
-  async updateIdea(ideaId: string, updates: any) {
+  async updateIdea(ideaId: string, updates: unknown) {
     const { data, error } = await supabase
       .from('ideas')
       .update(updates)
@@ -781,7 +781,7 @@ export const supabaseHelpers = {
     return { data, error };
   },
 
-  async createMVP(mvp: any) {
+  async createMVP(mvp: unknown) {
     const { data, error } = await supabase
       .from('mvps')
       .insert([mvp])
@@ -798,7 +798,7 @@ export const supabaseHelpers = {
     return { data, error };
   },
 
-  async createDocument(document: any) {
+  async createDocument(document: unknown) {
     const { data, error } = await supabase
       .from('documents')
       .insert([document])
@@ -814,7 +814,7 @@ export const supabaseHelpers = {
     return { data, error };
   },
 
-  async createTeamMember(member: any) {
+  async createTeamMember(member: unknown) {
     const { data, error } = await supabase
       .from('team_members')
       .insert([member])
@@ -831,7 +831,7 @@ export const supabaseHelpers = {
     return { data, error };
   },
 
-  async createInvestor(investor: any) {
+  async createInvestor(investor: unknown) {
     const { data, error } = await supabase
       .from('investors')
       .insert([investor])
@@ -848,7 +848,7 @@ export const supabaseHelpers = {
     return { data, error };
   },
 
-  async createWikiPage(page: any) {
+  async createWikiPage(page: unknown) {
     const { data, error } = await supabase
       .from('wiki_pages')
       .insert([page])
@@ -857,42 +857,42 @@ export const supabaseHelpers = {
   },
 
   // Real-time subscriptions for all tables
-  subscribeToIdeas(callback: (payload: any) => void) {
+  subscribeToIdeas(callback: (payload: unknown) => void) {
     return supabase
       .channel('ideas_changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'ideas' }, callback)
       .subscribe();
   },
 
-  subscribeToMVPs(callback: (payload: any) => void) {
+  subscribeToMVPs(callback: (payload: unknown) => void) {
     return supabase
       .channel('mvps_changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'mvps' }, callback)
       .subscribe();
   },
 
-  subscribeToDocuments(callback: (payload: any) => void) {
+  subscribeToDocuments(callback: (payload: unknown) => void) {
     return supabase
       .channel('documents_changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'documents' }, callback)
       .subscribe();
   },
 
-  subscribeToTeamMembers(callback: (payload: any) => void) {
+  subscribeToTeamMembers(callback: (payload: unknown) => void) {
     return supabase
       .channel('team_members_changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members' }, callback)
       .subscribe();
   },
 
-  subscribeToInvestors(callback: (payload: any) => void) {
+  subscribeToInvestors(callback: (payload: unknown) => void) {
     return supabase
       .channel('investors_changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'investors' }, callback)
       .subscribe();
   },
 
-  subscribeToWikiPages(callback: (payload: any) => void) {
+  subscribeToWikiPages(callback: (payload: unknown) => void) {
     return supabase
       .channel('wiki_pages_changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'wiki_pages' }, callback)
@@ -943,7 +943,7 @@ export const supabaseHelpers = {
     return { data, error };
   },
 
-  subscribeToTeamMessages(teamId: string, callback: (payload: any) => void) {
+  subscribeToTeamMessages(teamId: string, callback: (payload: unknown) => void) {
     return supabase
       .channel(`team_messages_${teamId}`)
       .on(
@@ -1027,7 +1027,7 @@ export const supabaseHelpers = {
     return channel;
   },
 
-  subscribeToTypingIndicators(teamId: string, callback: (payload: any) => void) {
+  subscribeToTypingIndicators(teamId: string, callback: (payload: unknown) => void) {
     return supabase
       .channel(`typing_${teamId}`)
       .on('broadcast', { event: 'typing' }, callback)
@@ -1097,7 +1097,7 @@ export const testSupabaseConnection = async (): Promise<{
         details.database = true;
         console.log('✅ Database queries working');
       } else {
-        errors.push(`Database query failed: ${error.message}`);
+        errors.push(`Database query failed: ${(error as Error).message}`);
       }
     } catch (error) {
       errors.push('Database connection failed');
@@ -1151,7 +1151,7 @@ export const testSupabaseConnection = async (): Promise<{
 
   } catch (error) {
     const connectionTime = performance.now() - startTime;
-    errors.push(`Connection test failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    errors.push(`Connection test failed: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`);
 
     return {
       success: false,

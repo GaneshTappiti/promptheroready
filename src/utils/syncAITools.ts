@@ -54,9 +54,9 @@ export async function initializeAIToolsForAdmin(adminUserId: string): Promise<Sy
     console.error('Error initializing AI tools sync:', error);
     return {
       success: false,
-      message: `Initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      message: `Initialization failed: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`,
       synced: 0,
-      errors: [error instanceof Error ? error.message : 'Unknown error']
+      errors: [error instanceof Error ? (error as Error).message : 'Unknown error']
     };
   }
 }
@@ -132,7 +132,7 @@ export async function validateAIToolsData(): Promise<{
       .select('*');
 
     if (error) {
-      issues.push(`Database error: ${error.message}`);
+      issues.push(`Database error: ${(error as Error).message}`);
       return { valid: false, issues, suggestions };
     }
 
@@ -180,7 +180,7 @@ export async function validateAIToolsData(): Promise<{
     console.error('Error validating AI tools data:', error);
     return {
       valid: false,
-      issues: [`Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`],
+      issues: [`Validation error: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`],
       suggestions: ['Check database connection and try again']
     };
   }
@@ -191,7 +191,7 @@ export async function validateAIToolsData(): Promise<{
  */
 export async function exportAIToolsData(): Promise<{
   success: boolean;
-  data?: any[];
+  data?: unknown[];
   error?: string;
 }> {
   try {
@@ -201,7 +201,7 @@ export async function exportAIToolsData(): Promise<{
       .order('category', { ascending: true });
 
     if (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: (error as Error).message };
     }
 
     return { success: true, data };
@@ -209,7 +209,7 @@ export async function exportAIToolsData(): Promise<{
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? (error as Error).message : 'Unknown error'
     };
   }
 }

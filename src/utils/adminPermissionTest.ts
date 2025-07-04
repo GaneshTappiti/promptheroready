@@ -132,8 +132,8 @@ export function canAccessRoute(
 /**
  * Run comprehensive permission tests
  */
-export function runPermissionTests(): { passed: number; failed: number; results: any[] } {
-  const results: any[] = [];
+export function runPermissionTests(): { passed: number; failed: number; results: unknown[] } {
+  const results: unknown[] = [];
   let passed = 0;
   let failed = 0;
 

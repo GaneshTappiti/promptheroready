@@ -21,7 +21,7 @@ interface TestResult {
   name: string;
   success: boolean;
   error?: string;
-  details?: any;
+  details?: unknown;
 }
 
 interface TestDocument {
@@ -78,7 +78,7 @@ const DocsDecksTest: React.FC = () => {
       testResults.push({
         name: 'Documents Table Access',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -116,7 +116,7 @@ const DocsDecksTest: React.FC = () => {
       testResults.push({
         name: 'Create Document',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -146,7 +146,7 @@ const DocsDecksTest: React.FC = () => {
         testResults.push({
           name: 'Update Document',
           success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? (error as Error).message : 'Unknown error'
         });
       }
     } else {
@@ -196,7 +196,7 @@ const DocsDecksTest: React.FC = () => {
       testResults.push({
         name: 'Create Document Template',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -230,7 +230,7 @@ const DocsDecksTest: React.FC = () => {
         testResults.push({
           name: 'Document Sharing',
           success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? (error as Error).message : 'Unknown error'
         });
       }
     } else {
@@ -257,7 +257,7 @@ const DocsDecksTest: React.FC = () => {
       testResults.push({
         name: 'Retrieve Documents List',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -291,7 +291,7 @@ const DocsDecksTest: React.FC = () => {
         const newResult: TestResult = {
           name: 'Cleanup Test Data',
           success: false,
-          error: error.message
+          error: (error as Error).message
         };
         setResults(prev => [...prev, newResult]);
       }
@@ -299,7 +299,7 @@ const DocsDecksTest: React.FC = () => {
       const newResult: TestResult = {
         name: 'Cleanup Test Data',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
       setResults(prev => [...prev, newResult]);
     }
@@ -367,7 +367,7 @@ const DocsDecksTest: React.FC = () => {
                 <Label htmlFor="doc-type">Document Type</Label>
                 <Select
                   value={testDocument.document_type}
-                  onValueChange={(value: any) => setTestDocument(prev => ({ ...prev, document_type: value }))}
+                  onValueChange={(value: string) => setTestDocument(prev => ({ ...prev, document_type: value as "document" | "presentation" | "pitch_deck" | "business_plan" }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select document type" />

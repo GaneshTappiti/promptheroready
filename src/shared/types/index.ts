@@ -94,7 +94,7 @@ export interface SelectOption {
 
 export interface ValidationRule {
   type: 'required' | 'email' | 'minLength' | 'maxLength' | 'pattern' | 'custom';
-  value?: any;
+  value?: unknown;
   message: string;
 }
 
@@ -134,7 +134,7 @@ export interface AppError extends Error {
 
 export interface ValidationError extends AppError {
   field: string;
-  value: any;
+  value: unknown;
 }
 
 // Utility Types

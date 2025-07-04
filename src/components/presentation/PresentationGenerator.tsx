@@ -112,7 +112,7 @@ const PresentationGenerator: React.FC<PresentationGeneratorProps> = ({
       );
 
       if (error || !presentation) {
-        throw new Error(error?.message || 'Failed to generate presentation');
+        throw new Error((error as Error)?.message || 'Failed to generate presentation');
       }
 
       // Save the generated presentation
@@ -123,7 +123,7 @@ const PresentationGenerator: React.FC<PresentationGeneratorProps> = ({
       );
 
       if (saveError || !savedPresentation) {
-        throw new Error(saveError?.message || 'Failed to save presentation');
+        throw new Error((saveError as Error)?.message || 'Failed to save presentation');
       }
 
       setStep('complete');
@@ -141,14 +141,14 @@ const PresentationGenerator: React.FC<PresentationGeneratorProps> = ({
         navigate(`/workspace/docs-decks/presentation/${savedPresentation.id}`);
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error generating presentation:', error);
       setStep('input');
       resetGeneration();
       
       toast({
         title: "Generation Failed",
-        description: error.message || "Failed to generate presentation. Please try again.",
+        description: (error as Error).message || "Failed to generate presentation. Please try again.",
         variant: "destructive"
       });
     }

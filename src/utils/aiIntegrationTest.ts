@@ -21,7 +21,7 @@ export interface AITestResult {
   success: boolean;
   message: string;
   duration: number;
-  data?: any;
+  data?: unknown;
   error?: string;
 }
 
@@ -75,7 +75,7 @@ export class AIIntegrationTester {
           success: false,
           message: `${provider} connection test failed`,
           duration: Date.now() - startTime,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? (error as Error).message : 'Unknown error'
         });
       }
     }
@@ -122,7 +122,7 @@ export class AIIntegrationTester {
         success: false,
         message: 'Startup idea analysis failed',
         duration: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -170,7 +170,7 @@ export class AIIntegrationTester {
         success: false,
         message: 'Presentation generation failed',
         duration: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -214,7 +214,7 @@ export class AIIntegrationTester {
         success: false,
         message: 'Direct AI call failed',
         duration: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -251,7 +251,7 @@ export class AIIntegrationTester {
         } catch (error) {
           capabilities.push({
             provider,
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: error instanceof Error ? (error as Error).message : 'Unknown error'
           });
         }
       }
@@ -267,7 +267,7 @@ export class AIIntegrationTester {
         success: false,
         message: 'Provider capabilities test failed',
         duration: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -275,7 +275,7 @@ export class AIIntegrationTester {
   /**
    * Run all AI integration tests
    */
-  async runAllTests(): Promise<{ results: Map<string, AITestResult>; summary: any }> {
+  async runAllTests(): Promise<{ results: Map<string, AITestResult>; summary: unknown }> {
     console.log('🤖 Starting AI Integration Tests...');
     
     const tests = [
@@ -303,7 +303,7 @@ export class AIIntegrationTester {
           success: false,
           message: 'Test execution failed',
           duration: 0,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? (error as Error).message : 'Unknown error'
         });
       }
     }

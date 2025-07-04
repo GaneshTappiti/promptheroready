@@ -13,7 +13,7 @@ interface TestResult {
   status: 'pass' | 'fail' | 'warning';
   message: string;
   duration?: number;
-  details?: any;
+  details?: unknown;
 }
 
 interface TestSuite {
@@ -77,7 +77,7 @@ class DatabaseTester {
       suite.tests.push({
         name: 'Basic Connection',
         status: 'fail',
-        message: `Connection test failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        message: `Connection test failed: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`,
         duration: performance.now() - startTime
       });
     }
@@ -95,7 +95,7 @@ class DatabaseTester {
       suite.tests.push({
         name: 'Database Service Health',
         status: 'fail',
-        message: `Health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        message: `Health check failed: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`
       });
     }
 
@@ -105,14 +105,14 @@ class DatabaseTester {
       suite.tests.push({
         name: 'Authentication System',
         status: error ? 'fail' : 'pass',
-        message: error ? `Auth error: ${error.message}` : 'Authentication system working',
+        message: error ? `Auth error: ${(error as Error).message}` : 'Authentication system working',
         details: { hasSession: !!data.session }
       });
     } catch (error) {
       suite.tests.push({
         name: 'Authentication System',
         status: 'fail',
-        message: `Auth test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        message: `Auth test failed: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`
       });
     }
 
@@ -147,13 +147,13 @@ class DatabaseTester {
         suite.tests.push({
           name: `Table: ${table}`,
           status: error ? 'fail' : 'pass',
-          message: error ? `Table error: ${error.message}` : 'Table accessible'
+          message: error ? `Table error: ${(error as Error).message}` : 'Table accessible'
         });
       } catch (error) {
         suite.tests.push({
           name: `Table: ${table}`,
           status: 'fail',
-          message: `Table test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+          message: `Table test failed: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`
         });
       }
     }
@@ -162,7 +162,7 @@ class DatabaseTester {
     try {
       const { data, error } = await supabase.rpc('validate_schema_integrity');
       if (data) {
-        data.forEach((check: any) => {
+        data.forEach((check: unknown) => {
           suite.tests.push({
             name: `Schema Check: ${check.check_name}`,
             status: check.status === 'PASS' ? 'pass' : 'fail',
@@ -209,14 +209,14 @@ class DatabaseTester {
       suite.tests.push({
         name: 'Workspace Dashboard',
         status: result.error ? 'fail' : 'pass',
-        message: result.error ? `Workspace error: ${result.error.message}` : 'Workspace data accessible',
+        message: result.error ? `Workspace error: ${(result.error as Error).message}` : 'Workspace data accessible',
         details: result.data
       });
     } catch (error) {
       suite.tests.push({
         name: 'Workspace Dashboard',
         status: 'fail',
-        message: `Workspace test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        message: `Workspace test failed: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`
       });
     }
 
@@ -226,14 +226,14 @@ class DatabaseTester {
       suite.tests.push({
         name: 'Idea Vault',
         status: result.error ? 'fail' : 'pass',
-        message: result.error ? `Idea Vault error: ${result.error.message}` : 'Idea Vault accessible',
+        message: result.error ? `Idea Vault error: ${(result.error as Error).message}` : 'Idea Vault accessible',
         details: { ideaCount: result.data?.length || 0 }
       });
     } catch (error) {
       suite.tests.push({
         name: 'Idea Vault',
         status: 'fail',
-        message: `Idea Vault test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        message: `Idea Vault test failed: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`
       });
     }
 
@@ -244,14 +244,14 @@ class DatabaseTester {
         name: 'Subscription System',
         status: result.error && result.error.code !== 'PGRST116' ? 'fail' : 'pass',
         message: result.error && result.error.code !== 'PGRST116' ? 
-          `Subscription error: ${result.error.message}` : 'Subscription system accessible',
+          `Subscription error: ${(result.error as Error).message}` : 'Subscription system accessible',
         details: result.data
       });
     } catch (error) {
       suite.tests.push({
         name: 'Subscription System',
         status: 'fail',
-        message: `Subscription test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        message: `Subscription test failed: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`
       });
     }
 
@@ -301,7 +301,7 @@ class DatabaseTester {
       suite.tests.push({
         name: 'Real-time Connection',
         status: 'fail',
-        message: `Real-time test failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        message: `Real-time test failed: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`
       });
     }
 
@@ -325,7 +325,7 @@ class DatabaseTester {
         suite.tests.push({
           name: `Real-time Table: ${table}`,
           status: 'fail',
-          message: `${table} real-time failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+          message: `${table} real-time failed: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`
         });
       }
     }
@@ -369,7 +369,7 @@ class DatabaseTester {
           name: test.name,
           status: error ? 'fail' : duration > test.threshold ? 'warning' : 'pass',
           message: error ? 
-            `Query failed: ${error.message}` : 
+            `Query failed: ${(error as Error).message}` : 
             `Query completed in ${duration.toFixed(2)}ms`,
           duration,
           details: { recordCount: data?.length || 0 }
@@ -378,7 +378,7 @@ class DatabaseTester {
         suite.tests.push({
           name: test.name,
           status: 'fail',
-          message: `Performance test failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          message: `Performance test failed: ${error instanceof Error ? (error as Error).message : 'Unknown error'}`,
           duration: performance.now() - startTime
         });
       }

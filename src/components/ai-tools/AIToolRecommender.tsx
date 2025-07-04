@@ -570,9 +570,9 @@ export const AIToolRecommender: React.FC<AIToolRecommenderProps> = ({
                         <Label>Budget</Label>
                         <Select
                           value={recommendationForm.budget}
-                          onValueChange={(value: any) => setRecommendationForm({
+                          onValueChange={(value: string) => setRecommendationForm({
                             ...recommendationForm,
-                            budget: value
+                            budget: value as "free" | "freemium" | "paid" | "any"
                           })}
                         >
                           <SelectTrigger>

@@ -499,7 +499,7 @@ ${journeySteps}
 `;
   }
 
-  private static calculateSuitabilityScore(tool: any, request: FrameworkGenerationRequest): number {
+  private static calculateSuitabilityScore(tool: unknown, request: FrameworkGenerationRequest): number {
     let score = tool.popularity || 50;
     
     // Platform compatibility
@@ -522,7 +522,7 @@ ${journeySteps}
     return Math.min(score, 100);
   }
 
-  private static generateRecommendationReasons(tool: any, request: FrameworkGenerationRequest): string[] {
+  private static generateRecommendationReasons(tool: unknown, request: FrameworkGenerationRequest): string[] {
     const reasons: string[] = [];
     
     if (tool.pricing?.model === 'free') {
@@ -540,7 +540,7 @@ ${journeySteps}
     return reasons;
   }
 
-  private static estimateTimeToMVP(tool: any, complexity: string): string {
+  private static estimateTimeToMVP(tool: unknown, complexity: string): string {
     const timeMap: Record<string, Record<string, string>> = {
       'simple': { 'app-builders': '1-2 days', 'dev-ides': '3-5 days', 'ui-ux': '1 day' },
       'medium': { 'app-builders': '3-7 days', 'dev-ides': '1-2 weeks', 'ui-ux': '2-3 days' },
@@ -550,7 +550,7 @@ ${journeySteps}
     return timeMap[complexity]?.[tool.category] || '1-2 weeks';
   }
 
-  private static mapToolComplexity(tool: any, appType: AppType): 'beginner' | 'intermediate' | 'advanced' {
+  private static mapToolComplexity(tool: unknown, appType: AppType): 'beginner' | 'intermediate' | 'advanced' {
     if (tool.category === 'app-builders') return 'beginner';
     if (tool.category === 'dev-ides') return 'advanced';
     return 'intermediate';
@@ -763,7 +763,7 @@ Create a pixel-perfect, production-ready design that converts visitors into user
 
   private static generateLinkingPrompt(
     navigation: NavigationStructure,
-    primaryTool?: any
+    primaryTool?: unknown
   ): string {
     return `Create a comprehensive navigation and linking system for the application.
 

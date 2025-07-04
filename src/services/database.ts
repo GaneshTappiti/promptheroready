@@ -27,7 +27,7 @@ class DatabaseService {
   private connectionStatus: 'connected' | 'disconnected' | 'checking' = 'checking';
   private lastConnectionCheck: number = 0;
   private connectionCheckInterval: number = 30000; // 30 seconds
-  private cache: Map<string, { data: any; timestamp: number; ttl: number }> = new Map();
+  private cache: Map<string, { data: unknown; timestamp: number; ttl: number }> = new Map();
   private defaultCacheTTL: number = 300000; // 5 minutes
 
   constructor() {
@@ -101,7 +101,7 @@ class DatabaseService {
   // CACHING SYSTEM
   // =====================================================
 
-  private getCacheKey(operation: string, params: any): string {
+  private getCacheKey(operation: string, params: unknown): string {
     return `${operation}:${JSON.stringify(params)}`;
   }
 
@@ -114,7 +114,7 @@ class DatabaseService {
       return null;
     }
 
-    return cached.data;
+    return cached.data as T;
   }
 
   private setCache<T>(key: string, data: T, ttl: number = this.defaultCacheTTL): void {
@@ -169,14 +169,14 @@ class DatabaseService {
   // Idea Vault operations
   public get ideaVault() {
     return {
-      getIdeas: (userId: string, filters?: any) => 
+      getIdeas: (userId: string, filters?: unknown) => 
         ideaVaultHelpers.getIdeas(userId, filters),
-      createIdea: (ideaData: any) => {
+      createIdea: (ideaData: unknown) => {
         this.clearCache('ideaVault');
         this.clearCache('workspace');
-        return ideaVaultHelpers.createIdea(ideaData);
+        return ideaVaultHelpers.createIdea(ideaData as any);
       },
-      updateIdea: (ideaId: string, updates: any) => {
+      updateIdea: (ideaId: string, updates: unknown) => {
         this.clearCache('ideaVault');
         this.clearCache('workspace');
         return ideaVaultHelpers.updateIdea(ideaId, updates);
@@ -241,7 +241,7 @@ class DatabaseService {
 
   private async withCache<T>(
     operation: string,
-    params: any,
+    params: unknown,
     fn: () => Promise<T>,
     ttl: number = this.defaultCacheTTL
   ): Promise<T> {

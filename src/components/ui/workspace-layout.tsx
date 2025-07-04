@@ -14,8 +14,7 @@ interface WorkspaceLayoutProps {
 export function WorkspaceLayout({
   children,
   className,
-  variant = 'default',
-  showSidebar = true
+  variant = 'default'
 }: WorkspaceLayoutProps) {
   const backgroundClass = variant === 'alt'
     ? 'workspace-background-alt'

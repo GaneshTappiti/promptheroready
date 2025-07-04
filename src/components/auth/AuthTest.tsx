@@ -18,7 +18,7 @@ interface TestResult {
   name: string;
   success: boolean;
   error?: string;
-  details?: any;
+  details?: unknown;
 }
 
 const AuthTest: React.FC = () => {
@@ -46,7 +46,7 @@ const AuthTest: React.FC = () => {
       testResults.push({
         name: 'Supabase Auth Connection',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -67,7 +67,7 @@ const AuthTest: React.FC = () => {
       testResults.push({
         name: 'User Profiles Table Access',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -95,7 +95,7 @@ const AuthTest: React.FC = () => {
       testResults.push({
         name: 'Password Reset Function',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -117,7 +117,7 @@ const AuthTest: React.FC = () => {
         testResults.push({
           name: 'RLS Policy Check (Own Profile)',
           success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? (error as Error).message : 'Unknown error'
         });
       }
     } else {
@@ -149,7 +149,7 @@ const AuthTest: React.FC = () => {
       const newResult: TestResult = {
         name: 'Test Sign Up',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
       setResults(prev => [...prev, newResult]);
     }
@@ -173,7 +173,7 @@ const AuthTest: React.FC = () => {
       const newResult: TestResult = {
         name: 'Test Sign In',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
       setResults(prev => [...prev, newResult]);
     }
@@ -194,7 +194,7 @@ const AuthTest: React.FC = () => {
       const newResult: TestResult = {
         name: 'Test Sign Out',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
       setResults(prev => [...prev, newResult]);
     }

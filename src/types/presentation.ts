@@ -53,7 +53,7 @@ export interface ThemeProperties {
 export interface SlideElement {
   id: string;
   type: 'text' | 'image' | 'chart' | 'list' | 'quote' | 'code';
-  content: any;
+  content: unknown;
   position: {
     x: number;
     y: number;

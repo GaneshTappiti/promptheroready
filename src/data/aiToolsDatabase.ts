@@ -672,8 +672,8 @@ export const getRecommendedTools = (
 
   // Filter by platform compatibility
   if (platform.length > 0) {
-    filtered = filtered.filter(tool => 
-      platform.some(p => tool.platforms.includes(p as any))
+    filtered = filtered.filter(tool =>
+      platform.some(p => tool.platforms.includes(p as 'mobile' | 'desktop' | 'api' | 'web'))
     );
   }
 

@@ -170,7 +170,7 @@ export class EncryptionService {
       
       // If it decodes to something that looks like an API key pattern, it's probably fallback
       return decoded.length < 100 && /^[a-zA-Z0-9_-]+$/.test(decoded);
-    } catch {
+    } catch (error) {
       return false;
     }
   }
@@ -182,7 +182,7 @@ export class EncryptionService {
     try {
       const decrypted = await this.decryptApiKey(encryptedApiKey, userId);
       return decrypted.length > 0;
-    } catch {
+    } catch (error) {
       return false;
     }
   }
@@ -197,7 +197,7 @@ export class EncryptionService {
       // Overwrite the string content (though this may not work due to string immutability)
       try {
         (sensitiveString as any) = '0'.repeat(sensitiveString.length);
-      } catch {
+      } catch (error) {
         // Ignore errors - string is immutable
       }
     }

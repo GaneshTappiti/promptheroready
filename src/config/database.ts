@@ -28,24 +28,24 @@ export { pool };
 export default pool;
 
 // Monitor pool events
-pool.on('connect', (client) => {
+pool.on('connect', () => {
   console.log('New client connected to pool');
 });
 
-pool.on('error', (err, client) => {
+pool.on('error', (err) => {
   console.error('Unexpected error on idle client', err);
 });
 
-pool.on('acquire', (client) => {
+pool.on('acquire', () => {
   console.log('Client acquired from pool');
 });
 
-pool.on('remove', (client) => {
+pool.on('remove', () => {
   console.log('Client removed from pool');
 });
 
 // Helper function to execute queries with retry logic
-export const query = async (text: string, params?: any[], retries = 3) => {
+export const query = async (text: string, params?: unknown[], retries = 3) => {
   let lastError;
   
   for (let i = 0; i < retries; i++) {

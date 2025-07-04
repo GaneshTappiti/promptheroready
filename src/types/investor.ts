@@ -34,5 +34,5 @@ export interface FundingRound {
 }
 
 // Form input types for new entries (without id)
-export interface InvestorInput extends Omit<Investor, 'id'> {}
-export interface FundingRoundInput extends Omit<FundingRound, 'id'> {}
+export type InvestorInput = Omit<Investor, 'id'>
+export type FundingRoundInput = Omit<FundingRound, 'id'>

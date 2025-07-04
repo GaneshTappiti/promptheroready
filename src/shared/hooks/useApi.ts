@@ -20,15 +20,15 @@ interface UseApiReturn<T> {
   data: T | null;
   loading: boolean;
   error: string | null;
-  execute: (...args: any[]) => Promise<T | null>;
+  execute: (...args: unknown[]) => Promise<T | null>;
   reset: () => void;
 }
 
 // Simple in-memory cache
-const cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
+const cache = new Map<string, { data: unknown; timestamp: number; ttl: number }>();
 
 export function useApi<T = any>(
-  apiFunction: (...args: any[]) => Promise<ApiResponse<T>>,
+  apiFunction: (...args: unknown[]) => Promise<ApiResponse<T>>,
   options: UseApiOptions<T> = {}
 ): UseApiReturn<T> {
   const {
@@ -54,7 +54,7 @@ export function useApi<T = any>(
     
     const cached = cache.get(key);
     if (cached && Date.now() - cached.timestamp < cached.ttl) {
-      return cached.data;
+      return cached.data as T;
     }
     
     // Remove expired cache
@@ -107,7 +107,7 @@ export function useApi<T = any>(
   }, [retries, retryDelay]);
 
   // Main execute function
-  const execute = useCallback(async (...args: any[]): Promise<T | null> => {
+  const execute = useCallback(async (...args: unknown[]): Promise<T | null> => {
     // Cancel previous request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();

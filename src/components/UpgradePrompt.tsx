@@ -8,13 +8,11 @@ import {
   Zap,
   Infinity,
   Check,
-  X,
   Star,
   Rocket,
-  Brain,
-  ExternalLink
+  Brain
 } from "lucide-react";
-import { useUserSettings } from "@/stores/ideaStore";
+
 import { useToast } from "@/hooks/use-toast";
 
 interface UpgradePromptProps {
@@ -30,7 +28,7 @@ const UpgradePrompt: React.FC<UpgradePromptProps> = ({
   className,
   variant = 'card'
 }) => {
-  const { userSettings } = useUserSettings();
+
   const { toast } = useToast();
 
   const handleUpgrade = () => {

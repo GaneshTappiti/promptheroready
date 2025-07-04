@@ -12,7 +12,6 @@ import {
   Code,
   FileText,
   Palette,
-  Link,
   Sparkles,
   ExternalLink
 } from "lucide-react";

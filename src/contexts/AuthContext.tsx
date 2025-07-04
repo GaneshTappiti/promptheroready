@@ -7,13 +7,13 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<{ error: any }>;
-  signUp: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
-  resetPassword: (email: string) => Promise<{ error: any }>;
-  updatePassword: (newPassword: string) => Promise<{ error: any }>;
-  signInWithProvider: (provider: Provider) => Promise<{ error: any }>;
-  resendVerificationEmail: () => Promise<{ error: any }>;
+  resetPassword: (email: string) => Promise<{ error: Error | null }>;
+  updatePassword: (newPassword: string) => Promise<{ error: Error | null }>;
+  signInWithProvider: (provider: Provider) => Promise<{ error: Error | null }>;
+  resendVerificationEmail: () => Promise<{ error: Error | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, [toast]);
 
-  const signIn = async (email: string, password: string, rememberMe = false) => {
+  const signIn = async (email: string, password: string) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -86,7 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) {
         toast({
           title: "Sign In Failed",
-          description: error.message || "Invalid credentials",
+          description: (error as Error).message || "Invalid credentials",
           variant: "destructive"
         });
         return { error };
@@ -104,7 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string, userData?: any) => {
+  const signUp = async (email: string, password: string, userData?: Record<string, unknown>) => {
     try {
       console.log('🔄 Attempting signup for email:', email);
 
@@ -121,7 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('❌ Signup error:', error);
         toast({
           title: "Sign Up Failed",
-          description: error.message || "Failed to create account",
+          description: (error as Error).message || "Failed to create account",
           variant: "destructive"
         });
         return { error };

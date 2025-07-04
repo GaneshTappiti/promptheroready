@@ -218,7 +218,7 @@ export class SecurityAuditService {
   /**
    * Check for potential security issues in configuration
    */
-  static auditProviderConfig(config: any): string[] {
+  static auditProviderConfig(config: unknown): string[] {
     const issues: string[] = [];
 
     // Check for insecure custom endpoints
@@ -255,7 +255,7 @@ export class SecurityAuditService {
       // In a real application, you'd get this from the server
       // For client-side, we can't reliably get the real IP
       return 'client-side';
-    } catch {
+    } catch (error) {
       return 'unknown';
     }
   }

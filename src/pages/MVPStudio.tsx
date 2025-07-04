@@ -14,31 +14,27 @@ import {
   Star,
   ExternalLink,
   Rocket,
-  ArrowRight,
+
   ChevronLeft,
   Target
 } from "lucide-react";
-import { Layers } from "lucide-react";
 import MVPWizard from "@/components/mvp-studio/MVPWizard";
 import MVPResultsDisplay from "@/components/mvp-studio/MVPResultsDisplay";
 import AIToolRecommender from "@/components/ai-tools/AIToolRecommender";
 import IdeaPromptHistory from "@/components/mvp-studio/IdeaPromptHistory";
 import UpgradePrompt from "@/components/UpgradePrompt";
-import AIResponseFormatter from "@/components/AIResponseFormatter";
 import { MVPAnalysisResult } from "@/types/ideaforge";
 import { useAuth } from "@/contexts/AuthContext";
 import { aiProviderService } from "@/services/aiProviderService";
 import {
   aiToolsDatabase,
   aiToolsCategories,
-  getRecommendedTools,
   AITool
 } from "@/data/aiToolsDatabase";
-import { aiToolsSyncService } from "@/services/aiToolsSyncService";
 import { useToast } from "@/hooks/use-toast";
 import { useActiveIdea, usePromptHistory, useIdeaStore } from "@/stores/ideaStore";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { AIGenerationLoader } from "@/components/common/LoadingSpinner";
+
 import { mvpStudioHelpers } from "@/lib/supabase-connection-helpers";
 
 const MVPStudio = () => {
@@ -51,19 +47,19 @@ const MVPStudio = () => {
   const [mvpResult, setMvpResult] = useState<MVPAnalysisResult | null>(null);
   const [isCheckingAI, setIsCheckingAI] = useState(false);
   const [hasAIProvider, setHasAIProvider] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [mvps, setMvps] = useState<any[]>([]);
+  // const [selectedCategory, setSelectedCategory] = useState('all');
+  const [mvps, setMvps] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
 
   // New state for sequential flow
-  const [currentStep, setCurrentStep] = useState(1);
+  // const [currentStep, setCurrentStep] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedAppType, setSelectedAppType] = useState<'web' | 'mobile' | 'saas' | null>(null);
   const [selectedTools, setSelectedTools] = useState<AITool[]>([]);
 
   // Store hooks
   const { activeIdea } = useActiveIdea();
-  const { promptHistory, addPrompt, getPrompt } = usePromptHistory();
+  const { addPrompt, getPrompt } = usePromptHistory();
   const canGeneratePrompts = useIdeaStore((state) => state.canGeneratePrompts);
   const getRemainingPrompts = useIdeaStore((state) => state.getRemainingPrompts);
 
@@ -81,7 +77,7 @@ const MVPStudio = () => {
       if (error) throw error;
 
       setMvps(data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error loading MVPs:', error);
       toast({
         title: "Error Loading MVPs",
@@ -111,7 +107,7 @@ const MVPStudio = () => {
           tools: selectedTools.map(t => t.name)
         }
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error saving prompt to database:', error);
     }
   };
@@ -243,7 +239,7 @@ const MVPStudio = () => {
     .slice(0, 6);
 
   // Templates will be loaded dynamically based on user preferences and AI recommendations
-  const mvpTemplates: any[] = [];
+  const mvpTemplates: unknown[] = [];
 
   // Check AI provider on component mount
   useEffect(() => {
@@ -286,7 +282,7 @@ const MVPStudio = () => {
     window.open(tool.officialUrl, '_blank');
   };
 
-  const handleTemplateSelect = (template: any) => {
+  const handleTemplateSelect = (template: unknown) => {
     toast({
       title: "Template Selected",
       description: `Starting MVP Wizard with ${template.name} template`

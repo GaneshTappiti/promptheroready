@@ -4,8 +4,8 @@ import { isValidEmail } from '@/shared/utils/validation';
 export interface SignupTestResult {
   success: boolean;
   message: string;
-  error?: any;
-  data?: any;
+  error?: unknown;
+  data?: unknown;
 }
 
 /**
@@ -51,7 +51,7 @@ export const testSignupFlow = async (email: string, password: string): Promise<S
       console.error('❌ Supabase signup error:', error);
       return {
         success: false,
-        message: `Supabase signup failed: ${error.message}`,
+        message: `Supabase signup failed: ${(error as Error).message}`,
         error
       };
     }

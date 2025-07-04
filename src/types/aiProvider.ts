@@ -1,6 +1,6 @@
 // AI Provider Types and Interfaces
 
-export type AIProvider = 'openai' | 'gemini' | 'deepseek' | 'claude' | 'mistral' | 'custom' | 'none';
+export type AIProvider = 'openai' | 'google' | 'gemini' | 'anthropic' | 'claude' | 'deepseek' | 'mistral' | 'custom' | 'none';
 
 export type ConnectionStatus = 'untested' | 'connected' | 'error' | 'quota_exceeded';
 
@@ -11,7 +11,7 @@ export interface AIProviderConfig {
   customEndpoint?: string;
   temperature?: number;
   maxTokens?: number;
-  providerSettings?: Record<string, any>;
+  providerSettings?: Record<string, unknown>;
 }
 
 export interface UserAIPreferences {
@@ -23,7 +23,7 @@ export interface UserAIPreferences {
   customEndpoint?: string;
   temperature: number;
   maxTokens: number;
-  providerSettings: Record<string, any>;
+  providerSettings: Record<string, unknown>;
   totalRequests: number;
   totalTokensUsed: number;
   lastUsedAt?: string;
@@ -129,7 +129,7 @@ export interface OpenAIConfig extends AIProviderConfig {
 
 export interface GeminiConfig extends AIProviderConfig {
   provider: 'gemini';
-  safetySettings?: any[];
+  safetySettings?: unknown[];
 }
 
 export interface ClaudeConfig extends AIProviderConfig {

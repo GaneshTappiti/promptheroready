@@ -32,7 +32,7 @@ export async function checkSchemaStatus(): Promise<{
           .select('*')
           .limit(1);
 
-        if (error && (error.code === '42P01' || error.message.includes('does not exist'))) {
+        if (error && (error.code === '42P01' || (error as Error).message.includes('does not exist'))) {
           missingTables.push(table);
         }
       } catch (error) {
@@ -55,7 +55,7 @@ export async function checkSchemaStatus(): Promise<{
     };
 
   } catch (error) {
-    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    const errorMsg = error instanceof Error ? (error as Error).message : 'Unknown error';
     console.error('❌ Failed to check schema status:', errorMsg);
 
     return {

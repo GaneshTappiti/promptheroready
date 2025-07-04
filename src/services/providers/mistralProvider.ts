@@ -59,14 +59,14 @@ export class MistralProvider {
           created: data.created
         }
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof AIError) {
         throw error;
       }
 
       throw new AIError({
         code: 'MISTRAL_REQUEST_FAILED',
-        message: error.message || 'Mistral request failed',
+        message: (error as any)?.message || 'Mistral request failed',
         provider: 'mistral',
         retryable: false,
         details: { originalError: error }

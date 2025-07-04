@@ -20,7 +20,7 @@ interface TestResult {
   name: string;
   success: boolean;
   error?: string;
-  details?: any;
+  details?: unknown;
 }
 
 interface TestMVP {
@@ -82,7 +82,7 @@ const MVPStudioTest: React.FC = () => {
       testResults.push({
         name: 'MVPs Table Access',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -124,7 +124,7 @@ const MVPStudioTest: React.FC = () => {
       testResults.push({
         name: 'Create MVP',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -153,7 +153,7 @@ const MVPStudioTest: React.FC = () => {
         testResults.push({
           name: 'Update MVP',
           success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? (error as Error).message : 'Unknown error'
         });
       }
     } else {
@@ -205,7 +205,7 @@ const MVPStudioTest: React.FC = () => {
         testResults.push({
           name: 'Create Prompt History',
           success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? (error as Error).message : 'Unknown error'
         });
       }
     } else {
@@ -236,7 +236,7 @@ const MVPStudioTest: React.FC = () => {
       testResults.push({
         name: 'AI Tools Directory Access',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -256,7 +256,7 @@ const MVPStudioTest: React.FC = () => {
       testResults.push({
         name: 'Retrieve MVPs List',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -290,7 +290,7 @@ const MVPStudioTest: React.FC = () => {
         const newResult: TestResult = {
           name: 'Cleanup Test Data',
           success: false,
-          error: error.message
+          error: (error as Error).message
         };
         setResults(prev => [...prev, newResult]);
       }
@@ -298,7 +298,7 @@ const MVPStudioTest: React.FC = () => {
       const newResult: TestResult = {
         name: 'Cleanup Test Data',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
       setResults(prev => [...prev, newResult]);
     }

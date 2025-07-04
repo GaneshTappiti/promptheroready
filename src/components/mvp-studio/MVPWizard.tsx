@@ -327,7 +327,7 @@ Provide a structured JSON response with:
 \`\`\``;
   };
 
-  const generatePagePrompt = (pageName: string, pageData: any, data: MVPWizardData): string => {
+  const generatePagePrompt = (pageName: string, pageData: unknown, data: MVPWizardData): string => {
     const platformSpecific = data.step3.platforms.includes('web') ?
       'Include responsive design for mobile, tablet, and desktop viewports.' :
       (data.step3.platforms.includes('android') || data.step3.platforms.includes('ios')) ?
@@ -342,9 +342,9 @@ Provide a structured JSON response with:
 - Platform: ${data.step3.platforms.join(', ')}
 
 **Page Details:**
-- Purpose: ${pageData.description}
-- Layout Style: ${pageData.layout}
-- Key Components: ${pageData.components.join(', ')}
+- Purpose: ${(pageData as any)?.description || 'Not specified'}
+- Layout Style: ${(pageData as any)?.layout || 'Not specified'}
+- Key Components: ${(pageData as any)?.components?.join(', ') || 'Not specified'}
 
 **Design Requirements:**
 1. **Layout & Structure:**
@@ -380,8 +380,8 @@ Provide a detailed, copy-paste ready prompt that includes:
 Format this as a comprehensive prompt that can be directly used in tools like Framer, FlutterFlow, Webflow, or other AI builders.`;
   };
 
-  const generateLinkingPrompt = (pages: any[], data: MVPWizardData): string => {
-    const pageNames = pages.map(p => p.pageName).join(', ');
+  const generateLinkingPrompt = (pages: unknown[], data: MVPWizardData): string => {
+    const pageNames = pages.map(p => (p as any)?.pageName || 'Untitled').join(', ');
     const appType = data.step1.appType.replace('-', ' ');
 
     return `Create the complete navigation and linking system for "${data.step1.appName}" (${appType}).
@@ -541,7 +541,7 @@ Structure this as actionable implementation steps that can be directly applied i
         enhancedData.keyFeatures.length > 2 ? 'medium' : 'simple',
         startTime,
         false,
-        error instanceof Error ? error.message : 'Unknown error'
+        error instanceof Error ? (error as Error).message : 'Unknown error'
       );
 
       toast({

@@ -19,7 +19,7 @@ export class PresentationService {
   async createPresentation(
     userId: string, 
     request: CreatePresentationRequest
-  ): Promise<{ data: PresentationDocument | null; error: any }> {
+  ): Promise<{ data: PresentationDocument | null; error: unknown }> {
     try {
       const presentation: Presentation = {
         id: nanoid(),
@@ -90,7 +90,7 @@ export class PresentationService {
   async getPresentation(
     id: string, 
     userId: string
-  ): Promise<{ data: Presentation | null; error: any }> {
+  ): Promise<{ data: Presentation | null; error: unknown }> {
     try {
       const { data, error } = await docsDecksHelpers.getPresentation(id, userId);
       
@@ -113,7 +113,7 @@ export class PresentationService {
     id: string,
     userId: string,
     updates: Partial<Presentation>
-  ): Promise<{ data: Presentation | null; error: any }> {
+  ): Promise<{ data: Presentation | null; error: unknown }> {
     try {
       // First get the current presentation document to access metadata
       const { data: currentDoc, error: fetchDocError } = await docsDecksHelpers.getDocument(id, userId);
@@ -178,7 +178,7 @@ export class PresentationService {
       status?: string;
       search?: string;
     }
-  ): Promise<{ data: Presentation[] | null; error: any }> {
+  ): Promise<{ data: Presentation[] | null; error: unknown }> {
     try {
       const { data, error } = await docsDecksHelpers.getPresentations(userId, options);
       
@@ -208,7 +208,7 @@ export class PresentationService {
   async deletePresentation(
     id: string, 
     userId: string
-  ): Promise<{ success: boolean; error: any }> {
+  ): Promise<{ success: boolean; error: unknown }> {
     try {
       const { error } = await docsDecksHelpers.deletePresentation(id, userId);
       return { success: !error, error };
@@ -225,7 +225,7 @@ export class PresentationService {
     id: string,
     userId: string,
     newTitle?: string
-  ): Promise<{ data: PresentationDocument | null; error: any }> {
+  ): Promise<{ data: PresentationDocument | null; error: unknown }> {
     try {
       const { data, error } = await docsDecksHelpers.duplicatePresentation(id, userId, newTitle);
       return { data, error };
@@ -242,7 +242,7 @@ export class PresentationService {
     userId: string,
     request: OutlineGenerationRequest,
     onProgress?: (stage: string, current: number, total: number, message: string) => void
-  ): Promise<{ data: Presentation | null; error: any }> {
+  ): Promise<{ data: Presentation | null; error: unknown }> {
     try {
       // Step 1: Generate outline
       onProgress?.('outline', 0, 2, 'Generating presentation outline...');
@@ -305,7 +305,7 @@ export class PresentationService {
     userId: string,
     presentation: Presentation,
     ideaId?: string
-  ): Promise<{ data: PresentationDocument | null; error: any }> {
+  ): Promise<{ data: PresentationDocument | null; error: unknown }> {
     try {
       const { data, error } = await docsDecksHelpers.createPresentation({
         title: presentation.title,
@@ -353,7 +353,7 @@ export class PresentationService {
     userId: string,
     slideId: string,
     updates: Partial<Slide>
-  ): Promise<{ success: boolean; error: any }> {
+  ): Promise<{ success: boolean; error: unknown }> {
     try {
       const { data: presentation, error: fetchError } = await this.getPresentation(presentationId, userId);
       

@@ -99,7 +99,7 @@ export class QueryOptimizationService {
    */
   static createOptimizedRealtimeSubscription(
     table: string,
-    callback: (payload: any) => void,
+    callback: (payload: unknown) => void,
     options: {
       filter?: string;
       rateLimit?: number; // Max events per second
@@ -142,7 +142,7 @@ export class QueryOptimizationService {
       }
     };
 
-    const queueEvent = (payload: any) => {
+    const queueEvent = (payload: unknown) => {
       eventQueue.push(payload);
 
       // Clear existing timeout
@@ -264,7 +264,7 @@ export class QueryOptimizationService {
     const { data, error } = await query;
 
     if (error) {
-      throw new Error(`Pagination query failed: ${error.message}`);
+      throw new Error(`Pagination query failed: ${(error as Error).message}`);
     }
 
     const hasMore = data.length > pageSize;

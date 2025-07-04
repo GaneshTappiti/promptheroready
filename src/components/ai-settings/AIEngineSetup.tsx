@@ -6,17 +6,14 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
+
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Brain, 
-  Key, 
-  CheckCircle, 
-  AlertCircle, 
-  Settings, 
+import {
+  Brain,
+  Key,
+  CheckCircle,
+  AlertCircle,
   Zap,
-  Shield,
-  DollarSign,
   Clock,
   ExternalLink,
   Copy,
@@ -25,9 +22,7 @@ import {
   Sparkles,
   Rocket,
   Star,
-  TrendingUp,
-  Users,
-  Globe
+  TrendingUp
 } from 'lucide-react';
 import { aiProviderService } from '@/services/aiProviderService';
 import { AIProvider, AIProviderConfig } from '@/types/aiProvider';
@@ -114,7 +109,7 @@ export const AIEngineSetup: React.FC<AIEngineSetupProps> = ({
   const [selectedModel, setSelectedModel] = useState('');
   const [isTestingConnection, setIsTestingConnection] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
-  const [isDefaultProvider, setIsDefaultProvider] = useState(true);
+
   const [loading, setLoading] = useState(false);
 
   const selectedProviderData = aiProviders.find(p => p.id === selectedProvider);
@@ -127,7 +122,7 @@ export const AIEngineSetup: React.FC<AIEngineSetupProps> = ({
       if (preferences) {
         setSelectedProvider(preferences.provider);
         setSelectedModel(preferences.modelName || '');
-        setIsDefaultProvider(true);
+
         setConnectionStatus('success');
       }
     } catch (error) {

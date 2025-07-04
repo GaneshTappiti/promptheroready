@@ -27,17 +27,15 @@ const WikiAiAssistant: React.FC<WikiAiAssistantProps> = ({ onClose }) => {
     
     // Generate structured AI response using proper prompting framework
     setTimeout(() => {
-      const structuredPrompt = `I am a startup knowledge management assistant helping entrepreneurs organize their business information. Analyze the user query "${message}" and provide specific, actionable recommendations for organizing startup knowledge in a wiki format.
-
-Context: This is for a startup founder building a comprehensive knowledge base to track market research, product development, customer insights, and business strategy.
-
-Task: Provide structured recommendations including:
-1. Specific wiki sections relevant to the query
-2. Organization strategies and best practices
-3. Actionable next steps
-4. Example content structure
-
-Format: Use clear headings, bullet points, and include a practical example. Keep response focused and under 400 words.`;
+      // AI response generation logic would use this prompt structure
+      // const structuredPrompt = `I am a startup knowledge management assistant helping entrepreneurs organize their business information. Analyze the user query "${message}" and provide specific, actionable recommendations for organizing startup knowledge in a wiki format.
+      // Context: This is for a startup founder building a comprehensive knowledge base to track market research, product development, customer insights, and business strategy.
+      // Task: Provide structured recommendations including:
+      // 1. Specific wiki sections relevant to the query
+      // 2. Organization strategies and best practices
+      // 3. Actionable next steps
+      // 4. Example content structure
+      // Format: Use clear headings, bullet points, and include a practical example. Keep response focused and under 400 words.`;
 
       // Simulate AI processing the structured prompt
       const response = `# Knowledge Organization Recommendations

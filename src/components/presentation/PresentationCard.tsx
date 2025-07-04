@@ -100,7 +100,7 @@ const PresentationCard: React.FC<PresentationCardProps> = ({
               {/* Presentation Preview */}
               <div 
                 className="w-16 h-12 rounded-lg flex items-center justify-center text-white text-xs font-medium"
-                style={{ backgroundColor: theme.colors.primary }}
+                style={{ backgroundColor: (theme as any).colors.primary }}
               >
                 <Presentation className="h-6 w-6" />
               </div>
@@ -295,7 +295,7 @@ const PresentationCard: React.FC<PresentationCardProps> = ({
         <div 
           className="w-full h-32 rounded-lg mb-4 flex items-center justify-center text-white relative overflow-hidden"
           style={{ 
-            background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.secondary})`
+            background: `linear-gradient(135deg, ${(theme as any).colors.primary}, ${(theme as any).colors.secondary})`
           }}
         >
           <Presentation className="h-12 w-12 opacity-80" />
@@ -341,15 +341,15 @@ const PresentationCard: React.FC<PresentationCardProps> = ({
             <div className="flex gap-1">
               <div 
                 className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: theme.colors.primary }}
+                style={{ backgroundColor: (theme as any).colors.primary }}
               />
               <div 
                 className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: theme.colors.secondary }}
+                style={{ backgroundColor: (theme as any).colors.secondary }}
               />
               <div 
                 className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: theme.colors.accent }}
+                style={{ backgroundColor: (theme as any).colors.accent }}
               />
             </div>
           </div>

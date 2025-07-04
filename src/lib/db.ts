@@ -26,7 +26,7 @@ export const testDbConnection = async () => {
 };
 
 // Helper function to execute queries
-export const query = async (text: string, params?: any[]) => {
+export const query = async (text: string, params?: unknown[]) => {
   const start = Date.now();
   try {
     const res = await pool.query(text, params);
@@ -52,7 +52,7 @@ export const getClient = async () => {
   }, 5000);
 
   // Monkey patch the query method to keep track of the last query executed
-  client.query = (...args: any[]) => {
+  client.query = (...args: unknown[]) => {
     (client as any).lastQuery = args;
     return query.apply(client, args);
   };

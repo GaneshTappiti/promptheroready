@@ -59,13 +59,13 @@ interface IdeaCardProps {
     createdAt?: string;
     lastUpdated?: string;
   };
-  onGenerateInsights: (idea: any) => void;
-  onAddToPitchDeck?: (idea: any) => void;
+  onGenerateInsights: (idea: unknown) => void;
+  onAddToPitchDeck?: (idea: unknown) => void;
   isGeneratingInsights?: boolean;
   isDragging?: boolean;
-  onDragStart?: (idea: any) => void;
+  onDragStart?: (idea: unknown) => void;
   onDragEnd?: () => void;
-  onClick?: (idea: any) => void;
+  onClick?: (idea: unknown) => void;
 }
 
 const EnhancedIdeaCard: React.FC<IdeaCardProps> = ({

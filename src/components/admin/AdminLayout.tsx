@@ -30,6 +30,7 @@ import {
   LogOut,
   User,
   ChevronDown,
+  Activity,
 } from 'lucide-react';
 
 interface AdminLayoutProps {

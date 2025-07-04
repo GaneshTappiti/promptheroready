@@ -20,7 +20,7 @@ interface TestResult {
   name: string;
   success: boolean;
   error?: string;
-  details?: any;
+  details?: unknown;
 }
 
 interface TestIdeaForge {
@@ -75,7 +75,7 @@ const IdeaForgeTest: React.FC = () => {
       testResults.push({
         name: 'IdeaForge Ideas Access',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -119,7 +119,7 @@ const IdeaForgeTest: React.FC = () => {
       testResults.push({
         name: 'Create IdeaForge Idea',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -161,7 +161,7 @@ const IdeaForgeTest: React.FC = () => {
         testResults.push({
           name: 'Create Wiki Page',
           success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? (error as Error).message : 'Unknown error'
         });
       }
     } else {
@@ -202,7 +202,7 @@ const IdeaForgeTest: React.FC = () => {
         testResults.push({
           name: 'Create Journey Entry',
           success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? (error as Error).message : 'Unknown error'
         });
       }
     } else {
@@ -243,7 +243,7 @@ const IdeaForgeTest: React.FC = () => {
         testResults.push({
           name: 'Create Feedback Item',
           success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? (error as Error).message : 'Unknown error'
         });
       }
     } else {
@@ -273,7 +273,7 @@ const IdeaForgeTest: React.FC = () => {
         testResults.push({
           name: 'Get Idea With Details',
           success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? (error as Error).message : 'Unknown error'
         });
       }
     } else {
@@ -314,7 +314,7 @@ const IdeaForgeTest: React.FC = () => {
         const newResult: TestResult = {
           name: 'Cleanup Test Data',
           success: false,
-          error: error.message
+          error: (error as Error).message
         };
         setResults(prev => [...prev, newResult]);
       }
@@ -322,7 +322,7 @@ const IdeaForgeTest: React.FC = () => {
       const newResult: TestResult = {
         name: 'Cleanup Test Data',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
       setResults(prev => [...prev, newResult]);
     }

@@ -10,7 +10,7 @@ import { supabase } from '@/lib/supabase';
 export interface AdminSetupResult {
   success: boolean;
   message: string;
-  data?: any;
+  data?: unknown;
 }
 
 /**
@@ -64,7 +64,7 @@ export async function createAdminUser(
     console.error('Error creating admin user:', error);
     return {
       success: false,
-      message: `Failed to create admin user: ${error.message}`
+      message: `Failed to create admin user: ${(error as Error).message}`
     };
   }
 }
@@ -123,7 +123,7 @@ export async function createDemoPromptTemplates(adminUserId: string): Promise<Ad
     console.error('Error creating demo templates:', error);
     return {
       success: false,
-      message: `Failed to create demo templates: ${error.message}`
+      message: `Failed to create demo templates: ${(error as Error).message}`
     };
   }
 }
@@ -204,7 +204,7 @@ export async function createDemoAITools(adminUserId: string): Promise<AdminSetup
     console.error('Error creating demo tools:', error);
     return {
       success: false,
-      message: `Failed to create demo tools: ${error.message}`
+      message: `Failed to create demo tools: ${(error as Error).message}`
     };
   }
 }
@@ -273,7 +273,7 @@ export async function createDemoPlatformSettings(adminUserId: string): Promise<A
     console.error('Error creating demo settings:', error);
     return {
       success: false,
-      message: `Failed to create demo settings: ${error.message}`
+      message: `Failed to create demo settings: ${(error as Error).message}`
     };
   }
 }

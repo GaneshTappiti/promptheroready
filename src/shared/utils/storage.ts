@@ -244,7 +244,7 @@ export const isStorageAvailable = (type: 'localStorage' | 'sessionStorage'): boo
     storage.setItem(test, test);
     storage.removeItem(test);
     return true;
-  } catch {
+  } catch (error) {
     return false;
   }
 };

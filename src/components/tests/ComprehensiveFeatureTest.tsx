@@ -82,7 +82,7 @@ const ComprehensiveFeatureTest: React.FC = () => {
       teamSpaceTests.push({
         name: 'Team Space General Test',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -132,7 +132,7 @@ const ComprehensiveFeatureTest: React.FC = () => {
       taskPlannerTests.push({
         name: 'Task Planner General Test',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -171,7 +171,7 @@ const ComprehensiveFeatureTest: React.FC = () => {
       investorRadarTests.push({
         name: 'Investor Radar General Test',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -210,7 +210,7 @@ const ComprehensiveFeatureTest: React.FC = () => {
       adminTests.push({
         name: 'Admin Panel General Test',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -249,7 +249,7 @@ const ComprehensiveFeatureTest: React.FC = () => {
       profileTests.push({
         name: 'Profile & Settings General Test',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 

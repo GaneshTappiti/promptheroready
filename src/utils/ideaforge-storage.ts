@@ -270,7 +270,7 @@ class IdeaForgeStorage {
   }
 
   // Export functionality
-  static exportIdeaData(ideaId: string): any {
+  static exportIdeaData(ideaId: string): unknown {
     const idea = this.getIdeas().find(i => i.id === ideaId);
     const wiki = this.getWikiData(ideaId);
     const blueprint = this.getBlueprintData(ideaId);
@@ -288,7 +288,7 @@ class IdeaForgeStorage {
   }
 
   // Import functionality
-  static importIdeaData(data: any): boolean {
+  static importIdeaData(data: unknown): boolean {
     try {
       if (data.idea) this.saveIdea(data.idea);
       if (data.wiki) this.saveWikiData(data.wiki);

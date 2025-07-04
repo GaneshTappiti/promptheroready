@@ -38,7 +38,7 @@ interface AIInsightsPanelProps {
     businessModel?: string;
   };
   onClose: () => void;
-  onRefreshInsights: (idea: any) => void;
+  onRefreshInsights: (idea: unknown) => void;
   isGenerating?: boolean;
 }
 

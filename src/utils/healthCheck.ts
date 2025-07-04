@@ -8,7 +8,7 @@ export interface HealthCheckResult {
   component: string;
   status: 'healthy' | 'warning' | 'error';
   message: string;
-  details?: any;
+  details?: unknown;
 }
 
 /**
@@ -22,7 +22,7 @@ export async function checkSupabaseConnection(): Promise<HealthCheckResult> {
       return {
         component: 'Supabase Connection',
         status: 'error',
-        message: `Database connection failed: ${error.message}`,
+        message: `Database connection failed: ${(error as Error).message}`,
         details: error
       };
     }
@@ -32,11 +32,11 @@ export async function checkSupabaseConnection(): Promise<HealthCheckResult> {
       status: 'healthy',
       message: 'Database connection successful'
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       component: 'Supabase Connection',
       status: 'error',
-      message: `Connection error: ${error.message}`,
+      message: `Connection error: ${(error as Error).message}`,
       details: error
     };
   }
@@ -53,7 +53,7 @@ export async function checkAdminTables(): Promise<HealthCheckResult> {
     for (const table of tables) {
       const { error } = await supabase.from(table).select('count').limit(1);
       if (error) {
-        results.push({ table, error: error.message });
+        results.push({ table, error: (error as Error).message });
       }
     }
 
@@ -71,11 +71,11 @@ export async function checkAdminTables(): Promise<HealthCheckResult> {
       status: 'healthy',
       message: 'All admin tables accessible'
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       component: 'Admin Tables',
       status: 'error',
-      message: `Table check failed: ${error.message}`,
+      message: `Table check failed: ${(error as Error).message}`,
       details: error
     };
   }
@@ -110,7 +110,7 @@ export async function checkPredefinedAdminSetup(): Promise<HealthCheckResult> {
         return {
           component: 'Admin Setup',
           status: 'error',
-          message: `Error checking admin status: ${error.message}`,
+          message: `Error checking admin status: ${(error as Error).message}`,
           details: error
         };
       }
@@ -135,11 +135,11 @@ export async function checkPredefinedAdminSetup(): Promise<HealthCheckResult> {
         message: `Current user (${user.email}) is not the predefined admin email`
       };
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       component: 'Admin Setup',
       status: 'error',
-      message: `Admin setup check failed: ${error.message}`,
+      message: `Admin setup check failed: ${(error as Error).message}`,
       details: error
     };
   }

@@ -98,7 +98,7 @@ export class PerformanceTester {
         success: false,
         duration: performance.now() - startTime,
         metrics: {},
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -161,7 +161,7 @@ export class PerformanceTester {
         success: false,
         duration: performance.now() - startTime,
         metrics: {},
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -217,7 +217,7 @@ export class PerformanceTester {
         success: false,
         duration: performance.now() - startTime,
         metrics: {},
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -273,7 +273,7 @@ export class PerformanceTester {
         success: false,
         duration: performance.now() - startTime,
         metrics: {},
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -287,7 +287,7 @@ export class PerformanceTester {
 
     try {
       let messageCount = 0;
-      const subscriptions: any[] = [];
+      const subscriptions: unknown[] = [];
 
       // Create multiple real-time subscriptions
       for (let i = 0; i < 5; i++) {
@@ -347,7 +347,7 @@ export class PerformanceTester {
         success: false,
         duration: performance.now() - startTime,
         metrics: {},
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -369,7 +369,7 @@ export class PerformanceTester {
       const initialMemory = this.getMemoryUsage();
       
       // Create large data structures to test memory handling
-      const largeArrays: any[] = [];
+      const largeArrays: unknown[] = [];
       for (let i = 0; i < 100; i++) {
         const { data } = await supabase.from('messages').select('*').limit(50);
         largeArrays.push(data);
@@ -413,7 +413,7 @@ export class PerformanceTester {
         success: false,
         duration: performance.now() - startTime,
         metrics: {},
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }

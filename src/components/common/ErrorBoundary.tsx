@@ -80,7 +80,7 @@ export class ErrorBoundary extends Component<Props, State> {
               {config.app.isDevelopment && this.state.error && (
                 <div className="rounded-md bg-red-950/50 p-3 text-xs text-red-300 font-mono overflow-auto max-h-32">
                   <div className="font-semibold mb-1">Error:</div>
-                  <div>{this.state.error.message}</div>
+                  <div>{(this.state.error as Error).message}</div>
                   {this.state.error.stack && (
                     <>
                       <div className="font-semibold mt-2 mb-1">Stack:</div>

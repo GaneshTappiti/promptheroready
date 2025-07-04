@@ -87,7 +87,7 @@ try {
     rootElement.innerHTML = `
       <div style="padding: 20px; background: red; color: white; font-family: Arial;">
         <h1>Error Loading App</h1>
-        <p>Error: ${error instanceof Error ? error.message : 'Unknown error'}</p>
+        <p>Error: ${error instanceof Error ? (error as Error).message : 'Unknown error'}</p>
         <p>Check the console for more details.</p>
       </div>
     `;

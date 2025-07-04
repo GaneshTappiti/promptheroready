@@ -20,7 +20,7 @@ interface TestResult {
   name: string;
   success: boolean;
   error?: string;
-  details?: any;
+  details?: unknown;
 }
 
 interface TestIdea {
@@ -77,7 +77,7 @@ const IdeaVaultTest: React.FC = () => {
       testResults.push({
         name: 'Ideas Table Access',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -113,7 +113,7 @@ const IdeaVaultTest: React.FC = () => {
       testResults.push({
         name: 'Create New Idea',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -143,7 +143,7 @@ const IdeaVaultTest: React.FC = () => {
         testResults.push({
           name: 'Update Idea',
           success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? (error as Error).message : 'Unknown error'
         });
       }
     } else {
@@ -170,7 +170,7 @@ const IdeaVaultTest: React.FC = () => {
       testResults.push({
         name: 'Retrieve Ideas List',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -219,7 +219,7 @@ const IdeaVaultTest: React.FC = () => {
       testResults.push({
         name: 'Zustand Store Integration',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       });
     }
 
@@ -253,7 +253,7 @@ const IdeaVaultTest: React.FC = () => {
         const newResult: TestResult = {
           name: 'Cleanup Test Data',
           success: false,
-          error: error.message
+          error: (error as Error).message
         };
         setResults(prev => [...prev, newResult]);
       }
@@ -261,7 +261,7 @@ const IdeaVaultTest: React.FC = () => {
       const newResult: TestResult = {
         name: 'Cleanup Test Data',
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
       setResults(prev => [...prev, newResult]);
     }

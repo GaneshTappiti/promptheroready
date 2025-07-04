@@ -58,24 +58,24 @@ export class GeminiProvider {
           citationMetadata: response.candidates?.[0]?.citationMetadata
         }
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Handle Gemini-specific errors
       let errorCode = 'GEMINI_REQUEST_FAILED';
       let retryable = false;
 
-      if (error.message?.includes('API_KEY_INVALID')) {
+      if ((error as any)?.message?.includes('API_KEY_INVALID')) {
         errorCode = 'GEMINI_INVALID_API_KEY';
-      } else if (error.message?.includes('QUOTA_EXCEEDED')) {
+      } else if ((error as any)?.message?.includes('QUOTA_EXCEEDED')) {
         errorCode = 'GEMINI_QUOTA_EXCEEDED';
         retryable = true;
-      } else if (error.message?.includes('RATE_LIMIT_EXCEEDED')) {
+      } else if ((error as any)?.message?.includes('RATE_LIMIT_EXCEEDED')) {
         errorCode = 'GEMINI_RATE_LIMIT';
         retryable = true;
       }
 
       throw new AIError({
         code: errorCode,
-        message: error.message || 'Gemini request failed',
+        message: (error as any)?.message || 'Gemini request failed',
         provider: 'gemini',
         retryable,
         details: { originalError: error }

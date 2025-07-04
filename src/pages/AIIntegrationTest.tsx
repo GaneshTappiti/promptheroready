@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,8 +20,6 @@ import {
   Settings,
   Play,
   RefreshCw,
-  AlertTriangle,
-  Sparkles,
   MessageSquare,
   Presentation,
   Lightbulb
@@ -36,13 +33,12 @@ const AIIntegrationTest: React.FC = () => {
   const [isRunningTests, setIsRunningTests] = useState(false);
   const [testProgress, setTestProgress] = useState(0);
   const [currentTest, setCurrentTest] = useState('');
-  const [testSummary, setTestSummary] = useState<any>(null);
-  
+  const [testSummary, setTestSummary] = useState<Record<string, unknown> | null>(null);
+
   // Manual test states
   const [manualPrompt, setManualPrompt] = useState('Generate a creative startup idea for a mobile app');
   const [manualResponse, setManualResponse] = useState('');
   const [isManualTesting, setIsManualTesting] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState<AIProvider>('gemini');
 
   const runComprehensiveTests = async () => {
     if (!user) {
@@ -94,7 +90,7 @@ const AIIntegrationTest: React.FC = () => {
       console.error('Test execution failed:', error);
       toast({
         title: "Test Execution Failed",
-        description: error instanceof Error ? error.message : "Unknown error occurred",
+        description: error instanceof Error ? (error as Error).message : "Unknown error occurred",
         variant: "destructive"
       });
     } finally {
@@ -132,7 +128,7 @@ const AIIntegrationTest: React.FC = () => {
         variant: "default"
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      const errorMessage = error instanceof Error ? (error as Error).message : "Unknown error occurred";
       setManualResponse(`Error: ${errorMessage}`);
       
       toast({
@@ -214,19 +210,19 @@ const AIIntegrationTest: React.FC = () => {
             {testSummary && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-700/30 rounded-lg">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-blue-400">{testSummary.total}</p>
+                  <p className="text-2xl font-bold text-blue-400">{String(testSummary.total)}</p>
                   <p className="text-gray-400 text-sm">Total Tests</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-green-400">{testSummary.passed}</p>
+                  <p className="text-2xl font-bold text-green-400">{String(testSummary.passed)}</p>
                   <p className="text-gray-400 text-sm">Passed</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-red-400">{testSummary.failed}</p>
+                  <p className="text-2xl font-bold text-red-400">{String(testSummary.failed)}</p>
                   <p className="text-gray-400 text-sm">Failed</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-yellow-400">{testSummary.successRate}</p>
+                  <p className="text-2xl font-bold text-yellow-400">{String(testSummary.successRate)}</p>
                   <p className="text-gray-400 text-sm">Success Rate</p>
                 </div>
               </div>

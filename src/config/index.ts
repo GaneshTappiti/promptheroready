@@ -258,10 +258,10 @@ export const config = {
     sentryDsn: env.SENTRY_DSN,
     environment: env.APP_ENVIRONMENT,
     sampleRate: env.NODE_ENV === 'production' ? 0.1 : 1.0,
-    beforeSend: (event: any) => {
+    beforeSend: (event: unknown) => {
       // Filter out sensitive information
-      if (event.exception) {
-        const error = event.exception.values?.[0];
+      if ((event as any)?.exception) {
+        const error = (event as any)?.exception?.values?.[0];
         if (error?.value?.includes('API_KEY') || error?.value?.includes('password')) {
           return null; // Don't send sensitive errors
         }

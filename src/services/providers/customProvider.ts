@@ -20,7 +20,7 @@ export class CustomProvider {
       }
 
       const requestFormat = config.requestFormat || 'openai';
-      let requestBody: any;
+      let requestBody: Record<string, unknown>;
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
         ...config.headers
@@ -129,14 +129,14 @@ export class CustomProvider {
         metadata: { customResponse: data }
       };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof AIError) {
         throw error;
       }
 
       throw new AIError({
         code: 'CUSTOM_REQUEST_FAILED',
-        message: error.message || 'Custom provider request failed',
+        message: (error as Error).message || 'Custom provider request failed',
         provider: 'custom',
         retryable: false,
         details: { originalError: error }

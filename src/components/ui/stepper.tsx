@@ -34,7 +34,6 @@ const Stepper: React.FC<StepperProps> = ({
   completedSteps = [],
   errorSteps = [],
   orientation = 'horizontal',
-  variant = 'default',
   className,
   onStepClick,
   allowStepNavigation = false,

@@ -222,7 +222,7 @@ const TaskList = ({ tasks, onUpdateTask, onAddTask }: TaskListProps) => {
 
             <div>
               <Label htmlFor="task-priority">Priority</Label>
-              <Select value={newTaskData.priority} onValueChange={(value: any) => setNewTaskData({...newTaskData, priority: value})}>
+              <Select value={newTaskData.priority} onValueChange={(value: string) => setNewTaskData({...newTaskData, priority: value as "high" | "medium" | "low"})}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

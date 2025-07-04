@@ -2,19 +2,17 @@ import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { cn } from '@/lib/utils';
-import { 
-  Copy, 
-  Check, 
-  ExternalLink, 
-  Code, 
-  Palette, 
-  Smartphone, 
+import {
+  Copy,
+  Check,
+  ExternalLink,
+  Code,
+  Palette,
+  Smartphone,
   Monitor,
   Zap,
-  Download,
-  Eye,
   ChevronDown,
   ChevronRight
 } from 'lucide-react';
@@ -22,7 +20,6 @@ import { Button } from './button';
 import { Badge } from './badge';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './collapsible';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
 import { useToast } from '@/hooks/use-toast';
 
 interface ToolSpecificSection {
@@ -280,7 +277,7 @@ const EnhancedAIResponse: React.FC<EnhancedAIResponseProps> = ({
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
-            code({ node, inline, className, children, ...props }: any) {
+            code({ inline, className, children, ...props }: any) {
               const match = /language-(\w+)/.exec(className || '');
               const language = match ? match[1] : '';
 

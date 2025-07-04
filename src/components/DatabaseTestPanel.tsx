@@ -12,7 +12,7 @@ interface TestResult {
   status: 'pass' | 'fail' | 'warning';
   message: string;
   duration?: number;
-  details?: any;
+  details?: unknown;
 }
 
 interface TestSuite {

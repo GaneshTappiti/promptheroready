@@ -57,10 +57,10 @@ export default function Auth() {
 
         const { error } = await updatePassword(newPassword);
         if (error) {
-          setError(error.message);
+          setError((error as Error).message);
           toast({
             title: "Error",
-            description: error.message,
+            description: (error as Error).message,
             variant: "destructive"
           });
         } else {
@@ -86,10 +86,10 @@ export default function Auth() {
 
         const { error } = await resetPassword(email);
         if (error) {
-          setError(error.message);
+          setError((error as Error).message);
           toast({
             title: "Error",
-            description: error.message,
+            description: (error as Error).message,
             variant: "destructive"
           });
         } else {
@@ -119,14 +119,14 @@ export default function Auth() {
         }
 
         const { error } = isLogin
-          ? await signIn(email, password, rememberMe)
+          ? await signIn(email, password)
           : await signUp(email, password);
 
         if (error) {
-          setError(error.message);
+          setError((error as Error).message);
           toast({
             title: "Error",
-            description: error.message,
+            description: (error as Error).message,
             variant: "destructive"
           });
         } else {
@@ -178,10 +178,10 @@ export default function Auth() {
     try {
       const { error } = await signInWithProvider(provider);
       if (error) {
-        setError(error.message);
+        setError((error as Error).message);
         toast({
           title: "Error",
-          description: error.message,
+          description: (error as Error).message,
           variant: "destructive"
         });
       }

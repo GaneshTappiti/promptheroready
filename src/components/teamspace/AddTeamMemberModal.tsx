@@ -15,7 +15,7 @@ import { UserPlus } from "lucide-react";
 interface AddTeamMemberModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddMember: (member: any) => void;
+  onAddMember: (member: unknown) => void;
 }
 
 const formSchema = z.object({

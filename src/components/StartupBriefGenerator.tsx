@@ -10,8 +10,7 @@ import {
   DollarSign,
   Code,
   Users,
-  TrendingUp,
-  Clock,
+
   CheckCircle2,
   ExternalLink,
   Download,

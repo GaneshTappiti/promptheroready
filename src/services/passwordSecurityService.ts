@@ -204,7 +204,7 @@ export class PasswordSecurityService {
   /**
    * Enhanced sign up with password validation
    */
-  static async secureSignUp(email: string, password: string, userData?: any) {
+  static async secureSignUp(email: string, password: string, userData?: unknown) {
     try {
       // Validate password first
       const validation = await this.validatePassword(password);
@@ -238,7 +238,7 @@ export class PasswordSecurityService {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: userData,
+          data: userData as object,
         },
       });
 
@@ -246,9 +246,9 @@ export class PasswordSecurityService {
         await SecurityAuditService.logSecurityEvent({
           userId: 'anonymous',
           eventType: 'connection_test_failed',
-          description: `Sign up failed: ${error.message}`,
+          description: `Sign up failed: ${(error as Error).message}`,
           severity: 'medium',
-          metadata: { email, error: error.message },
+          metadata: { email, error: (error as Error).message },
         });
       } else {
         await SecurityAuditService.logSecurityEvent({
@@ -287,9 +287,9 @@ export class PasswordSecurityService {
         await SecurityAuditService.logSecurityEvent({
           userId: 'anonymous',
           eventType: 'connection_test_failed',
-          description: `Sign in failed: ${error.message}`,
+          description: `Sign in failed: ${(error as Error).message}`,
           severity: 'medium',
-          metadata: { email, error: error.message },
+          metadata: { email, error: (error as Error).message },
         });
       } else {
         await SecurityAuditService.logSecurityEvent({

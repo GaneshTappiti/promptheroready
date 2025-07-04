@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -68,13 +68,13 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
       const { data, error } = await presentationService.getPresentation(effectivePresentationId, user.id);
       
       if (error || !data) {
-        throw new Error(error?.message || 'Presentation not found');
+        throw new Error((error as Error)?.message || 'Presentation not found');
       }
 
       setPresentation(data);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error loading presentation:', error);
-      setError(error.message);
+      setError((error as Error).message);
       toast({
         title: "Error",
         description: "Failed to load presentation.",
@@ -193,9 +193,9 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
       <div 
         className="min-h-screen flex flex-col"
         style={{ 
-          backgroundColor: theme.colors.background,
-          color: theme.colors.text,
-          fontFamily: theme.fonts.body
+          backgroundColor: (theme as any).colors.background,
+          color: (theme as any).colors.text,
+          fontFamily: (theme as any).fonts.body
         }}
       >
         {/* Presentation Controls */}
@@ -381,20 +381,20 @@ const PresentationViewer: React.FC<PresentationViewerProps> = ({
 };
 
 // Simple slide renderer component
-const SlideRenderer: React.FC<{ slide: Slide; theme: any }> = ({ slide, theme }) => {
+const SlideRenderer: React.FC<{ slide: Slide; theme: unknown }> = ({ slide, theme }) => {
   return (
     <div 
       className="w-full aspect-video p-8 flex flex-col"
       style={{ 
-        backgroundColor: slide.background?.value || theme.colors.surface,
-        fontFamily: theme.fonts.body
+        backgroundColor: slide.background?.value || (theme as any).colors.surface,
+        fontFamily: (theme as any).fonts.body
       }}
     >
       <h1 
         className="text-3xl font-bold mb-6"
         style={{ 
-          color: theme.colors.text,
-          fontFamily: theme.fonts.heading
+          color: (theme as any).colors.text,
+          fontFamily: (theme as any).fonts.heading
         }}
       >
         {slide.title}
@@ -417,13 +417,13 @@ const SlideRenderer: React.FC<{ slide: Slide; theme: any }> = ({ slide, theme })
             {element.type === 'text' && (
               <div 
                 className="prose"
-                style={{ color: theme.colors.text }}
+                style={{ color: (theme as any).colors.text }}
                 dangerouslySetInnerHTML={{ __html: element.content }}
               />
             )}
             {element.type === 'list' && (
-              <ul className="list-disc list-inside space-y-2" style={{ color: theme.colors.text }}>
-                {element.content.split('\n').map((item: string, index: number) => (
+              <ul className="list-disc list-inside space-y-2" style={{ color: (theme as any).colors.text }}>
+                {(element.content as string).split('\n').map((item: string, index: number) => (
                   <li key={index}>{item}</li>
                 ))}
               </ul>
@@ -432,11 +432,11 @@ const SlideRenderer: React.FC<{ slide: Slide; theme: any }> = ({ slide, theme })
               <blockquote 
                 className="border-l-4 pl-4 italic text-lg"
                 style={{ 
-                  borderColor: theme.colors.primary,
-                  color: theme.colors.textSecondary
+                  borderColor: (theme as any).colors.primary,
+                  color: (theme as any).colors.textSecondary
                 }}
               >
-                {element.content}
+                {element.content as string}
               </blockquote>
             )}
           </div>

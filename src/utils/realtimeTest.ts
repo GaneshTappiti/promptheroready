@@ -10,7 +10,7 @@ export interface RealtimeTestResult {
   success: boolean;
   message: string;
   duration: number;
-  data?: any;
+  data?: unknown;
   error?: string;
 }
 
@@ -70,7 +70,7 @@ export class RealtimeTester {
         success: false,
         message: 'WebSocket connection failed',
         duration: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -134,7 +134,7 @@ export class RealtimeTester {
         success: false,
         message: 'Global messaging test failed',
         duration: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -214,7 +214,7 @@ export class RealtimeTester {
         success: false,
         message: 'Team messaging test failed',
         duration: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -278,7 +278,7 @@ export class RealtimeTester {
         success: false,
         message: 'Presence tracking test failed',
         duration: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -356,7 +356,7 @@ export class RealtimeTester {
         success: false,
         message: 'Typing indicators test failed',
         duration: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -406,7 +406,7 @@ export class RealtimeTester {
         success: false,
         message: 'Concurrent connections test failed',
         duration: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? (error as Error).message : 'Unknown error'
       };
     }
   }
@@ -414,7 +414,7 @@ export class RealtimeTester {
   /**
    * Run all real-time tests
    */
-  async runAllTests(): Promise<{ results: Map<string, RealtimeTestResult>; summary: any }> {
+  async runAllTests(): Promise<{ results: Map<string, RealtimeTestResult>; summary: unknown }> {
     console.log('🔄 Starting Real-time Features Tests...');
     
     const results = new Map<string, RealtimeTestResult>();
@@ -438,7 +438,7 @@ export class RealtimeTester {
           success: false,
           message: 'Test execution failed',
           duration: 0,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? (error as Error).message : 'Unknown error'
         });
       }
     }
