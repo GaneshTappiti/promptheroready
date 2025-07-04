@@ -135,7 +135,8 @@ export default function Auth() {
               title: "Success",
               description: "Signed in successfully!"
             });
-            navigate('/workspace');
+            // Redirect to auth callback to handle onboarding checks
+            navigate('/auth/callback');
           } else {
             setSuccess('Please check your email to verify your account!');
             toast({

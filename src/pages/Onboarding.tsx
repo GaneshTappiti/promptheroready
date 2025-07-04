@@ -1,15 +1,28 @@
 // Comprehensive Onboarding Page - Welcome new users and collect essential info
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { ComprehensiveOnboarding, type OnboardingData } from '@/components/onboarding';
 import { onboardingService } from '@/services/onboardingService';
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 
 export default function Onboarding() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+  const [onboardingStatus, setOnboardingStatus] = useState<{
+    loading: boolean;
+    hasCompletedBasic: boolean;
+    hasConfiguredAI: boolean;
+    needsAI: boolean;
+  }>({
+    loading: true,
+    hasCompletedBasic: false,
+    hasConfiguredAI: false,
+    needsAI: false
+  });
 
   useEffect(() => {
     // Redirect to auth if not logged in
@@ -17,6 +30,40 @@ export default function Onboarding() {
       navigate('/auth');
     }
   }, [user, loading, navigate]);
+
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      if (!user) return;
+
+      try {
+        const [hasCompletedBasic, hasConfiguredAI] = await Promise.all([
+          onboardingService.hasCompletedBasicOnboarding(user.id),
+          onboardingService.hasConfiguredAI(user.id)
+        ]);
+
+        const needsAI = location.state?.needsAI || false;
+
+        setOnboardingStatus({
+          loading: false,
+          hasCompletedBasic,
+          hasConfiguredAI,
+          needsAI
+        });
+
+        // If user has completed basic onboarding and configured AI, redirect to workspace
+        if (hasCompletedBasic && hasConfiguredAI && !needsAI) {
+          navigate('/workspace');
+        }
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+        setOnboardingStatus(prev => ({ ...prev, loading: false }));
+      }
+    };
+
+    if (!loading && user) {
+      checkOnboardingStatus();
+    }
+  }, [user, loading, navigate, location.state]);
 
   const handleOnboardingComplete = async (data: OnboardingData) => {
     if (!user) return;
@@ -55,12 +102,8 @@ export default function Onboarding() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
-      </div>
-    );
+  if (loading || onboardingStatus.loading) {
+    return <LoadingSpinner fullScreen text="Checking onboarding status..." />;
   }
 
   if (!user) {

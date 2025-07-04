@@ -19,6 +19,7 @@ import { BetaRibbon } from "@/components/ui/beta-ribbon";
 import { config } from "@/config";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { ProtectedOnboardingRoute } from "@/components/ProtectedOnboardingRoute";
 
 // Lazy load page components for better performance
 const LandingPage = lazy(() => import("@/pages/LandingPage"));
@@ -91,7 +92,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// Protected Route component
+// Protected Route component - Basic auth check only
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
 
@@ -104,6 +105,17 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   return <>{children}</>;
+}
+
+// Protected Route with onboarding check
+function ProtectedWorkspaceRoute({ children, requiresAI = true }: { children: React.ReactNode; requiresAI?: boolean }) {
+  return (
+    <ProtectedRoute>
+      <ProtectedOnboardingRoute requiresAI={requiresAI}>
+        {children}
+      </ProtectedOnboardingRoute>
+    </ProtectedRoute>
+  );
 }
 
 function AppRoutes() {
@@ -125,47 +137,47 @@ function AppRoutes() {
       <Route
         path="/workspace"
         element={
-          <ProtectedRoute>
+          <ProtectedWorkspaceRoute requiresAI={false}>
             <Workspace />
-          </ProtectedRoute>
+          </ProtectedWorkspaceRoute>
         }
       />
 
       <Route path="/workspace/idea-vault" element={
-        <ProtectedRoute>
+        <ProtectedWorkspaceRoute requiresAI={false}>
           <IdeaVault />
-        </ProtectedRoute>
+        </ProtectedWorkspaceRoute>
       } />
       <Route path="/workspace/idea-vault/:ideaId" element={
-        <ProtectedRoute>
+        <ProtectedWorkspaceRoute requiresAI={false}>
           <IdeaDetails />
-        </ProtectedRoute>
+        </ProtectedWorkspaceRoute>
       } />
       <Route path="/workspace/ideaforge" element={
-        <ProtectedRoute>
+        <ProtectedWorkspaceRoute requiresAI={true}>
           <IdeaForge />
-        </ProtectedRoute>
+        </ProtectedWorkspaceRoute>
       } />
       <Route path="/workspace/ideaforge/:ideaId" element={
-        <ProtectedRoute>
+        <ProtectedWorkspaceRoute requiresAI={true}>
           <IdeaForge />
-        </ProtectedRoute>
+        </ProtectedWorkspaceRoute>
       } />
 
       <Route path="/workspace/mvp-studio" element={
-        <ProtectedRoute>
+        <ProtectedWorkspaceRoute requiresAI={true}>
           <MVPStudio />
-        </ProtectedRoute>
+        </ProtectedWorkspaceRoute>
       } />
       <Route path="/workspace/docs-decks" element={
-        <ProtectedRoute>
+        <ProtectedWorkspaceRoute requiresAI={true}>
           <DocsDecks />
-        </ProtectedRoute>
+        </ProtectedWorkspaceRoute>
       } />
       <Route path="/workspace/docs-decks/editor/:docId" element={
-        <ProtectedRoute>
+        <ProtectedWorkspaceRoute requiresAI={true}>
           <DocumentEditor />
-        </ProtectedRoute>
+        </ProtectedWorkspaceRoute>
       } />
       <Route path="/workspace/docs-decks/presentation/:id" element={
         <ProtectedRoute>

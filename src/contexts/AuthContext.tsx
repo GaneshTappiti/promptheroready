@@ -60,12 +60,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null);
       setLoading(false);
 
-      if (event === 'SIGNED_IN') {
-        toast({
-          title: "Success",
-          description: "Signed in successfully!"
-        });
-      } else if (event === 'SIGNED_OUT') {
+      // Only show success toasts for manual sign in/out actions
+      // AuthCallback will handle redirects and onboarding checks
+      if (event === 'SIGNED_OUT') {
         toast({
           title: "Success",
           description: "Signed out successfully!"

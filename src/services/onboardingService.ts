@@ -88,9 +88,36 @@ class OnboardingService {
   async hasCompletedOnboarding(userId: string): Promise<boolean> {
     try {
       const { data } = await this.getOnboardingData(userId);
-      return !!data;
+      // User must have completed onboarding AND configured AI to be considered fully onboarded
+      return !!(data && data.onboarding_completed && data.ai_configured);
     } catch (error) {
       console.error('Error checking onboarding status:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Check if user has completed basic onboarding (profile setup)
+   */
+  async hasCompletedBasicOnboarding(userId: string): Promise<boolean> {
+    try {
+      const { data } = await this.getOnboardingData(userId);
+      return !!(data && data.onboarding_completed);
+    } catch (error) {
+      console.error('Error checking basic onboarding status:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Check if user has configured AI API
+   */
+  async hasConfiguredAI(userId: string): Promise<boolean> {
+    try {
+      const { data } = await this.getOnboardingData(userId);
+      return !!(data && data.ai_configured);
+    } catch (error) {
+      console.error('Error checking AI configuration status:', error);
       return false;
     }
   }
@@ -99,7 +126,7 @@ class OnboardingService {
    * Update specific onboarding preferences
    */
   async updateOnboardingPreferences(
-    userId: string, 
+    userId: string,
     updates: Partial<Pick<UserOnboardingProfile, 'ui_style' | 'theme' | 'output_format' | 'ai_provider' | 'ai_configured'>>
   ): Promise<{ success: boolean; error?: string }> {
     try {
@@ -120,6 +147,63 @@ class OnboardingService {
     } catch (error) {
       console.error('Error in updateOnboardingPreferences:', error);
       return { success: false, error: 'Failed to update preferences' };
+    }
+  }
+
+  /**
+   * Mark AI as configured for a user
+   */
+  async markAIConfigured(userId: string, aiProvider: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      // First check if user has an onboarding profile
+      const { data: existingProfile } = await this.getOnboardingData(userId);
+
+      if (!existingProfile) {
+        // Create a basic onboarding profile if it doesn't exist
+        const basicProfile: Omit<UserOnboardingProfile, 'id' | 'created_at' | 'updated_at'> = {
+          user_id: userId,
+          user_type: 'entrepreneur', // default
+          building_goal: '',
+          experience_level: 'beginner',
+          ai_provider: aiProvider,
+          ai_configured: true,
+          ui_style: 'professional',
+          theme: 'dark',
+          output_format: 'both',
+          discovery_source: '',
+          onboarding_completed: false, // Still need to complete basic onboarding
+          completed_at: undefined
+        };
+
+        const { error } = await supabase
+          .from('user_onboarding_profiles')
+          .insert(basicProfile);
+
+        if (error) {
+          console.error('Error creating onboarding profile with AI config:', error);
+          return { success: false, error: (error as Error).message };
+        }
+      } else {
+        // Update existing profile
+        const { error } = await supabase
+          .from('user_onboarding_profiles')
+          .update({
+            ai_provider: aiProvider,
+            ai_configured: true,
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', userId);
+
+        if (error) {
+          console.error('Error updating AI configuration:', error);
+          return { success: false, error: (error as Error).message };
+        }
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error in markAIConfigured:', error);
+      return { success: false, error: 'Failed to mark AI as configured' };
     }
   }
 

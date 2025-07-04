@@ -4,19 +4,18 @@ import { CardContent, CardDescription, CardHeader, CardTitle } from '@/component
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { 
+import {
   ArrowRight,
   ArrowLeft,
   Brain,
-  CheckCircle,
   DollarSign,
   Shield,
   Zap,
   SkipForward,
   ExternalLink,
-  Info
+  Info,
+  AlertTriangle
 } from 'lucide-react';
-import { User } from '@supabase/supabase-js';
 import { OnboardingData } from '../ComprehensiveOnboarding';
 
 interface AIProviderStepProps {
@@ -24,12 +23,10 @@ interface AIProviderStepProps {
   onUpdate: (data: Partial<OnboardingData>) => void;
   onNext: () => void;
   onBack: () => void;
-  user: User | null;
 }
 
 export const AIProviderStep = ({ data, onUpdate, onNext, onBack }: AIProviderStepProps) => {
   const [selectedProvider, setSelectedProvider] = useState(data.aiProvider || '');
-  const [showSetup, setShowSetup] = useState(false);
 
   const handleNext = () => {
     onUpdate({ 
@@ -172,9 +169,9 @@ export const AIProviderStep = ({ data, onUpdate, onNext, onBack }: AIProviderSte
           <Alert className="bg-blue-50 border-blue-200">
             <Info className="h-4 w-4 text-blue-600" />
             <AlertDescription className="text-blue-800">
-              <strong>Next:</strong> You'll be able to configure your {providers.find(p => p.id === selectedProvider)?.name} API key in the settings after completing onboarding.
+              <strong>Important:</strong> You'll need to configure your {providers.find(p => p.id === selectedProvider)?.name} API key to access AI-powered features.
               <br />
-              <a 
+              <a
                 href={`https://${selectedProvider === 'gemini' ? 'makersuite.google.com' : selectedProvider === 'openai' ? 'platform.openai.com' : selectedProvider === 'claude' ? 'console.anthropic.com' : 'platform.deepseek.com'}/api-keys`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -186,11 +183,11 @@ export const AIProviderStep = ({ data, onUpdate, onNext, onBack }: AIProviderSte
           </Alert>
         )}
 
-        {/* Default Option */}
-        <Alert className="bg-yellow-50 border-yellow-200">
-          <CheckCircle className="h-4 w-4 text-yellow-600" />
-          <AlertDescription className="text-yellow-800">
-            <strong>Don't have an API key?</strong> No problem! You can use StartWise with limited AI features and set up your provider later.
+        {/* Important Notice */}
+        <Alert className="bg-amber-50 border-amber-200">
+          <AlertTriangle className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="text-amber-800">
+            <strong>AI API Required:</strong> Most features in StartWise require an AI provider. You can set up your API key now or later in settings, but you'll need it to access AI-powered tools like IdeaForge, MVP Studio, and Document Generation.
           </AlertDescription>
         </Alert>
 

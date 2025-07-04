@@ -12,6 +12,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { encryptApiKey, decryptApiKey } from './encryptionService';
 import { SecurityAuditService } from './securityAuditService';
+import { onboardingService } from './onboardingService';
 import { OpenAIProvider } from './providers/openaiProvider';
 import { GeminiProvider } from './providers/geminiProvider';
 import { DeepSeekProvider } from './providers/deepseekProvider';
@@ -105,6 +106,9 @@ export class AIProviderService {
 
       // Log security event
       await SecurityAuditService.logApiKeyCreated(userId, config.provider);
+
+      // Mark AI as configured in onboarding
+      await onboardingService.markAIConfigured(userId, config.provider);
 
       return true;
     } catch (error) {

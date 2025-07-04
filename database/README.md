@@ -1,39 +1,42 @@
-# 🗄️ Database Structure - PromptHeroReady
+# 🚀 PromptHeroReady Database Setup
 
-This directory contains all database-related files for the PromptHeroReady application, organized for optimal maintainability and deployment.
+**The simplest way to set up your complete database in 2 steps.**
 
-## 📁 Directory Structure
+## ⚡ Quick Setup (2 Steps)
+
+### Step 1: Run Main Schema
+1. Open your **Supabase Dashboard** → **SQL Editor**
+2. Copy the entire contents of `database/schemas/clean_schema.sql`
+3. Paste and click **"Run"** (takes 30-60 seconds)
+
+### Step 2: Run Complete Setup
+1. Copy the entire contents of `database/complete-setup.sql`
+2. Paste in a new SQL Editor query and click **"Run"**
+3. Run: `SELECT setup_admin_user('your-email@domain.com');`
+
+**🎉 Done! Your database is ready with 43 tables, AI tools, and admin access.**
+
+## 📁 Files Overview
 
 ```
 database/
-├── README.md                           # This file
-├── deploy-simple.js                    # Simple deployment script
-├── verify-simple.js                    # Database verification script
-├── setup-environment.js               # Environment setup helper
-├── schemas/                           # Database schema definitions
-│   └── clean_schema.sql              # Production-ready schema (42 tables)
-├── DEPLOYMENT_GUIDE.md               # Deployment instructions
-└── MIGRATION_GUIDE.md                # Migration guide
+├── README.md                    # This file - setup instructions
+├── complete-setup.sql          # 🎯 MAIN SETUP FILE (run after schema)
+├── setup-database.js           # Helper script with instructions
+├── test-setup.sql              # 🧪 VERIFY SETUP (run to test)
+├── schemas/
+│   └── clean_schema.sql        # 🎯 MAIN SCHEMA FILE (run first)
+├── migrations/
+│   └── 003_populate_ai_tools.sql # AI tools data (auto-included)
+├── utilities/
+│   └── performance_optimization.sql # Performance (auto-included)
+├── verify-simple.js            # Test your setup
+└── deploy-simple.js            # Deployment helper
 ```
 
-## 🚀 Quick Start
+## 🎯 What You Get
 
-### 1. Environment Setup
-Ensure your `.env` file contains:
-```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_KEY=your_supabase_anon_key
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
-### 2. Database Deployment
-Run the following files in your Supabase SQL Editor in this order:
-
-1. **Complete Schema**: `schemas/complete_schema.sql`
-2. **Initial Setup**: `setup/initial_setup.sql`
-3. **Performance Optimizations**: `utilities/performance_optimization.sql`
-4. **Real-time Chat**: `setup/realtime_chat_setup.sql`
-5. **Migrations**: Run all files in `migrations/` directory in numerical order
+After running the setup, your database includes:
 
 ### 3. Application Integration
 The `supabase-connection-helpers.ts` file contains all necessary TypeScript helpers for:

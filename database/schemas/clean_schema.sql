@@ -1,7 +1,20 @@
 -- =====================================================
--- PROMPTHEROREADY - CLEAN SUPABASE DATABASE SCHEMA
+-- PROMPTHEROREADY - COMPLETE DATABASE SETUP
 -- =====================================================
--- Clean version without problematic array syntax
+-- This file sets up the complete database schema for PromptHeroReady
+-- including all tables, policies, functions, and initial data
+--
+-- Features included:
+-- - User management and authentication
+-- - Application core (ideas, MVPs, documents)
+-- - Team collaboration and messaging
+-- - Project management and tasks
+-- - Business features (investors, funding, pitches)
+-- - Admin panel and system management
+-- - AI tools directory and recommendations
+-- - Performance optimizations
+-- - Security policies and audit logging
+-- =====================================================
 
 -- Enable necessary extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -1398,6 +1411,71 @@ INSERT INTO admin_roles (name, description, permissions, is_system_role) VALUES
 ON CONFLICT (name) DO NOTHING;
 
 -- =====================================================
+-- PERFORMANCE OPTIMIZATIONS
+-- =====================================================
+
+-- Create performance indexes
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_messages_username ON messages(username);
+CREATE INDEX IF NOT EXISTS idx_user_activity_user_id ON user_activity(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_activity_created_at ON user_activity(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_ideas_user_id ON ideas(user_id);
+CREATE INDEX IF NOT EXISTS idx_ideas_created_at ON ideas(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_mvps_user_id ON mvps(user_id);
+CREATE INDEX IF NOT EXISTS idx_prompt_history_user_id ON prompt_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_documents_user_id ON documents(user_id);
+CREATE INDEX IF NOT EXISTS idx_teams_created_by ON teams(created_by);
+CREATE INDEX IF NOT EXISTS idx_team_members_user_id ON team_members(user_id);
+CREATE INDEX IF NOT EXISTS idx_team_members_team_id ON team_members(team_id);
+CREATE INDEX IF NOT EXISTS idx_projects_owner_id ON projects(owner_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_assigned_to ON tasks(assigned_to);
+CREATE INDEX IF NOT EXISTS idx_tasks_project_id ON tasks(project_id);
+
+-- Create materialized view for user statistics (privacy-safe)
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_user_stats AS
+SELECT
+    COUNT(*) as total_users,
+    COUNT(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '30 days' THEN 1 END) as new_users_30d,
+    COUNT(CASE WHEN last_login_at >= CURRENT_DATE - INTERVAL '7 days' THEN 1 END) as active_users_7d
+FROM user_profiles;
+
+-- Create function to refresh materialized views
+CREATE OR REPLACE FUNCTION refresh_materialized_views()
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW mv_user_stats;
+    RETURN TRUE;
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Error refreshing materialized views: %', SQLERRM;
+        RETURN FALSE;
+END;
+$$;
+
+-- Create function for timezone management
+CREATE OR REPLACE FUNCTION get_timezone_names()
+RETURNS TEXT[]
+LANGUAGE plpgsql
+STABLE
+AS $$
+DECLARE
+    timezone_array TEXT[];
+BEGIN
+    SELECT ARRAY(
+        SELECT name
+        FROM pg_timezone_names
+        WHERE name NOT LIKE '%/%/%'
+        ORDER BY name
+    ) INTO timezone_array;
+
+    RETURN timezone_array;
+END;
+$$;
+
+-- =====================================================
 -- SCHEMA DEPLOYMENT COMPLETE
 -- =====================================================
 
@@ -1407,7 +1485,7 @@ SELECT create_profiles_for_existing_users();
 -- Final success message
 DO $$
 BEGIN
-    RAISE NOTICE '🎉 PromptHeroReady Clean Database Schema deployed successfully!';
+    RAISE NOTICE '🎉 PromptHeroReady Complete Database Setup deployed successfully!';
     RAISE NOTICE '📊 Total tables created: 43';
     RAISE NOTICE '🔒 Row Level Security enabled on all user tables';
     RAISE NOTICE '⚡ Performance indexes created';
