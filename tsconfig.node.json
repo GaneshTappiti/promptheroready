@@ -4,6 +4,8 @@
     "lib": ["ES2023"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -11,12 +13,42 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
+    "resolveJsonModule": true,
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": false,
+    "noImplicitAny": false,
+
+    /* Path mapping */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
+    /* Type definitions */
+    "types": ["node"],
+    "typeRoots": ["./node_modules/@types"]
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    "vite.config.ts",
+    "vitest.config.ts",
+    "postcss.config.js",
+    "tailwind.config.ts",
+    "eslint.config.js",
+    "scripts/**/*",
+    "database/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/*",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
 }

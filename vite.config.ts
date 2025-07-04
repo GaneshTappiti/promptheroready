@@ -132,9 +132,6 @@ export default defineConfig(({ mode }) => {
             return 'assets/[name]-[hash].[ext]'
           },
         },
-
-        // External dependencies (for CDN usage if needed)
-        external: isProduction ? [] : [],
       },
 
       // Increase chunk size warning limit for production

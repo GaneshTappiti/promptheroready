@@ -1,13 +1,11 @@
 {
-  "buildCommand": "npm run build:vercel",
+  "buildCommand": "rm -rf node_modules package-lock.json && npm install --force --omit=optional && npm install @rollup/rollup-linux-x64-gnu --save-dev --force && npm run build",
   "env": {
-    "npm_config_optional": "false",
     "ROLLUP_NO_NATIVE": "true",
     "NODE_OPTIONS": "--max-old-space-size=4096"
   },
   "build": {
     "env": {
-      "npm_config_optional": "false",
       "ROLLUP_NO_NATIVE": "true",
       "NODE_OPTIONS": "--max-old-space-size=4096"
     }
