@@ -23,18 +23,18 @@ export default function Auth() {
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const { signIn, signUp, resetPassword, updatePassword, signInWithProvider, user, loading } = useAuth();
+  const { signIn, signUp, resetPassword, updatePassword, signInWithProvider, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
 
   // Redirect if user is already signed in
   useEffect(() => {
-    if (!loading && user) {
+    if (!authLoading && user) {
       console.log('👤 User already signed in, redirecting to callback...');
       navigate('/auth/callback');
     }
-  }, [user, loading, navigate]);
+  }, [user, authLoading, navigate]);
 
   // Check if we're on the reset password page
   const isResetPassword = location.pathname === '/auth/reset-password';
