@@ -1,14 +1,12 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Lightbulb,
   Brain,
-  Rocket,
   Zap,
   Crown,
-  Infinity,
-  Clock,
+  Infinity as InfinityIcon,
   TrendingUp
 } from "lucide-react";
 import { useIdeaStore, usePromptHistory, useUserSettings } from "@/stores/ideaStore";
@@ -49,7 +47,7 @@ const QuickStats = () => {
       title: "Remaining Prompts",
       value: remainingPrompts === -1 ? "∞" : remainingPrompts.toString(),
       subtitle: promptLimit === -1 ? "Unlimited (Pro)" : `${promptLimit} limit (Free)`,
-      icon: remainingPrompts === -1 ? <Infinity className="h-5 w-5" /> : <Zap className="h-5 w-5" />,
+      icon: remainingPrompts === -1 ? <InfinityIcon className="h-5 w-5" /> : <Zap className="h-5 w-5" />,
       color: remainingPrompts === -1 ? "text-purple-400" : remainingPrompts > 5 ? "text-green-400" : remainingPrompts > 0 ? "text-yellow-400" : "text-red-400",
       bgColor: remainingPrompts === -1 ? "bg-purple-600/20" : remainingPrompts > 5 ? "bg-green-600/20" : remainingPrompts > 0 ? "bg-yellow-600/20" : "bg-red-600/20"
     },

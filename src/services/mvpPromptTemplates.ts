@@ -291,7 +291,7 @@ Make it visually stunning with smooth animations that enhance the {{designStyle}
     preferredBuilder: string = 'framer'
   ): string {
     const template = this.promptTemplates.find(t => t.id === 'page-ui-detailed');
-    if (!template) return this.generateGenericPrompt(`Create UI for ${pageName}`, { pages: [{ name: pageName, description: pageData.description, components: pageData.components, layout: pageData.layout }] } as any);
+    if (!template) return this.generateGenericPrompt(`Create UI for ${pageName}`, { pages: [{ name: pageName, description: (pageData as any).description, components: (pageData as any).components, layout: (pageData as any).layout }] } as any);
 
     return this.processTemplate(template.template, {
       pageName,
@@ -300,9 +300,9 @@ Make it visually stunning with smooth animations that enhance the {{designStyle}
       theme: wizardData.step2.theme,
       designStyle: wizardData.step2.designStyle,
       platforms: wizardData.step3.platforms.join(', '),
-      pageDescription: pageData.description,
-      pageLayout: pageData.layout,
-      components: pageData.components,
+      pageDescription: (pageData as any).description,
+      pageLayout: (pageData as any).layout,
+      components: (pageData as any).components,
       preferredBuilder
     });
   }
@@ -716,7 +716,7 @@ ${result.pages.map(page => `- ${page.name}: ${page.description}`).join('\n')}`;
     return this.processTemplate(template.template, {
       appName: wizardData.step1.appName,
       appType: wizardData.step1.appType.replace('-', ' '),
-      pages: pages.map(p => ({ name: p.pageName || p.name, description: p.description || `${p.pageName || p.name} page` })),
+      pages: pages.map(p => ({ name: (p as any).pageName || (p as any).name, description: (p as any).description || `${(p as any).pageName || (p as any).name} page` })),
       navType,
       isWeb: wizardData.step3.platforms.includes('web'),
       preferredBuilder
@@ -743,11 +743,11 @@ ${result.pages.map(page => `- ${page.name}: ${page.description}`).join('\n')}`;
       typography: 'Inter, system fonts',
       spacing: '8px grid system',
       components: components.map(comp => ({
-        name: comp.name,
-        type: comp.type,
-        description: comp.description,
-        layout: comp.layout || 'flexible',
-        props: comp.props || {}
+        name: (comp as any).name,
+        type: (comp as any).type,
+        description: (comp as any).description,
+        layout: (comp as any).layout || 'flexible',
+        props: (comp as any).props || {}
       })),
       preferredBuilder
     });
@@ -770,8 +770,8 @@ ${result.pages.map(page => `- ${page.name}: ${page.description}`).join('\n')}`;
       return this.processTemplate(template.template, {
         pageName,
         appName: wizardData.step1.appName,
-        pageLayout: pageData.layout,
-        components: pageData.components,
+        pageLayout: (pageData as any).layout,
+        components: (pageData as any).components,
         colorScheme: enhancedData.colorPreference || 'Modern color palette',
         typography: 'Inter, system fonts',
         spacing: '8px grid system',
@@ -781,7 +781,7 @@ ${result.pages.map(page => `- ${page.name}: ${page.description}`).join('\n')}`;
 
     // Fallback to generic tool-specific prompt
     return this.generateToolSpecificPrompt(builder, wizardData, {
-      pages: [{ name: pageName, description: pageData.description, components: pageData.components, layout: pageData.layout }],
+      pages: [{ name: pageName, description: (pageData as any).description, components: (pageData as any).components, layout: (pageData as any).layout }],
       styling: {
         theme: wizardData.step2.theme,
         designStyle: wizardData.step2.designStyle,
@@ -794,7 +794,7 @@ ${result.pages.map(page => `- ${page.name}: ${page.description}`).join('\n')}`;
 
   // Keep the original method for backward compatibility
   private static generateLinkingPrompt(pages: unknown[], wizardData: MVPWizardData): string {
-    const pageNames = pages.map(p => p.pageName || p.name).join(', ');
+    const pageNames = pages.map(p => (p as any).pageName || (p as any).name).join(', ');
     const appType = wizardData.step1.appType.replace('-', ' ');
 
     return `Create the complete navigation and linking system for "${wizardData.step1.appName}" (${appType}).

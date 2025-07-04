@@ -112,7 +112,7 @@ const MigrationRunner: React.FC = () => {
         description: "Database migration process finished. Check individual results below.",
       });
 
-    } catch (error) {
+    } catch {
       toast({
         title: "Migration Process Failed",
         description: "The migration process encountered an unexpected error",

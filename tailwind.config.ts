@@ -159,6 +159,14 @@ export default {
 						transform: 'translateX(0)',
 						opacity: '1'
 					}
+				},
+				'shine': {
+					'0%': {
+						transform: 'translateX(-100%) skewX(-12deg)'
+					},
+					'100%': {
+						transform: 'translateX(200%) skewX(-12deg)'
+					}
 				}
 			},
 			animation: {
@@ -167,7 +175,8 @@ export default {
 				'float': 'float 5s ease-in-out infinite',
 				'fade-in': 'fade-in 0.3s ease-out forwards',
 				'scale-in': 'scale-in 0.3s ease-out forwards',
-				'slide-in': 'slide-in 0.3s ease-out forwards'
+				'slide-in': 'slide-in 0.3s ease-out forwards',
+				'shine': 'shine 2s ease-in-out infinite'
 			}
 		}
 	},

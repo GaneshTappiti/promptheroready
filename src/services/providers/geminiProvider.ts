@@ -14,7 +14,7 @@ export class GeminiProvider {
       const genAI = new GoogleGenerativeAI(config.apiKey);
       const model = genAI.getGenerativeModel({ 
         model: config.modelName || 'gemini-2.0-flash',
-        safetySettings: config.safetySettings
+        safetySettings: config.safetySettings as any
       });
 
       // Combine system prompt and user prompt for Gemini

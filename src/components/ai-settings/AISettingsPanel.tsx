@@ -17,7 +17,7 @@ interface AISettingsPanelProps {
   onClose?: () => void;
 }
 
-export const AISettingsPanel: React.FC<AISettingsPanelProps> = ({ onClose }) => {
+export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
   const { user } = useAuth();
   const [preferences, setPreferences] = useState<UserAIPreferences | null>(null);
   const [usageStats, setUsageStats] = useState<any>(null);

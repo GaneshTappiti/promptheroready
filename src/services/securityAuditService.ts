@@ -222,24 +222,25 @@ export class SecurityAuditService {
     const issues: string[] = [];
 
     // Check for insecure custom endpoints
-    if (config.customEndpoint) {
-      if (!config.customEndpoint.startsWith('https://')) {
+    const configData = config as any;
+    if (configData.customEndpoint) {
+      if (!configData.customEndpoint.startsWith('https://')) {
         issues.push('Custom endpoint should use HTTPS');
       }
       
-      if (config.customEndpoint.includes('localhost') || 
-          config.customEndpoint.includes('127.0.0.1')) {
+      if (configData.customEndpoint.includes('localhost') ||
+          configData.customEndpoint.includes('127.0.0.1')) {
         issues.push('Custom endpoint points to localhost - ensure this is intentional');
       }
     }
 
     // Check for suspicious provider settings
-    if (config.providerSettings) {
-      if (config.providerSettings.debug === true) {
+    if (configData.providerSettings) {
+      if (configData.providerSettings.debug === true) {
         issues.push('Debug mode is enabled - disable in production');
       }
       
-      if (config.providerSettings.logRequests === true) {
+      if (configData.providerSettings.logRequests === true) {
         issues.push('Request logging is enabled - may expose sensitive data');
       }
     }

@@ -323,7 +323,7 @@ export class PerformanceTester {
 
       // Cleanup subscriptions
       subscriptions.forEach(channel => {
-        supabase.removeChannel(channel);
+        supabase.removeChannel(channel as any);
       });
 
       const duration = performance.now() - startTime;

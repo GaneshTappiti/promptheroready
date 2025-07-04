@@ -15,9 +15,10 @@ import {
   Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
+import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useAdmin } from "@/contexts/AdminContext";
+import { BetaLabel } from "@/components/ui/beta-label";
 
 interface SidebarItemProps {
   icon: React.ElementType;
@@ -25,9 +26,11 @@ interface SidebarItemProps {
   path: string;
   isActive: boolean;
   onClick?: () => void;
+  isBeta?: boolean;
+  betaVariant?: 'default' | 'secondary' | 'outline' | 'destructive';
 }
 
-const SidebarItem = ({ icon: Icon, label, path, isActive, onClick }: SidebarItemProps) => {
+const SidebarItem = ({ icon: Icon, label, path, isActive, onClick, isBeta, betaVariant = 'default' }: SidebarItemProps) => {
   return (
     <Link
       to={path}
@@ -39,7 +42,14 @@ const SidebarItem = ({ icon: Icon, label, path, isActive, onClick }: SidebarItem
       }`}
     >
       <Icon className="h-5 w-5" />
-      <span>{label}</span>
+      <span className="flex-1">{label}</span>
+      {isBeta && (
+        <BetaLabel
+          variant={betaVariant}
+          size="sm"
+          className="ml-auto"
+        />
+      )}
     </Link>
   );
 };
@@ -71,28 +81,33 @@ const WorkspaceSidebar = ({ isOpen = false, setIsOpen = () => {} }: WorkspaceSid
   const modules = [
     { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, path: "/workspace" },
     { id: "idea-vault", name: "Idea Vault", icon: Lightbulb, path: "/workspace/idea-vault" },
-    { id: "ideaforge", name: "IdeaForge", icon: Target, path: "/workspace/ideaforge" },
+    { id: "ideaforge", name: "IdeaForge", icon: Target, path: "/workspace/ideaforge", isBeta: true, betaVariant: 'secondary' as const },
     { id: "mvp-studio", name: "MVP Studio", icon: Code, path: "/workspace/mvp-studio" },
     { id: "ai-tools", name: "AI Tools Hub", icon: Brain, path: "/workspace/ai-tools" },
     { id: "docs-decks", name: "Docs & Decks", icon: FileText, path: "/workspace/docs-decks" },
-    { id: "teamspace", name: "TeamSpace", icon: Users, path: "/workspace/teamspace" },
-    { id: "investor-radar", name: "Investor Radar", icon: Search, path: "/workspace/investor-radar" },
-
+    { id: "teamspace", name: "TeamSpace", icon: Users, path: "/workspace/teamspace", isBeta: true, betaVariant: 'secondary' as const },
+    { id: "investor-radar", name: "Investor Radar", icon: Search, path: "/workspace/investor-radar", isBeta: true, betaVariant: 'secondary' as const },
   ];
 
   const sidebarContent = (
     <div className="h-full flex flex-col workspace-sidebar">
-      <div className="p-4 flex items-center justify-between border-b border-white/10">
+      <div className="p-4 flex items-center border-b border-white/10">
         <div className="flex items-center gap-2">
           <div className="rounded-full bg-gradient-to-br from-green-500 to-green-600 w-8 h-8 flex items-center justify-center">
             <span className="font-bold text-white text-sm">SW</span>
           </div>
-          <span className="font-bold text-lg text-white">StartWise</span>
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-lg text-white">StartWise</span>
+              <Badge
+                variant="secondary"
+                className="bg-blue-600/20 text-blue-300 border-blue-600/40 text-xs font-semibold"
+              >
+                BETA
+              </Badge>
+            </div>
+          </div>
         </div>
-        <Button variant="ghost" size="icon" onClick={() => setIsOpen && setIsOpen(false)} className="text-gray-400 hover:text-white">
-          <X className="h-5 w-5" />
-          <span className="sr-only">Close</span>
-        </Button>
       </div>
       <div className="px-2 py-4 flex-1 overflow-y-auto">
         <nav className="space-y-1">
@@ -103,6 +118,8 @@ const WorkspaceSidebar = ({ isOpen = false, setIsOpen = () => {} }: WorkspaceSid
               label={module.name}
               path={module.path}
               onClick={handleLinkClick}
+              isBeta={module.isBeta}
+              betaVariant={module.betaVariant}
               isActive={
                 module.path === "/workspace"
                   ? currentPath === "/workspace"

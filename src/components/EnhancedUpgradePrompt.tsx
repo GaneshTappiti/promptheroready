@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -16,7 +16,7 @@ import {
   Gift,
   Clock,
   TrendingUp,
-  Infinity
+  InfinityIcon
 } from 'lucide-react';
 
 interface EnhancedUpgradePromptProps {
@@ -194,7 +194,7 @@ const EnhancedUpgradePrompt: React.FC<EnhancedUpgradePromptProps> = ({
           {/* Quick Benefits */}
           <div className="grid grid-cols-2 gap-3">
             <div className="text-center p-3 bg-gray-900/30 rounded-lg">
-              <Infinity className="h-5 w-5 text-green-400 mx-auto mb-1" />
+              <InfinityIcon className="h-5 w-5 text-green-400 mx-auto mb-1" />
               <p className="text-xs text-gray-300">Unlimited Access</p>
             </div>
             <div className="text-center p-3 bg-gray-900/30 rounded-lg">

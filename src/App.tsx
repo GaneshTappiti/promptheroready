@@ -14,6 +14,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { DeviceInfoProvider } from "@/components/ui/mobile-responsive";
+import { BetaBanner } from "@/components/ui/beta-banner";
+import { BetaRibbon } from "@/components/ui/beta-ribbon";
 import { config } from "@/config";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
@@ -292,9 +294,24 @@ const App = () => {
                 <TooltipProvider>
                   <DeviceInfoProvider>
                     <Router>
+                      <BetaBanner
+                        variant="warning"
+                        dismissible={true}
+                        persistent={false}
+                        message="🚧 BETA VERSION: PromptHeroReady is currently in beta testing. Expect frequent updates and potential bugs."
+                        className="sticky top-0 z-50"
+                      />
                       <Suspense fallback={<LoadingSpinner fullScreen text="Loading application..." />}>
                         <AppRoutes />
                       </Suspense>
+                      <BetaRibbon
+                        position="top-right"
+                        variant="warning"
+                        text="BETA"
+                        size="default"
+                        animate={false}
+                        shine={true}
+                      />
                       <Toaster />
                       <Sonner />
                     </Router>

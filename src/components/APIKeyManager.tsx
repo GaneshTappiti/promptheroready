@@ -186,7 +186,7 @@ const APIKeyManager: React.FC<APIKeyManagerProps> = ({ className }) => {
           variant: "destructive"
         });
       }
-    } catch (error) {
+    } catch {
       setKeyStatus(prev => ({ ...prev, [providerId]: 'invalid' }));
       toast({
         title: "Test Failed",
@@ -224,7 +224,7 @@ const APIKeyManager: React.FC<APIKeyManagerProps> = ({ className }) => {
           variant: "destructive"
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to save API key",

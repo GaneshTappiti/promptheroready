@@ -143,7 +143,7 @@ export class QueryOptimizationService {
     };
 
     const queueEvent = (payload: unknown) => {
-      eventQueue.push(payload);
+      eventQueue.push(payload as Record<string, unknown>);
 
       // Clear existing timeout
       if (batchTimeout) {

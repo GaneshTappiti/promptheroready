@@ -164,9 +164,9 @@ class DatabaseTester {
       if (data) {
         data.forEach((check: unknown) => {
           suite.tests.push({
-            name: `Schema Check: ${check.check_name}`,
-            status: check.status === 'PASS' ? 'pass' : 'fail',
-            message: check.details
+            name: `Schema Check: ${(check as any).check_name}`,
+            status: (check as any).status === 'PASS' ? 'pass' : 'fail',
+            message: (check as any).details
           });
         });
       }

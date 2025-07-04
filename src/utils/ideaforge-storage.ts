@@ -290,11 +290,12 @@ class IdeaForgeStorage {
   // Import functionality
   static importIdeaData(data: unknown): boolean {
     try {
-      if (data.idea) this.saveIdea(data.idea);
-      if (data.wiki) this.saveWikiData(data.wiki);
-      if (data.blueprint) this.saveBlueprintData(data.blueprint);
-      if (data.journey) this.saveJourneyData(data.journey);
-      if (data.feedback) this.saveFeedbackData(data.feedback);
+      const dataObj = data as any;
+      if (dataObj.idea) this.saveIdea(dataObj.idea);
+      if (dataObj.wiki) this.saveWikiData(dataObj.wiki);
+      if (dataObj.blueprint) this.saveBlueprintData(dataObj.blueprint);
+      if (dataObj.journey) this.saveJourneyData(dataObj.journey);
+      if (dataObj.feedback) this.saveFeedbackData(dataObj.feedback);
       return true;
     } catch (error) {
       console.error('Error importing idea data:', error);

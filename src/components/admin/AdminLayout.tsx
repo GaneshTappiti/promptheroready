@@ -187,7 +187,15 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 <Shield className="h-4 w-4 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-semibold text-white">Admin Panel</h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-lg font-semibold text-white">Admin Panel</h1>
+                  <Badge
+                    variant="secondary"
+                    className="bg-blue-600/20 text-blue-300 border-blue-600/40 text-xs font-semibold"
+                  >
+                    BETA
+                  </Badge>
+                </div>
                 <p className="text-xs text-gray-400">PromptHeroReady</p>
               </div>
             </div>

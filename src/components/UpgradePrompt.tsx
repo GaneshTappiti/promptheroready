@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Crown,
   Zap,
-  Infinity,
+  Infinity as InfinityIcon,
   Check,
   Star,
   Rocket,
@@ -193,7 +193,7 @@ const UpgradePrompt: React.FC<UpgradePromptProps> = ({
         {/* Benefits Highlight */}
         <div className="flex items-center justify-center gap-6 text-xs text-gray-400">
           <div className="flex items-center gap-1">
-            <Infinity className="h-3 w-3" />
+            <InfinityIcon className="h-3 w-3" />
             <span>Unlimited</span>
           </div>
           <div className="flex items-center gap-1">

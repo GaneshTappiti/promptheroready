@@ -214,7 +214,7 @@ export const runAuthTests = async () => {
   const sessionTest = await getCurrentSession();
   console.log(`   ${sessionTest.success ? '✅' : '❌'} ${sessionTest.message}`);
   if (sessionTest.data) {
-    console.log('   User:', sessionTest.data.user?.email);
+    console.log('   User:', (sessionTest.data as any)?.user?.email);
   }
 
   console.log('\n🧪 Authentication Tests Complete!');

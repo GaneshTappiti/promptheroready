@@ -242,17 +242,17 @@ Make this slide engaging and visually appealing while maintaining consistency wi
    */
   private processSlideElements(elements: unknown[]): SlideElement[] {
     return elements.map((element, index) => ({
-      id: element.id || nanoid(),
-      type: element.type || 'text',
-      content: element.content || '',
+      id: (element as any).id || nanoid(),
+      type: (element as any).type || 'text',
+      content: (element as any).content || '',
       position: {
-        x: element.position?.x || 0,
-        y: element.position?.y || (index * 20),
-        width: element.position?.width || 100,
-        height: element.position?.height || 20
+        x: (element as any).position?.x || 0,
+        y: (element as any).position?.y || (index * 20),
+        width: (element as any).position?.width || 100,
+        height: (element as any).position?.height || 20
       },
-      style: element.style || {},
-      animation: element.animation
+      style: (element as any).style || {},
+      animation: (element as any).animation
     }));
   }
 
@@ -262,18 +262,18 @@ Make this slide engaging and visually appealing while maintaining consistency wi
   private createFallbackSlide(slideInfo: unknown, index: number): Slide {
     return {
       id: nanoid(),
-      title: slideInfo.title || `Slide ${index + 1}`,
-      layout: slideInfo.layout || 'content',
+      title: (slideInfo as any).title || `Slide ${index + 1}`,
+      layout: (slideInfo as any).layout || 'content',
       elements: [
         {
           id: nanoid(),
           type: 'text',
-          content: slideInfo.content || 'Content will be added here.',
+          content: (slideInfo as any).content || 'Content will be added here.',
           position: { x: 10, y: 20, width: 80, height: 60 },
           style: { fontSize: '18px', color: '#333' }
         }
       ],
-      notes: slideInfo.notes || '',
+      notes: (slideInfo as any).notes || '',
       duration: 60,
       transition: 'fade',
       background: { type: 'color', value: '#ffffff' },

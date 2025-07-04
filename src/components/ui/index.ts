@@ -28,6 +28,7 @@ export { Skeleton } from './skeleton';
 export { useToast, toast } from './use-toast';
 export { Toaster } from './toaster';
 export { Alert, AlertDescription, AlertTitle } from './alert';
+export { BetaBanner } from './beta-banner';
 
 // Overlay Components
 export { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './dialog';

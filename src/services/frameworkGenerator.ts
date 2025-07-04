@@ -500,22 +500,23 @@ ${journeySteps}
   }
 
   private static calculateSuitabilityScore(tool: unknown, request: FrameworkGenerationRequest): number {
-    let score = tool.popularity || 50;
+    const toolData = tool as any;
+    let score = toolData.popularity || 50;
     
     // Platform compatibility
-    if (request.platforms.some(p => tool.platforms?.includes(p))) {
+    if (request.platforms.some(p => toolData.platforms?.includes(p))) {
       score += 20;
     }
     
     // App type compatibility
-    if (tool.bestFor?.some((use: string) => 
+    if (toolData.bestFor?.some((use: string) =>
       use.toLowerCase().includes(request.appType.replace('-', ' '))
     )) {
       score += 15;
     }
     
     // Complexity match
-    if (request.complexity === 'simple' && tool.pricing?.model === 'free') {
+    if (request.complexity === 'simple' && toolData.pricing?.model === 'free') {
       score += 10;
     }
     
@@ -523,36 +524,39 @@ ${journeySteps}
   }
 
   private static generateRecommendationReasons(tool: unknown, request: FrameworkGenerationRequest): string[] {
+    const toolData = tool as any;
     const reasons: string[] = [];
-    
-    if (tool.pricing?.model === 'free') {
+
+    if (toolData.pricing?.model === 'free') {
       reasons.push('Free to use - perfect for MVP testing');
     }
-    
-    if (request.platforms.some(p => tool.platforms?.includes(p))) {
+
+    if (request.platforms.some(p => toolData.platforms?.includes(p))) {
       reasons.push(`Supports ${request.platforms.join(', ')} platforms`);
     }
-    
-    if (tool.bestFor?.length > 0) {
-      reasons.push(`Excellent for ${tool.bestFor.slice(0, 2).join(' and ')}`);
+
+    if (toolData.bestFor?.length > 0) {
+      reasons.push(`Excellent for ${toolData.bestFor.slice(0, 2).join(' and ')}`);
     }
     
     return reasons;
   }
 
   private static estimateTimeToMVP(tool: unknown, complexity: string): string {
+    const toolData = tool as any;
     const timeMap: Record<string, Record<string, string>> = {
       'simple': { 'app-builders': '1-2 days', 'dev-ides': '3-5 days', 'ui-ux': '1 day' },
       'medium': { 'app-builders': '3-7 days', 'dev-ides': '1-2 weeks', 'ui-ux': '2-3 days' },
       'complex': { 'app-builders': '1-2 weeks', 'dev-ides': '2-4 weeks', 'ui-ux': '1 week' }
     };
     
-    return timeMap[complexity]?.[tool.category] || '1-2 weeks';
+    return timeMap[complexity]?.[toolData.category] || '1-2 weeks';
   }
 
   private static mapToolComplexity(tool: unknown, appType: AppType): 'beginner' | 'intermediate' | 'advanced' {
-    if (tool.category === 'app-builders') return 'beginner';
-    if (tool.category === 'dev-ides') return 'advanced';
+    const toolData = tool as any;
+    if (toolData.category === 'app-builders') return 'beginner';
+    if (toolData.category === 'dev-ides') return 'advanced';
     return 'intermediate';
   }
 
@@ -836,10 +840,10 @@ Protected Routes:
 \`\`\`
 
 ${primaryTool ? `
-## ${primaryTool.name}-Specific Implementation
-${this.getToolSpecificLinkingInstructions(primaryTool.name)}
+## ${(primaryTool as any).name}-Specific Implementation
+${this.getToolSpecificLinkingInstructions((primaryTool as any).name)}
 
-### ${primaryTool.name} Navigation Setup:
+### ${(primaryTool as any).name} Navigation Setup:
 1. Configure routing system according to platform
 2. Implement navigation components using platform widgets
 3. Set up state management for navigation

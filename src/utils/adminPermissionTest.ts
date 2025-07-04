@@ -189,9 +189,10 @@ export function generateTestReport(): string {
   if (failed > 0) {
     report += `Failed Tests:\n`;
     results
-      .filter(r => !r.passed)
+      .filter(r => !(r as any).passed)
       .forEach(r => {
-        report += `- ${r.role || 'non-admin'} accessing ${r.route}: expected ${r.expected}, got ${r.actual}\n`;
+        const result = r as any;
+        report += `- ${result.role || 'non-admin'} accessing ${result.route}: expected ${result.expected}, got ${result.actual}\n`;
       });
   }
 

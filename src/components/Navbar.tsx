@@ -1,5 +1,6 @@
 
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Link, useLocation } from "react-router-dom";
 import {
   Search,
@@ -33,7 +34,15 @@ export const Navbar = () => {
             <div className="rounded-full bg-gradient-custom w-8 h-8 flex items-center justify-center">
               <span className="font-bold text-white text-sm">IV</span>
             </div>
-            <span className="font-bold text-lg hidden md:inline-block">Startify OS</span>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-lg hidden md:inline-block">Startify OS</span>
+              <Badge
+                variant="secondary"
+                className="bg-blue-600/20 text-blue-300 border-blue-600/40 text-xs font-semibold hidden sm:inline-flex"
+              >
+                BETA
+              </Badge>
+            </div>
           </Link>
           
           <nav className="hidden md:flex items-center gap-6">

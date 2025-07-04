@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 import autoprefixer from 'autoprefixer'
 import cssnano from 'cssnano'
+import tailwindcss from 'tailwindcss'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -36,7 +37,7 @@ export default defineConfig(({ mode }) => {
       // Production optimizations
       minify: isProduction ? 'terser' : false,
       sourcemap: isDevelopment ? 'inline' : false,
-      cssMinify: false, // Disable CSS minification to avoid @apply directive issues
+      cssMinify: false, // CSS minification handled by PostCSS
       target: 'es2020',
 
       // Terser options for better compression
@@ -172,13 +173,22 @@ export default defineConfig(({ mode }) => {
     css: {
       devSourcemap: isDevelopment,
       postcss: {
-        plugins: isProduction ? [
+        plugins: [
+          tailwindcss(),
           autoprefixer(),
-          cssnano({
-            preset: 'default',
-          }),
-        ] : [
-          autoprefixer(),
+          ...(isProduction ? [
+            cssnano({
+              preset: ['default', {
+                discardComments: {
+                  removeAll: true,
+                },
+                normalizeWhitespace: true,
+                minifySelectors: true,
+                mergeLonghand: false,
+                mergeRules: false,
+              }]
+            }),
+          ] : []),
         ],
       },
     },

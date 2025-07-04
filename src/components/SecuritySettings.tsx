@@ -132,7 +132,7 @@ export const SecuritySettings: React.FC = () => {
       setConfirmPassword('');
       setPasswordValidation(null);
       checkPasswordAge();
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to update password",
@@ -154,7 +154,7 @@ export const SecuritySettings: React.FC = () => {
         title: "TOTP Setup",
         description: "Scan the QR code with your authenticator app",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Setup Failed",
         description: "Failed to setup TOTP authentication",
@@ -188,7 +188,7 @@ export const SecuritySettings: React.FC = () => {
           variant: "destructive"
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to verify TOTP setup",
@@ -216,7 +216,7 @@ export const SecuritySettings: React.FC = () => {
           variant: "destructive"
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to enable email MFA",
@@ -244,7 +244,7 @@ export const SecuritySettings: React.FC = () => {
           variant: "destructive"
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to disable MFA method",

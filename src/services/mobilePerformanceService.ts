@@ -105,11 +105,11 @@ class MobilePerformanceService {
     if ('getBattery' in navigator) {
       (navigator as any).getBattery().then((battery: unknown) => {
         const updateBatteryInfo = () => {
-          this.metrics.batteryLevel = battery.level * 100
-        }
+          this.metrics.batteryLevel = (battery as any).level * 100;
+        };
 
-        updateBatteryInfo()
-        battery.addEventListener('levelchange', updateBatteryInfo)
+        updateBatteryInfo();
+        (battery as any).addEventListener('levelchange', updateBatteryInfo);
       })
     }
   }

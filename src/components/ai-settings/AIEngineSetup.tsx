@@ -172,7 +172,7 @@ export const AIEngineSetup: React.FC<AIEngineSetupProps> = ({
           variant: "destructive"
         });
       }
-    } catch (error) {
+    } catch {
       setConnectionStatus('error');
       toast({
         title: "Connection Error",
@@ -212,7 +212,7 @@ export const AIEngineSetup: React.FC<AIEngineSetupProps> = ({
           variant: "destructive"
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Save Error",
         description: "An error occurred while saving configuration",
