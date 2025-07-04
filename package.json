@@ -32,6 +32,7 @@
     "serve": "npx serve -s build",
     "preview": "npm run build && npm run serve",
     "verify:deployment": "node scripts/verify-deployment.js",
+    "validate:workflow": "node scripts/validate-workflow.js",
     "predeployment": "npm run verify:deployment"
   },
   "dependencies": {
