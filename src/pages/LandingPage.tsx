@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Sparkles, CheckCircle, Star, Users, Zap, Target, Rocket, Brain, Shield } from 'lucide-react';
+import { ArrowRight, Sparkles, CheckCircle, Star, Users, Zap, Target, Rocket, Brain, Shield, Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const LandingPage = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const features = [
     {
       icon: <Brain className="h-8 w-8 text-green-400" />,
@@ -154,15 +156,76 @@ const LandingPage = () => {
                 <Link to="/auth">Get Started</Link>
               </Button>
             </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-white hover:bg-white/10"
+              >
+                {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </Button>
+            </div>
           </div>
+
+          {/* Mobile menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-white/10 bg-black/20 backdrop-blur-xl">
+              <div className="px-6 py-4 space-y-4">
+                <a
+                  href="#features"
+                  className="block text-gray-300 hover:text-white transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMobileMenuOpen(false);
+                    document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  Features
+                </a>
+                <a
+                  href="#pricing"
+                  className="block text-gray-300 hover:text-white transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMobileMenuOpen(false);
+                    document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  Pricing
+                </a>
+                <a
+                  href="#testimonials"
+                  className="block text-gray-300 hover:text-white transition-colors"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMobileMenuOpen(false);
+                    document.getElementById('testimonials')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  Reviews
+                </a>
+                <div className="pt-4 space-y-2">
+                  <Button asChild variant="outline" className="w-full border-white/20 text-white hover:bg-white/10">
+                    <Link to="/auth">Sign In</Link>
+                  </Button>
+                  <Button asChild className="w-full bg-green-600 hover:bg-green-500">
+                    <Link to="/auth">Get Started</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
       {/* Hero Section */}
       <section className="pt-20 pb-32 relative">
         <div className="container mx-auto px-6 text-center">
-          <div className="max-w-4xl mx-auto">
-            <Badge className="mb-6 bg-green-500/20 text-green-400 border-green-500/30">
+          <div className="max-w-4xl mx-auto animate-fade-in">
+            <Badge className="mb-6 bg-green-500/20 text-green-400 border-green-500/30 animate-scale-in">
               <Sparkles className="h-4 w-4 mr-2" />
               AI-Powered Startup Platform
             </Badge>
@@ -184,10 +247,13 @@ const LandingPage = () => {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-white/20 text-white hover:bg-white/10 text-lg px-8 py-4">
-                <Link to="#features">
-                  Explore Features
-                </Link>
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-white/20 text-white hover:bg-white/10 text-lg px-8 py-4"
+                onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                Explore Features
               </Button>
             </div>
             
