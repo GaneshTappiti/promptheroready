@@ -282,48 +282,88 @@ function AppRoutes() {
 }
 
 const App = () => {
-  console.log('App component rendering...');
+  console.log('🎨 App component rendering...');
 
-  return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <AdminProvider>
-            <AppStateProvider>
-              <BreadcrumbProvider>
-                <TooltipProvider>
-                  <DeviceInfoProvider>
-                    <Router>
-                      <BetaBanner
-                        variant="warning"
-                        dismissible={true}
-                        persistent={false}
-                        message="🚧 BETA VERSION: PromptHeroReady is currently in beta testing. Expect frequent updates and potential bugs."
-                        className="sticky top-0 z-50"
-                      />
-                      <Suspense fallback={<LoadingSpinner fullScreen text="Loading application..." />}>
-                        <AppRoutes />
-                      </Suspense>
-                      <BetaRibbon
-                        position="top-right"
-                        variant="warning"
-                        text="BETA"
-                        size="default"
-                        animate={false}
-                        shine={true}
-                      />
-                      <Toaster />
-                      <Sonner />
-                    </Router>
-                  </DeviceInfoProvider>
-                </TooltipProvider>
-              </BreadcrumbProvider>
-            </AppStateProvider>
-          </AdminProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
-  );
+  try {
+    return (
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <AdminProvider>
+              <AppStateProvider>
+                <BreadcrumbProvider>
+                  <TooltipProvider>
+                    <DeviceInfoProvider>
+                      <Router>
+                        <BetaBanner
+                          variant="warning"
+                          dismissible={true}
+                          persistent={false}
+                          message="🚧 BETA VERSION: PromptHeroReady is currently in beta testing. Expect frequent updates and potential bugs."
+                          className="sticky top-0 z-50"
+                        />
+                        <Suspense fallback={<LoadingSpinner fullScreen text="Loading application..." />}>
+                          <AppRoutes />
+                        </Suspense>
+                        <BetaRibbon
+                          position="top-right"
+                          variant="warning"
+                          text="BETA"
+                          size="default"
+                          animate={false}
+                          shine={true}
+                        />
+                        <Toaster />
+                        <Sonner />
+                      </Router>
+                    </DeviceInfoProvider>
+                  </TooltipProvider>
+                </BreadcrumbProvider>
+              </AppStateProvider>
+            </AdminProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    );
+  } catch (error) {
+    console.error('🔥 Error in App component:', error);
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        background: 'linear-gradient(135deg, #dc2626, #991b1b)',
+        color: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: 'Arial, sans-serif',
+        zIndex: 9999
+      }}>
+        <div style={{ textAlign: 'center', padding: '20px' }}>
+          <h1>🔥 App Component Error</h1>
+          <p>Error: {error instanceof Error ? error.message : 'Unknown error'}</p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              marginTop: '20px',
+              padding: '10px 20px',
+              background: 'white',
+              color: '#dc2626',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
 };
 
 export default App;

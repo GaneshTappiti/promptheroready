@@ -42,13 +42,21 @@ const env = {
 const requiredEnvVars = ['SUPABASE_URL', 'SUPABASE_ANON_KEY'] as const;
 
 const validateEnvironment = () => {
-  const missing = requiredEnvVars.filter(key => !env[key]);
+  try {
+    const missing = requiredEnvVars.filter(key => !env[key]);
 
-  if (missing.length > 0) {
-    console.error('Missing required environment variables:', missing);
-    if (env.NODE_ENV === 'production') {
-      throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+    if (missing.length > 0) {
+      console.error('❌ Missing required environment variables:', missing);
+      if (env.NODE_ENV === 'production') {
+        console.error('🔥 Production deployment missing critical environment variables!');
+        // Don't throw in production to prevent complete app failure
+        // throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+      }
+    } else {
+      console.log('✅ All required environment variables are present');
     }
+  } catch (error) {
+    console.error('🔥 Error validating environment:', error);
   }
 };
 

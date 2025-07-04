@@ -1,8 +1,24 @@
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import DebugApp from './components/debug/DebugApp'
 import './index.css'
 
-console.log('main.tsx loading...');
+console.log('🚀 main.tsx loading...');
+
+// Enhanced error handling and debugging
+window.addEventListener('error', (event) => {
+  console.error('🔥 Global JavaScript Error:', {
+    message: event.message,
+    filename: event.filename,
+    lineno: event.lineno,
+    colno: event.colno,
+    error: event.error
+  });
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('🔥 Unhandled Promise Rejection:', event.reason);
+});
 
 // Client-side only initialization
 const initializeClientSide = async () => {
@@ -10,11 +26,13 @@ const initializeClientSide = async () => {
   if (typeof window === 'undefined') return;
 
   try {
+    console.log('🔧 Initializing client-side services...');
     // Initialize performance optimizations
     const { QueryOptimizationService } = await import('./services/queryOptimizationService');
-    QueryOptimizationService.initialize().catch(console.error);
+    await QueryOptimizationService.initialize();
+    console.log('✅ QueryOptimizationService initialized');
   } catch (error) {
-    console.warn('Failed to initialize QueryOptimizationService:', error);
+    console.warn('⚠️ Failed to initialize QueryOptimizationService:', error);
   }
 
   // Register service worker for PWA functionality
@@ -84,36 +102,83 @@ const setupClientDOM = () => {
   }
 };
 
-// Main rendering function
+// Main rendering function with enhanced error handling
 const renderApp = () => {
   try {
-    console.log('About to create root...');
+    console.log('🎯 About to create root...');
+
+    // Validate environment
+    console.log('🔍 Environment check:', {
+      NODE_ENV: import.meta.env.NODE_ENV,
+      MODE: import.meta.env.MODE,
+      PROD: import.meta.env.PROD,
+      DEV: import.meta.env.DEV,
+      SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL ? '✅ Set' : '❌ Missing',
+      SUPABASE_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY ? '✅ Set' : '❌ Missing'
+    });
 
     // Create root and render app
     const rootElement = document.getElementById("root");
     if (!rootElement) {
-      throw new Error('Root element not found');
+      throw new Error('Root element not found in DOM');
     }
 
+    console.log('🏗️ Creating React root...');
     const root = createRoot(rootElement);
-    console.log('Root created, about to render...');
 
-    root.render(<App />);
-    console.log('App rendered successfully');
+    // Check if we should load debug mode
+    const isDebugMode = window.location.search.includes('debug=true') ||
+                       window.location.hash.includes('debug') ||
+                       !import.meta.env.VITE_SUPABASE_URL ||
+                       !import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+    if (isDebugMode && !window.location.hash.includes('full-app')) {
+      console.log('🧪 Rendering Debug App...');
+      root.render(<DebugApp />);
+      console.log('✅ Debug App rendered successfully!');
+    } else {
+      console.log('🎨 Rendering Full App component...');
+      root.render(<App />);
+      console.log('✅ Full App rendered successfully!');
+    }
   } catch (error) {
-    console.error('Error in main.tsx:', error);
+    console.error('🔥 Critical error in main.tsx:', error);
+    console.error('🔥 Error stack:', error instanceof Error ? error.stack : 'No stack trace');
 
-    // Fallback rendering
+    // Enhanced fallback rendering with debugging info
     const rootElement = document.getElementById("root");
     if (rootElement) {
+      const errorDetails = error instanceof Error ? {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      } : { message: 'Unknown error', details: String(error) };
+
       rootElement.innerHTML = `
-        <div style="padding: 20px; background: red; color: white; font-family: Arial; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-          <h1>Error Loading App</h1>
-          <p>Error: ${error instanceof Error ? (error as Error).message : 'Unknown error'}</p>
-          <p>Check the console for more details.</p>
-          <button onclick="window.location.reload()" style="margin-top: 20px; padding: 10px 20px; background: white; color: black; border: none; border-radius: 5px; cursor: pointer;">
-            Reload Page
-          </button>
+        <div style="padding: 20px; background: linear-gradient(135deg, #dc2626, #991b1b); color: white; font-family: 'Segoe UI', Arial, sans-serif; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow-y: auto;">
+          <div style="max-width: 800px; text-align: center;">
+            <h1 style="font-size: 2rem; margin-bottom: 1rem;">🔥 App Loading Error</h1>
+            <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin: 20px 0; text-align: left;">
+              <h3>Error Details:</h3>
+              <p><strong>Type:</strong> ${errorDetails.name || 'Unknown'}</p>
+              <p><strong>Message:</strong> ${errorDetails.message}</p>
+              <details style="margin-top: 10px;">
+                <summary style="cursor: pointer;">Stack Trace</summary>
+                <pre style="white-space: pre-wrap; font-size: 0.8rem; margin-top: 10px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px;">${errorDetails.stack || 'No stack trace available'}</pre>
+              </details>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+              <button onclick="window.location.reload()" style="padding: 12px 24px; background: white; color: #dc2626; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem;">
+                🔄 Reload Page
+              </button>
+              <button onclick="console.clear(); window.location.reload()" style="padding: 12px 24px; background: rgba(255,255,255,0.2); color: white; border: 1px solid white; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem;">
+                🧹 Clear Console & Reload
+              </button>
+            </div>
+            <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
+              Check the browser console (F12) for more detailed error information.
+            </p>
+          </div>
         </div>
       `;
     }

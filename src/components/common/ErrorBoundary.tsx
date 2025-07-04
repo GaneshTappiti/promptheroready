@@ -32,19 +32,23 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Error Boundary caught an error:', error, errorInfo);
-    
+    console.error('🔥 Error Boundary caught an error:', error, errorInfo);
+
     this.setState({ errorInfo });
-    
+
     // Call custom error handler if provided
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }
 
     // Report to error tracking service in production
-    if (config.errorReporting.enabled) {
-      // This would integrate with Sentry or similar service
-      console.error('Reporting error to tracking service:', error);
+    try {
+      if (config.errorReporting.enabled) {
+        // This would integrate with Sentry or similar service
+        console.error('Reporting error to tracking service:', error);
+      }
+    } catch (configError) {
+      console.warn('Error accessing config for error reporting:', configError);
     }
   }
 
@@ -77,18 +81,35 @@ export class ErrorBoundary extends Component<Props, State> {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {config.app.isDevelopment && this.state.error && (
-                <div className="rounded-md bg-red-950/50 p-3 text-xs text-red-300 font-mono overflow-auto max-h-32">
-                  <div className="font-semibold mb-1">Error:</div>
-                  <div>{(this.state.error as Error).message}</div>
-                  {this.state.error.stack && (
-                    <>
-                      <div className="font-semibold mt-2 mb-1">Stack:</div>
-                      <div className="whitespace-pre-wrap">{this.state.error.stack}</div>
-                    </>
-                  )}
-                </div>
-              )}
+              {(() => {
+                try {
+                  return config.app.isDevelopment && this.state.error && (
+                    <div className="rounded-md bg-red-950/50 p-3 text-xs text-red-300 font-mono overflow-auto max-h-32">
+                      <div className="font-semibold mb-1">Error:</div>
+                      <div>{(this.state.error as Error).message}</div>
+                      {this.state.error.stack && (
+                        <>
+                          <div className="font-semibold mt-2 mb-1">Stack:</div>
+                          <div className="whitespace-pre-wrap">{this.state.error.stack}</div>
+                        </>
+                      )}
+                    </div>
+                  );
+                } catch (configError) {
+                  return this.state.error && (
+                    <div className="rounded-md bg-red-950/50 p-3 text-xs text-red-300 font-mono overflow-auto max-h-32">
+                      <div className="font-semibold mb-1">Error:</div>
+                      <div>{(this.state.error as Error).message}</div>
+                      {this.state.error.stack && (
+                        <>
+                          <div className="font-semibold mt-2 mb-1">Stack:</div>
+                          <div className="whitespace-pre-wrap">{this.state.error.stack}</div>
+                        </>
+                      )}
+                    </div>
+                  );
+                }
+              })()}
               
               <div className="flex gap-2">
                 <Button 
