@@ -137,9 +137,15 @@ const renderApp = () => {
       root.render(<DebugApp />);
       console.log('✅ Debug App rendered successfully!');
     } else {
-      console.log('🎨 Rendering Full App component...');
-      root.render(<App />);
-      console.log('✅ Full App rendered successfully!');
+      console.log('🎨 Attempting to render Full App component...');
+      try {
+        root.render(<App />);
+        console.log('✅ Full App rendered successfully!');
+      } catch (appError) {
+        console.error('🔥 Failed to render App component:', appError);
+        console.log('🧪 Falling back to Debug App...');
+        root.render(<DebugApp />);
+      }
     }
   } catch (error) {
     console.error('🔥 Critical error in main.tsx:', error);
