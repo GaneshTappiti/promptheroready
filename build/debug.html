@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - JavaScript Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 800px;
+            text-align: center;
+            background: rgba(0,0,0,0.2);
+            padding: 30px;
+            border-radius: 15px;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background: rgba(0,0,0,0.3);
+        }
+        .success { background: rgba(34, 197, 94, 0.3); }
+        .error { background: rgba(239, 68, 68, 0.3); }
+        button {
+            background: white;
+            color: #059669;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+        }
+        pre {
+            text-align: left;
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 JavaScript Debug Test</h1>
+        <p>Testing if JavaScript is working on the deployed site...</p>
+        
+        <div id="test-results">
+            <div class="test-result">⏳ Running tests...</div>
+        </div>
+        
+        <button onclick="runTests()">🔄 Run Tests Again</button>
+        <button onclick="window.location.href='/'">🏠 Back to App</button>
+        
+        <div id="console-output">
+            <h3>Console Output:</h3>
+            <pre id="console-log"></pre>
+        </div>
+    </div>
+
+    <script>
+        // Capture console output
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        let consoleOutput = [];
+
+        function captureConsole(type, ...args) {
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            consoleOutput.push(`[${type.toUpperCase()}] ${new Date().toISOString()}: ${message}`);
+            updateConsoleDisplay();
+        }
+
+        console.log = (...args) => {
+            originalLog(...args);
+            captureConsole('log', ...args);
+        };
+
+        console.error = (...args) => {
+            originalError(...args);
+            captureConsole('error', ...args);
+        };
+
+        console.warn = (...args) => {
+            originalWarn(...args);
+            captureConsole('warn', ...args);
+        };
+
+        function updateConsoleDisplay() {
+            const consoleElement = document.getElementById('console-log');
+            if (consoleElement) {
+                consoleElement.textContent = consoleOutput.slice(-20).join('\n');
+            }
+        }
+
+        function runTests() {
+            console.log('🧪 Starting JavaScript tests...');
+            const resultsContainer = document.getElementById('test-results');
+            resultsContainer.innerHTML = '';
+
+            const tests = [
+                {
+                    name: 'Basic JavaScript',
+                    test: () => {
+                        const result = 2 + 2;
+                        return result === 4;
+                    }
+                },
+                {
+                    name: 'DOM Manipulation',
+                    test: () => {
+                        const testDiv = document.createElement('div');
+                        testDiv.textContent = 'test';
+                        return testDiv.textContent === 'test';
+                    }
+                },
+                {
+                    name: 'Local Storage',
+                    test: () => {
+                        try {
+                            localStorage.setItem('test', 'value');
+                            const value = localStorage.getItem('test');
+                            localStorage.removeItem('test');
+                            return value === 'value';
+                        } catch (e) {
+                            console.error('LocalStorage test failed:', e);
+                            return false;
+                        }
+                    }
+                },
+                {
+                    name: 'Fetch API',
+                    test: async () => {
+                        try {
+                            const response = await fetch('/debug.html', { method: 'HEAD' });
+                            return response.ok;
+                        } catch (e) {
+                            console.error('Fetch test failed:', e);
+                            return false;
+                        }
+                    }
+                },
+                {
+                    name: 'ES6 Features',
+                    test: () => {
+                        try {
+                            const arrow = () => 'test';
+                            const [a, b] = [1, 2];
+                            const obj = { a, b };
+                            return arrow() === 'test' && obj.a === 1;
+                        } catch (e) {
+                            console.error('ES6 test failed:', e);
+                            return false;
+                        }
+                    }
+                },
+                {
+                    name: 'Environment Variables',
+                    test: () => {
+                        // This won't work in static HTML, but we can check if the concept works
+                        return typeof window !== 'undefined';
+                    }
+                }
+            ];
+
+            async function runTest(test) {
+                try {
+                    const result = await test.test();
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = `test-result ${result ? 'success' : 'error'}`;
+                    resultDiv.innerHTML = `${result ? '✅' : '❌'} ${test.name}: ${result ? 'PASS' : 'FAIL'}`;
+                    resultsContainer.appendChild(resultDiv);
+                    console.log(`Test "${test.name}": ${result ? 'PASS' : 'FAIL'}`);
+                } catch (error) {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'test-result error';
+                    resultDiv.innerHTML = `❌ ${test.name}: ERROR - ${error.message}`;
+                    resultsContainer.appendChild(resultDiv);
+                    console.error(`Test "${test.name}" threw error:`, error);
+                }
+            }
+
+            // Run all tests
+            Promise.all(tests.map(runTest)).then(() => {
+                console.log('🏁 All tests completed');
+                
+                // Add environment info
+                const envDiv = document.createElement('div');
+                envDiv.className = 'test-result';
+                envDiv.innerHTML = `
+                    <h4>Environment Info:</h4>
+                    <p>User Agent: ${navigator.userAgent}</p>
+                    <p>URL: ${window.location.href}</p>
+                    <p>Protocol: ${window.location.protocol}</p>
+                    <p>Host: ${window.location.host}</p>
+                `;
+                resultsContainer.appendChild(envDiv);
+            });
+        }
+
+        // Global error handlers
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', {
+                message: event.message,
+                filename: event.filename,
+                lineno: event.lineno,
+                colno: event.colno,
+                error: event.error
+            });
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+        });
+
+        // Run tests on load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Debug page loaded');
+            runTests();
+        });
+    </script>
+</body>
+</html>

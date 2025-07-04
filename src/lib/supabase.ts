@@ -5,15 +5,15 @@ import type { Database } from '@/types/database';
 // SUPABASE CONFIGURATION & CLIENT SETUP
 // =====================================================
 
-// Environment variables with validation
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-// const dbConnectionString = import.meta.env.VITE_DATABASE_URL || '';
+// Environment variables with validation - React-style with fallback
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
+// const dbConnectionString = process.env.REACT_APP_DATABASE_URL || process.env.VITE_DATABASE_URL || '';
 
 // Configuration validation
 if (!supabaseUrl || !supabaseKey) {
   console.error('❌ Missing Supabase configuration. Please check your environment variables.');
-  console.error('Required: VITE_SUPABASE_URL, VITE_SUPABASE_KEY');
+  console.error('Required: REACT_APP_SUPABASE_URL, REACT_APP_SUPABASE_ANON_KEY');
 }
 
 // Validate URL format
@@ -36,7 +36,7 @@ export const supabase = createClient<Database>(
       detectSessionInUrl: true,
       storageKey: 'promptheroready-auth',
       flowType: 'pkce' as const,
-      debug: import.meta.env.DEV,
+      debug: process.env.NODE_ENV === 'development',
       storage: {
         getItem: (key: string) => {
           try {

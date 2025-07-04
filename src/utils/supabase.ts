@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Use Vite environment variables (VITE_ prefix)
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Use React environment variables (REACT_APP_ prefix) with fallback to VITE_
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   throw new Error('Missing Supabase environment variables. Please check your .env file.');
@@ -15,6 +15,6 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
     detectSessionInUrl: true,
     storageKey: 'promptheroready-auth',
     flowType: 'pkce' as const,
-    debug: import.meta.env.DEV,
+    debug: process.env.NODE_ENV === 'development',
   }
 });
