@@ -753,4 +753,44 @@
       -moz-osx-font-smoothing: grayscale;
     }
   }
+
+  /* Green Glass Theme Classes */
+  .bg-green-glass {
+    @apply bg-gradient-to-br from-black via-gray-900 to-green-950;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400;
+  }
+
+  /* Feature Gradient Classes */
+  .feature-gradient-1 {
+    @apply bg-gradient-to-br from-green-500/20 via-emerald-500/10 to-teal-500/20;
+  }
+
+  .feature-gradient-2 {
+    @apply bg-gradient-to-br from-blue-500/20 via-cyan-500/10 to-green-500/20;
+  }
+
+  .feature-gradient-3 {
+    @apply bg-gradient-to-br from-purple-500/20 via-violet-500/10 to-blue-500/20;
+  }
+
+  .feature-gradient-4 {
+    @apply bg-gradient-to-br from-pink-500/20 via-rose-500/10 to-purple-500/20;
+  }
+
+  /* Landing Page Specific Styles */
+  .hero-gradient {
+    @apply bg-gradient-to-br from-green-600/20 via-emerald-600/10 to-teal-600/20;
+  }
+
+  .pricing-card-popular {
+    @apply border-green-500/50 shadow-lg shadow-green-500/20 relative;
+  }
+
+  .pricing-card-popular::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-green-500/10 via-emerald-500/5 to-teal-500/10 rounded-lg;
+  }
 }
