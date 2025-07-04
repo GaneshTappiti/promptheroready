@@ -1,0 +1,54 @@
+{
+  "buildCommand": "npm run build:vercel",
+  "env": {
+    "npm_config_optional": "false",
+    "ROLLUP_NO_NATIVE": "true",
+    "NODE_OPTIONS": "--max-old-space-size=4096"
+  },
+  "build": {
+    "env": {
+      "npm_config_optional": "false",
+      "ROLLUP_NO_NATIVE": "true",
+      "NODE_OPTIONS": "--max-old-space-size=4096"
+    }
+  },
+  "functions": {
+    "app/api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
+}

@@ -34,28 +34,25 @@ export default defineConfig(({ mode }) => {
     },
 
     build: {
-      // Production optimizations
-      minify: isProduction ? 'terser' : false,
+      // Production optimizations - use esbuild for faster builds and avoid Rollup native issues
+      minify: isProduction ? 'esbuild' : false,
       sourcemap: isDevelopment ? 'inline' : false,
       cssMinify: false, // CSS minification handled by PostCSS
       target: 'es2020',
 
-      // Terser options for better compression
-      terserOptions: isProduction ? {
-        compress: {
-          drop_console: true,
-          drop_debugger: true,
-          pure_funcs: ['console.log', 'console.info'],
-        },
-        mangle: {
-          safari10: true,
-        },
-        format: {
-          comments: false,
-        },
+      // ESBuild options for better compression and faster builds
+      esbuild: isProduction ? {
+        drop: ['console', 'debugger'],
+        minifyIdentifiers: true,
+        minifySyntax: true,
+        minifyWhitespace: true,
       } : undefined,
 
       rollupOptions: {
+        // Force Rollup to use JS fallback instead of native binaries
+        // This fixes the @rollup/rollup-linux-x64-gnu issue on Vercel
+        external: isProduction ? [] : [],
+
         output: {
           // Enhanced manual chunks for better caching
           manualChunks: (id) => {
@@ -198,6 +195,7 @@ export default defineConfig(({ mode }) => {
       __DEV__: isDevelopment,
       __PROD__: isProduction,
       'process.env.NODE_ENV': JSON.stringify(mode),
+      'process.env.ROLLUP_NO_NATIVE': JSON.stringify('true'),
     },
 
     // Preview server configuration
