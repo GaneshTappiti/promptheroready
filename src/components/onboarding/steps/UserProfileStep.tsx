@@ -130,35 +130,28 @@ export const UserProfileStep = ({ data, onUpdate, onNext, onBack }: UserProfileS
   ];
 
   const getColorClasses = (color: string, selected: boolean) => {
-    const colors = {
-      blue: selected ? 'bg-blue-100 border-blue-500 text-blue-900' : 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100',
-      purple: selected ? 'bg-purple-100 border-purple-500 text-purple-900' : 'bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100',
-      pink: selected ? 'bg-pink-100 border-pink-500 text-pink-900' : 'bg-pink-50 border-pink-200 text-pink-700 hover:bg-pink-100',
-      green: selected ? 'bg-green-100 border-green-500 text-green-900' : 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100',
-      orange: selected ? 'bg-orange-100 border-orange-500 text-orange-900' : 'bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100',
-      gray: selected ? 'bg-gray-100 border-gray-500 text-gray-900' : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100',
-      teal: selected ? 'bg-teal-100 border-teal-500 text-teal-900' : 'bg-teal-50 border-teal-200 text-teal-700 hover:bg-teal-100',
-      yellow: selected ? 'bg-yellow-100 border-yellow-500 text-yellow-900' : 'bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100'
-    };
-    return colors[color as keyof typeof colors] || colors.gray;
+    // Use green glassy theme for all options
+    return selected
+      ? 'bg-green-600/20 border-green-500 text-green-400 backdrop-blur-sm'
+      : 'bg-black/20 border-green-500/20 text-gray-300 hover:bg-green-600/10 hover:border-green-400/40 backdrop-blur-sm';
   };
 
   return (
     <>
-      <CardHeader className="text-center">
-        <div className="mx-auto mb-4 w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center">
+      <CardHeader className="text-center bg-gradient-to-br from-black/20 to-green-900/20">
+        <div className="mx-auto mb-4 w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg shadow-green-500/25">
           <User className="w-8 h-8 text-white" />
         </div>
-        <CardTitle className="text-2xl font-bold text-gray-900">Tell Us About You</CardTitle>
-        <CardDescription className="text-gray-600">
-          Help us personalize your StartWise experience
+        <CardTitle className="text-2xl font-bold text-white">Tell Us About You</CardTitle>
+        <CardDescription className="text-gray-300">
+          Help us personalize your PromptHeroReady experience
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-8">
+      <CardContent className="space-y-8 bg-gradient-to-br from-black/10 to-green-900/10">
         {/* User Type Selection */}
         <div className="space-y-4">
-          <Label className="text-lg font-semibold text-gray-900">
+          <Label className="text-lg font-semibold text-white">
             What best describes you?
           </Label>
           
@@ -188,7 +181,7 @@ export const UserProfileStep = ({ data, onUpdate, onNext, onBack }: UserProfileS
 
         {/* Building Goal Selection */}
         <div className="space-y-4">
-          <Label className="text-lg font-semibold text-gray-900">
+          <Label className="text-lg font-semibold text-white">
             What do you want to build first?
           </Label>
           
@@ -218,7 +211,7 @@ export const UserProfileStep = ({ data, onUpdate, onNext, onBack }: UserProfileS
 
         {/* Experience Level Selection */}
         <div className="space-y-4">
-          <Label className="text-lg font-semibold text-gray-900">
+          <Label className="text-lg font-semibold text-white">
             What's your experience level?
           </Label>
 
@@ -248,7 +241,7 @@ export const UserProfileStep = ({ data, onUpdate, onNext, onBack }: UserProfileS
 
         {/* Navigation */}
         <div className="flex justify-between pt-6">
-          <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
+          <Button variant="outline" onClick={onBack} className="flex items-center gap-2 bg-black/20 border-green-500/30 text-gray-300 hover:bg-green-600/10 hover:border-green-400/40">
             <ArrowLeft className="w-4 h-4" />
             Back
           </Button>
@@ -256,7 +249,7 @@ export const UserProfileStep = ({ data, onUpdate, onNext, onBack }: UserProfileS
           <Button
             onClick={handleNext}
             disabled={!userType || !buildingGoal || !experience}
-            className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white flex items-center gap-2"
+            className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white flex items-center gap-2 shadow-lg shadow-green-500/25"
           >
             Continue
             <ArrowRight className="w-4 h-4" />

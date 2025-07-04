@@ -5,7 +5,7 @@
 
 import React, { Suspense, lazy } from 'react';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { AppStateProvider } from "@/contexts/AppStateContext";
 import { AdminProvider } from "@/contexts/AdminContext";
@@ -21,7 +21,7 @@ import { config } from "@/config";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { LazyLoadErrorBoundary } from "@/components/common/LazyLoadErrorBoundary";
-import { ProtectedOnboardingRoute } from "@/components/ProtectedOnboardingRoute";
+// import { ProtectedOnboardingRoute } from "@/components/ProtectedOnboardingRoute"; // Not needed in beta mode
 
 // Lazy load page components for better performance with error handling
 const LandingPage = lazy(() => import("@/pages/LandingPage").catch(err => {
@@ -110,31 +110,26 @@ const queryClient = new QueryClient({
   },
 });
 
-// Protected Route component - Basic auth check only
+// Protected Route component - Beta mode with relaxed auth check
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <LoadingSpinner fullScreen text="Authenticating..." />;
+    return <LoadingSpinner fullScreen text="Loading dashboard..." />;
   }
 
-  if (!user) {
-    return <Navigate to="/auth" />;
-  }
+  // Beta mode: Allow access even without authentication for testing
+  // In production, you would uncomment the line below
+  // if (!user) {
+  //   return <Navigate to="/auth" />;
+  // }
 
+  console.log('🚀 Beta mode: Allowing dashboard access', user ? `for ${user.email}` : 'without authentication');
   return <>{children}</>;
 }
 
-// Protected Route with onboarding check
-function ProtectedWorkspaceRoute({ children, requiresAI = true }: { children: React.ReactNode; requiresAI?: boolean }) {
-  return (
-    <ProtectedRoute>
-      <ProtectedOnboardingRoute requiresAI={requiresAI}>
-        {children}
-      </ProtectedOnboardingRoute>
-    </ProtectedRoute>
-  );
-}
+// Beta Mode: Simplified protected route without onboarding checks
+// ProtectedWorkspaceRoute is no longer needed in beta mode
 
 function AppRoutes() {
   return (
@@ -171,9 +166,9 @@ function AppRoutes() {
       <Route
         path="/workspace"
         element={
-          <ProtectedWorkspaceRoute requiresAI={false}>
+          <ProtectedRoute>
             <Workspace />
-          </ProtectedWorkspaceRoute>
+          </ProtectedRoute>
         }
       />
       {/* Test route that bypasses onboarding for debugging */}
@@ -186,41 +181,42 @@ function AppRoutes() {
         }
       />
 
+      {/* Beta Mode: Simplified routing without onboarding checks */}
       <Route path="/workspace/idea-vault" element={
-        <ProtectedWorkspaceRoute requiresAI={false}>
+        <ProtectedRoute>
           <IdeaVault />
-        </ProtectedWorkspaceRoute>
+        </ProtectedRoute>
       } />
       <Route path="/workspace/idea-vault/:ideaId" element={
-        <ProtectedWorkspaceRoute requiresAI={false}>
+        <ProtectedRoute>
           <IdeaDetails />
-        </ProtectedWorkspaceRoute>
+        </ProtectedRoute>
       } />
       <Route path="/workspace/ideaforge" element={
-        <ProtectedWorkspaceRoute requiresAI={true}>
+        <ProtectedRoute>
           <IdeaForge />
-        </ProtectedWorkspaceRoute>
+        </ProtectedRoute>
       } />
       <Route path="/workspace/ideaforge/:ideaId" element={
-        <ProtectedWorkspaceRoute requiresAI={true}>
+        <ProtectedRoute>
           <IdeaForge />
-        </ProtectedWorkspaceRoute>
+        </ProtectedRoute>
       } />
 
       <Route path="/workspace/mvp-studio" element={
-        <ProtectedWorkspaceRoute requiresAI={true}>
+        <ProtectedRoute>
           <MVPStudio />
-        </ProtectedWorkspaceRoute>
+        </ProtectedRoute>
       } />
       <Route path="/workspace/docs-decks" element={
-        <ProtectedWorkspaceRoute requiresAI={true}>
+        <ProtectedRoute>
           <DocsDecks />
-        </ProtectedWorkspaceRoute>
+        </ProtectedRoute>
       } />
       <Route path="/workspace/docs-decks/editor/:docId" element={
-        <ProtectedWorkspaceRoute requiresAI={true}>
+        <ProtectedRoute>
           <DocumentEditor />
-        </ProtectedWorkspaceRoute>
+        </ProtectedRoute>
       } />
       <Route path="/workspace/docs-decks/presentation/:id" element={
         <ProtectedRoute>

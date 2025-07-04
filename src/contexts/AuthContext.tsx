@@ -128,13 +128,70 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error };
       } else {
         console.log('✅ Signup successful:', data);
+
+        // If user was created, try to create their profile manually
+        if (data.user) {
+          // Wait a moment for the database trigger to potentially create the profile
+          setTimeout(async () => {
+            try {
+              console.log('🔄 Checking/creating user profile for:', data.user.email);
+
+              // First check if profile already exists (from trigger)
+              const { data: existingProfile } = await supabase
+                .from('user_profiles')
+                .select('id')
+                .eq('id', data.user.id)
+                .single();
+
+              if (existingProfile) {
+                console.log('✅ User profile already exists (created by trigger)');
+                return;
+              }
+
+              // If no profile exists, create one manually
+              console.log('🔄 Creating user profile manually...');
+              const userRole = data.user.email === 'ganeshtappiti1605@gmail.com' ? 'super_admin' : 'user';
+
+              const { data: profileData, error: profileError } = await supabase
+                .from('user_profiles')
+                .insert({
+                  id: data.user.id,
+                  role: userRole,
+                  avatar_url: data.user.user_metadata?.avatar_url
+                })
+                .select();
+
+              if (profileError) {
+                console.error('❌ Failed to create user profile:', profileError);
+                // Try with minimal data if full insert fails
+                const { error: minimalError } = await supabase
+                  .from('user_profiles')
+                  .insert({
+                    id: data.user.id,
+                    role: userRole
+                  });
+
+                if (minimalError) {
+                  console.error('❌ Failed to create minimal user profile:', minimalError);
+                } else {
+                  console.log('✅ Minimal user profile created successfully');
+                }
+              } else {
+                console.log('✅ User profile created successfully:', profileData);
+              }
+            } catch (profileErr) {
+              console.error('❌ Error in profile creation process:', profileErr);
+            }
+          }, 1000); // Wait 1 second for trigger to potentially run
+        }
+
         toast({
           title: "Account Created",
           description: "Please check your email to verify your account",
         });
       }
 
-      return { data, error: null };
+      return { error: null };
     } catch (error) {
       console.error('❌ Unexpected signup error:', error);
       toast({

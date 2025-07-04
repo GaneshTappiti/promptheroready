@@ -1,81 +1,58 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
-import { onboardingService } from '@/services/onboardingService';
+import { isPredefinedAdmin } from '@/utils/setupSpecificAdmin';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
+  const [status, setStatus] = useState('Redirecting to dashboard...');
 
   useEffect(() => {
-    const handleAuthStateChange = async (event: string, session: any) => {
-      console.log('🔄 AuthCallback - Auth state changed:', event, session?.user?.email);
+    const handleDirectRedirect = async () => {
+      try {
+        setStatus('Authentication successful! Redirecting to dashboard...');
+        console.log('🚀 Beta mode: Direct redirect to dashboard');
 
-      if (event === 'SIGNED_IN' && session) {
-        try {
-          console.log('✅ User signed in, checking onboarding status...');
+        // Get the current session (optional check)
+        const { data: { session } } = await supabase.auth.getSession();
 
-          // Check onboarding status with detailed logging
-          const [hasCompletedBasic, hasConfiguredAI, hasCompletedFull] = await Promise.all([
-            onboardingService.hasCompletedBasicOnboarding(session.user.id),
-            onboardingService.hasConfiguredAI(session.user.id),
-            onboardingService.hasCompletedOnboarding(session.user.id)
-          ]);
+        if (session?.user) {
+          console.log('✅ User authenticated:', session.user.email);
 
-          console.log('📊 Onboarding status:', {
-            hasCompletedBasic,
-            hasConfiguredAI,
-            hasCompletedFull,
-            userId: session.user.id
-          });
+          // Check if admin for routing, but default to workspace
+          const isAdmin = isPredefinedAdmin(session.user.email || '');
 
-          // Check for bypass parameter (for testing)
-          const urlParams = new URLSearchParams(window.location.search);
-          const bypassOnboarding = urlParams.get('bypass') === 'true';
-
-          if (bypassOnboarding) {
-            console.log('🚀 Bypassing onboarding checks, going directly to workspace');
-            navigate('/workspace');
-            return;
-          }
-
-          // More flexible redirect logic
-          if (hasCompletedBasic && hasConfiguredAI) {
-            console.log('🎯 Redirecting to workspace - user fully onboarded');
-            navigate('/workspace');
-          } else if (hasCompletedBasic && !hasConfiguredAI) {
-            console.log('🔧 Redirecting to onboarding - needs AI configuration');
-            navigate('/onboarding', { state: { needsAI: true } });
+          if (isAdmin) {
+            console.log('👑 Admin user - redirecting to admin panel');
+            navigate('/admin');
           } else {
-            console.log('📝 Redirecting to onboarding - needs basic setup');
-            navigate('/onboarding');
+            console.log('🎯 User - redirecting to workspace dashboard');
+            navigate('/workspace');
           }
-        } catch (error) {
-          console.error('❌ Error checking onboarding status:', error);
-          // For existing users who might not have onboarding data, go to workspace
-          console.log('🔄 Defaulting to workspace for existing user');
+        } else {
+          console.log('🚀 Beta mode: No session but redirecting to dashboard anyway');
+          // For beta, redirect to dashboard even without session
           navigate('/workspace');
         }
-      } else if (event === 'SIGNED_OUT') {
-        console.log('👋 User signed out, redirecting to auth');
-        navigate('/auth');
-      } else {
-        console.log('🔄 No valid session, redirecting to auth');
-        navigate('/auth');
+      } catch (error) {
+        console.error('❌ Error in auth callback:', error);
+        console.log('🚀 Beta mode: Error occurred but redirecting to dashboard anyway');
+        navigate('/workspace');
       }
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
-
-    return () => subscription.unsubscribe();
+    // Direct redirect without complex auth state checking
+    handleDirectRedirect();
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-green-900 to-emerald-900">
       <div className="text-center">
         <Loader2 className="h-8 w-8 animate-spin text-green-500 mx-auto mb-4" />
-        <p className="text-gray-400">Completing authentication...</p>
+        <p className="text-gray-300">{status}</p>
+        <p className="text-gray-400 text-sm mt-2">Beta Version - Direct Dashboard Access</p>
       </div>
     </div>
   );
-} 
+}

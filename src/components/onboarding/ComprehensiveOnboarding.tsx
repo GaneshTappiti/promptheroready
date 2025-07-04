@@ -198,30 +198,34 @@ export const ComprehensiveOnboarding = ({ onComplete }: ComprehensiveOnboardingP
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center p-4 overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-green-600/10"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,197,94,0.1),transparent_50%)]"></div>
+
+      <div className="w-full max-w-4xl relative z-10">
         {/* Progress Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-emerald-600" />
-              <h1 className="text-2xl font-bold text-gray-900">Welcome to StartWise</h1>
+              <Sparkles className="w-6 h-6 text-green-400" />
+              <h1 className="text-2xl font-bold text-white">Welcome to PromptHeroReady</h1>
             </div>
-            <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
+            <Badge variant="secondary" className="bg-green-600/20 text-green-400 border-green-500/30">
               Step {currentStepIndex + 1} of {STEPS.length}
             </Badge>
           </div>
-          
-          <Progress value={progress} className="h-2 bg-white/50" />
-          
-          <div className="flex justify-between mt-2 text-sm text-gray-600">
+
+          <Progress value={progress} className="h-2 bg-black/40 border border-green-500/20" />
+
+          <div className="flex justify-between mt-2 text-sm text-gray-300">
             <span>{STEPS[currentStepIndex].title}</span>
             <span>{Math.round(progress)}% Complete</span>
           </div>
         </div>
 
         {/* Step Content */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden">
+        <div className="bg-black/40 backdrop-blur-xl rounded-2xl shadow-2xl border border-green-500/20 overflow-hidden glass-effect">
           {renderStepContent()}
         </div>
 
@@ -231,16 +235,16 @@ export const ComprehensiveOnboarding = ({ onComplete }: ComprehensiveOnboardingP
             const Icon = step.icon as React.ComponentType<{ className?: string }>;
             const isActive = index === currentStepIndex;
             const isCompleted = index < currentStepIndex;
-            
+
             return (
               <div
                 key={step.id}
                 className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${
-                  isActive 
-                    ? 'bg-emerald-600 text-white shadow-lg scale-110' 
+                  isActive
+                    ? 'bg-green-600 text-white shadow-lg shadow-green-500/25 scale-110'
                     : isCompleted
-                    ? 'bg-emerald-100 text-emerald-600'
-                    : 'bg-white/50 text-gray-400'
+                    ? 'bg-green-600/20 text-green-400 border border-green-500/30'
+                    : 'bg-black/40 text-gray-500 border border-gray-600/30'
                 }`}
               >
                 <Icon className="w-5 h-5" />

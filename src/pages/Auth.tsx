@@ -139,23 +139,20 @@ export default function Auth() {
           });
         } else {
           if (isLogin) {
-            console.log('✅ Sign in successful, redirecting...');
+            console.log('✅ Sign in successful, redirecting directly to dashboard...');
             toast({
               title: "Success",
-              description: "Signed in successfully!"
+              description: "Signed in successfully! Redirecting to dashboard..."
             });
 
-            // Check if there's a redirect location from protected route
-            const from = location.state?.from?.pathname || '/auth/callback';
-            console.log('🎯 Redirecting to:', from);
-
-            // Redirect to auth callback to handle onboarding checks
-            navigate(from === '/auth' ? '/auth/callback' : from);
+            // Direct redirect to workspace dashboard (beta mode)
+            console.log('🚀 Beta mode: Direct redirect to workspace');
+            navigate('/workspace');
           } else {
-            setSuccess('Please check your email to verify your account! After verification, you\'ll be guided through a quick setup process.');
+            setSuccess('Account created successfully! You can now sign in.');
             toast({
               title: "Account Created Successfully!",
-              description: "Please check your email to verify your account. After verification, you'll be guided through a quick setup process to get started."
+              description: "You can now sign in to access the dashboard."
             });
           }
         }
