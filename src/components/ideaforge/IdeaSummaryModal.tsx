@@ -274,7 +274,7 @@ const IdeaSummaryModal: React.FC<IdeaSummaryModalProps> = ({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {ideaData.feedback.items.slice(0, 3).map((item: unknown) => (
+                    {ideaData.feedback.items.slice(0, 3).map((item: any) => (
                       <div key={item.id} className="border-l-4 border-purple-200 pl-4">
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-semibold text-sm">{item.title}</h4>

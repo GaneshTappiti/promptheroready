@@ -448,9 +448,9 @@ const IdeaForge = () => {
           <div class="subsection">
             <h3 class="subsection-title">Features</h3>
             ${data.blueprint.features.map((feature: unknown) => `
-              <div class="feature-item priority-${feature.priority}">
-                <strong>${feature.name}</strong> (${feature.priority} priority)
-                <br>${feature.description}
+              <div class="feature-item priority-${(feature as any).priority}">
+                <strong>${(feature as any).name}</strong> (${(feature as any).priority} priority)
+                <br>${(feature as any).description}
               </div>
             `).join('')}
           </div>
@@ -461,8 +461,8 @@ const IdeaForge = () => {
             <h3 class="subsection-title">Tech Stack</h3>
             ${data.blueprint.techStack.map((tech: unknown) => `
               <div class="feature-item">
-                <strong>${tech.category}:</strong> ${tech.name}
-                <br>${tech.description}
+                <strong>${(tech as any).category}:</strong> ${(tech as any).name}
+                <br>${(tech as any).description}
               </div>
             `).join('')}
           </div>
@@ -475,9 +475,9 @@ const IdeaForge = () => {
           <h2 class="section-title">📍 Founder's Journey</h2>
           ${data.journey.entries.map((entry: unknown) => `
             <div class="subsection">
-              <h3 class="subsection-title">${entry.title} (${new Date(entry.date).toLocaleDateString()})</h3>
-              <p><strong>Type:</strong> ${entry.type}</p>
-              <div class="content">${entry.content}</div>
+              <h3 class="subsection-title">${(entry as any).title} (${new Date((entry as any).date).toLocaleDateString()})</h3>
+              <p><strong>Type:</strong> ${(entry as any).type}</p>
+              <div class="content">${(entry as any).content}</div>
             </div>
           `).join('')}
         </div>
@@ -487,11 +487,11 @@ const IdeaForge = () => {
         <div class="section">
           <h2 class="section-title">💬 Feedback & Validation</h2>
           ${data.feedback.items.map((item: unknown) => `
-            <div class="feedback-item priority-${item.priority}">
-              <h4>${item.title}</h4>
-              <p><strong>Source:</strong> ${item.source} | <strong>Type:</strong> ${item.type} | <strong>Priority:</strong> ${item.priority}</p>
-              <p><strong>Author:</strong> ${item.author}</p>
-              <div class="content">${item.content}</div>
+            <div class="feedback-item priority-${(item as any).priority}">
+              <h4>${(item as any).title}</h4>
+              <p><strong>Source:</strong> ${(item as any).source} | <strong>Type:</strong> ${(item as any).type} | <strong>Priority:</strong> ${(item as any).priority}</p>
+              <p><strong>Author:</strong> ${(item as any).author}</p>
+              <div class="content">${(item as any).content}</div>
             </div>
           `).join('')}
         </div>
@@ -554,10 +554,10 @@ const IdeaForge = () => {
     if (data.feedback?.items?.length) {
       markdown += `## 💬 Feedback\n\n`;
       data.feedback.items.forEach((item: unknown) => {
-        markdown += `### ${item.title}\n\n`;
-        markdown += `**Source:** ${item.source} | **Type:** ${item.type} | **Priority:** ${item.priority}\n\n`;
-        markdown += `**Author:** ${item.author}\n\n`;
-        markdown += `${item.content}\n\n`;
+        markdown += `### ${(item as any).title}\n\n`;
+        markdown += `**Source:** ${(item as any).source} | **Type:** ${(item as any).type} | **Priority:** ${(item as any).priority}\n\n`;
+        markdown += `**Author:** ${(item as any).author}\n\n`;
+        markdown += `${(item as any).content}\n\n`;
       });
     }
 

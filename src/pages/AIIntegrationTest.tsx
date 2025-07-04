@@ -77,14 +77,14 @@ const AIIntegrationTest: React.FC = () => {
 
       const { results, summary } = await tester.runAllTests();
       setTestResults(results);
-      setTestSummary(summary);
+      setTestSummary(summary as Record<string, unknown>);
       setTestProgress(100);
       setCurrentTest('Tests completed!');
 
       toast({
         title: "AI Integration Tests Complete",
-        description: `${summary.passed}/${summary.total} tests passed (${summary.successRate})`,
-        variant: summary.failed === 0 ? "default" : "destructive"
+        description: `${(summary as any).passed}/${(summary as any).total} tests passed (${(summary as any).successRate})`,
+        variant: (summary as any).failed === 0 ? "default" : "destructive"
       });
     } catch (error) {
       console.error('Test execution failed:', error);

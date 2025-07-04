@@ -94,17 +94,17 @@ export class AIToolsSyncService {
       pricing: {
         model: dbTool.pricing_model,
         inr: dbTool.pricing_inr,
-        details: dbTool.metadata?.pricingDetails || ''
+        details: (dbTool.metadata as any)?.pricingDetails || ''
       },
       features: dbTool.features || [],
       bestFor: dbTool.best_for || [],
       officialUrl: dbTool.url,
       logo: dbTool.logo_url,
       tags: dbTool.tags,
-      apiCompatible: dbTool.metadata?.apiCompatible || false,
+      apiCompatible: (dbTool.metadata as any)?.apiCompatible || false,
       popularity: dbTool.popularity_score || 50,
-      whyRecommend: dbTool.metadata?.whyRecommend || '',
-      useCases: dbTool.metadata?.useCases || [],
+      whyRecommend: (dbTool.metadata as any)?.whyRecommend || '',
+      useCases: (dbTool.metadata as any)?.useCases || [],
       platforms: dbTool.supported_platforms as ('web' | 'mobile' | 'desktop' | 'api')[]
     };
   }

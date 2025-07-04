@@ -29,7 +29,7 @@ export const investorRadarHelpers = {
     return allHelpers.investorRadar.getInvestors(userId, filters);
   },
   async createInvestor(data: unknown) {
-    return allHelpers.investorRadar.createInvestor(data);
+    return allHelpers.investorRadar.createInvestor(data as any);
   },
   async updateInvestor(id: string, data: unknown) {
     return allHelpers.investorRadar.updateInvestor(id, data);
@@ -49,19 +49,19 @@ export const pitchPerfectHelpers = {
     return allHelpers.pitchPerfect.getPitchScripts(userId, scriptType);
   },
   async createPitchScript(data: unknown) {
-    return allHelpers.pitchPerfect.createPitchScript(data);
+    return allHelpers.pitchPerfect.createPitchScript(data as any);
   },
   async getPitchDecks(userId: string, deckType?: string) {
     return allHelpers.pitchPerfect.getPitchDecks(userId, deckType);
   },
   async createPitchDeck(data: unknown) {
-    return allHelpers.pitchPerfect.createPitchDeck(data);
+    return allHelpers.pitchPerfect.createPitchDeck(data as any);
   },
   async getPitchVideos(userId: string, videoType?: string) {
     return allHelpers.pitchPerfect.getPitchVideos(userId, videoType);
   },
   async createPitchVideo(data: unknown) {
-    return allHelpers.pitchPerfect.createPitchVideo(data);
+    return allHelpers.pitchPerfect.createPitchVideo(data as any);
   }
 };
 
@@ -71,7 +71,7 @@ export const taskPlannerHelpers = {
     return allHelpers.taskPlanner.getTasks(userId, filters);
   },
   async createTask(data: unknown) {
-    return allHelpers.taskPlanner.createTask(data);
+    return allHelpers.taskPlanner.createTask(data as any);
   },
   async updateTask(id: string, data: unknown) {
     return allHelpers.taskPlanner.updateTask(id, data);
@@ -83,7 +83,7 @@ export const taskPlannerHelpers = {
     return allHelpers.taskPlanner.getProjects(userId);
   },
   async createProject(data: unknown) {
-    return allHelpers.taskPlanner.createProject(data);
+    return allHelpers.taskPlanner.createProject(data as any);
   }
 };
 

@@ -435,8 +435,8 @@ const PerformanceTest: React.FC = () => {
                       <div className="space-y-2">
                         {performanceStats.slowestQueries.slice(0, 5).map((query: unknown, index: number) => (
                           <div key={index} className="flex items-center justify-between p-2 bg-gray-700/30 rounded">
-                            <span className="text-gray-300 font-mono text-sm">{query.queryId}</span>
-                            <span className="text-yellow-400">{Math.round(query.executionTime)}ms</span>
+                            <span className="text-gray-300 font-mono text-sm">{(query as any).queryId}</span>
+                            <span className="text-yellow-400">{Math.round((query as any).executionTime)}ms</span>
                           </div>
                         ))}
                       </div>

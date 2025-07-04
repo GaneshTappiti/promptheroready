@@ -285,7 +285,7 @@ const MVPStudio = () => {
   const handleTemplateSelect = (template: unknown) => {
     toast({
       title: "Template Selected",
-      description: `Starting MVP Wizard with ${template.name} template`
+      description: `Starting MVP Wizard with ${(template as any).name} template`
     });
     setMvpWizardOpen(true);
   };
@@ -557,17 +557,17 @@ const MVPStudio = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {mvpTemplates.map(template => (
-                    <Card key={template.id} className="workspace-card workspace-hover hover:translate-y-[-2px] transition-all cursor-pointer">
+                    <Card key={(template as any).id} className="workspace-card workspace-hover hover:translate-y-[-2px] transition-all cursor-pointer">
                       <CardContent className="p-6">
                         <div className="flex items-start gap-4 mb-4">
                           <div className="p-3 bg-primary/10 rounded-lg">
-                            <template.icon className="h-6 w-6 text-primary" />
+                            {React.createElement((template as any).icon, { className: "h-6 w-6 text-primary" })}
                           </div>
                           <div className="flex-1">
-                            <h3 className="font-semibold text-lg mb-2">{template.name}</h3>
-                            <p className="text-muted-foreground mb-3">{template.description}</p>
+                            <h3 className="font-semibold text-lg mb-2">{(template as any).name}</h3>
+                            <p className="text-muted-foreground mb-3">{(template as any).description}</p>
                             <div className="flex flex-wrap gap-2 mb-3">
-                              {template.tags.map(tag => (
+                              {(template as any).tags.map((tag: string) => (
                                 <Badge key={tag} variant="secondary" className="text-xs">
                                   {tag}
                                 </Badge>
@@ -579,17 +579,17 @@ const MVPStudio = () => {
                         <div className="space-y-3">
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Complexity:</span>
-                            <Badge variant={template.complexity === 'High' ? 'destructive' : template.complexity === 'Medium' ? 'default' : 'secondary'}>
-                              {template.complexity}
+                            <Badge variant={(template as any).complexity === 'High' ? 'destructive' : (template as any).complexity === 'Medium' ? 'default' : 'secondary'}>
+                              {(template as any).complexity}
                             </Badge>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Est. Time:</span>
-                            <span>{template.estimatedTime}</span>
+                            <span>{(template as any).estimatedTime}</span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Recommended Tools:</span>
-                            <span className="text-right">{template.recommendedTools.slice(0, 2).join(', ')}</span>
+                            <span className="text-right">{(template as any).recommendedTools.slice(0, 2).join(', ')}</span>
                           </div>
                         </div>
 

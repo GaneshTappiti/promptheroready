@@ -98,8 +98,8 @@ const RealtimeTest: React.FC = () => {
 
       toast({
         title: "Real-time Tests Complete",
-        description: `${summary.passed}/${summary.total} tests passed (${summary.successRate})`,
-        variant: summary.failed === 0 ? "default" : "destructive"
+        description: `${(summary as any).passed}/${(summary as any).total} tests passed (${(summary as any).successRate})`,
+        variant: (summary as any).failed === 0 ? "default" : "destructive"
       });
     } catch (error) {
       console.error('Test execution failed:', error);
