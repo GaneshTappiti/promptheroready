@@ -55,16 +55,23 @@ CREATE TABLE IF NOT EXISTS user_onboarding_profiles (
 -- User AI preferences and API keys (encrypted)
 CREATE TABLE IF NOT EXISTS user_ai_preferences (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID UNIQUE REFERENCES auth.users(id) ON DELETE CASCADE,
     provider TEXT NOT NULL,
     api_key_encrypted TEXT,
-    model_preferences JSONB DEFAULT '{}',
-    is_primary BOOLEAN DEFAULT false,
+    model_name TEXT,
+    custom_endpoint TEXT,
+    temperature DECIMAL(3,2) DEFAULT 0.7,
+    max_tokens INTEGER DEFAULT 2000,
+    provider_settings JSONB DEFAULT '{}',
+    connection_status TEXT DEFAULT 'untested' CHECK (connection_status IN ('untested', 'connected', 'error', 'quota_exceeded')),
+    last_error TEXT,
+    last_test_at TIMESTAMP WITH TIME ZONE,
+    total_requests INTEGER DEFAULT 0,
+    total_tokens_used INTEGER DEFAULT 0,
+    last_used_at TIMESTAMP WITH TIME ZONE,
     is_active BOOLEAN DEFAULT true,
-    usage_stats JSONB DEFAULT '{}',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(user_id, provider)
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- User preferences (UI, notifications, etc.)

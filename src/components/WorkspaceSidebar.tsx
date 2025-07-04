@@ -12,7 +12,8 @@ import {
   FileText,
   Menu,
   Target,
-  Shield
+  Shield,
+  TestTube
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -127,6 +128,16 @@ const WorkspaceSidebar = ({ isOpen = false, setIsOpen = () => {} }: WorkspaceSid
               }
             />
           ))}
+
+          {/* Utility Links */}
+          <div className="my-4 border-t border-white/10"></div>
+          <SidebarItem
+            icon={TestTube}
+            label="API Key Test"
+            path="/api-key-test"
+            onClick={handleLinkClick}
+            isActive={currentPath === "/api-key-test"}
+          />
 
           {/* Admin Panel Link - Only visible to admin users */}
           {isAdmin && (

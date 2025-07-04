@@ -56,6 +56,7 @@ const AdminPermissionTest = lazy(() => import("@/pages/AdminPermissionTest"));
 const AIIntegrationTest = lazy(() => import("@/pages/AIIntegrationTest"));
 const RealtimeTest = lazy(() => import("@/pages/RealtimeTest"));
 const PerformanceTest = lazy(() => import("@/pages/PerformanceTest"));
+const APIKeyTestPage = lazy(() => import("@/pages/APIKeyTestPage"));
 
 const PromptGuide = lazy(() => import("@/components/prompting/PromptGuide"));
 const PromptBuilder = lazy(() => import("@/components/prompting/PromptBuilder"));
@@ -298,6 +299,11 @@ function AppRoutes() {
       <Route path="/ai-integration-test" element={<AIIntegrationTest />} />
       <Route path="/realtime-test" element={<RealtimeTest />} />
       <Route path="/performance-test" element={<PerformanceTest />} />
+      <Route path="/api-key-test" element={
+        <ProtectedRoute>
+          <APIKeyTestPage />
+        </ProtectedRoute>
+      } />
 
       {/* Admin Routes */}
       <Route path="/admin/*" element={
