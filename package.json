@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node scripts/validate-env.js && tsc -b && vite build",
     "build:vercel": "node scripts/build-vercel.js",
-    "build:production": "set NODE_ENV=production && tsc -b && vite build",
-    "build:staging": "set NODE_ENV=production && tsc -b && vite build",
+    "build:production": "set NODE_ENV=production && node scripts/validate-env.js && tsc -b && vite build",
+    "build:staging": "set NODE_ENV=production && node scripts/validate-env.js && tsc -b && vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",

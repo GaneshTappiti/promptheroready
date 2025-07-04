@@ -10,6 +10,16 @@ const path = require('path');
 
 console.log('🚀 Starting Vercel build process...');
 
+// Validate environment variables first
+console.log('🔍 Validating environment variables...');
+try {
+  // Run validation as a separate process since this is CommonJS
+  execSync('node scripts/validate-env.js', { stdio: 'inherit' });
+  console.log('✅ Environment validation passed');
+} catch (envError) {
+  console.warn('⚠️ Environment validation failed, but continuing build...');
+}
+
 // Set environment variables to force npm to handle optional dependencies correctly
 process.env.npm_config_optional = 'false';
 process.env.ROLLUP_NO_NATIVE = 'true';

@@ -124,11 +124,14 @@ const renderApp = () => {
     console.log('🏗️ Creating React root...');
     const root = createRoot(rootElement);
 
-    // Check if we should load debug mode
+    // Check if we should load debug mode - support both naming conventions
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.REACT_APP_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.REACT_APP_SUPABASE_ANON_KEY;
+
     const isDebugMode = window.location.search.includes('debug=true') ||
                        window.location.hash.includes('debug') ||
-                       !import.meta.env.VITE_SUPABASE_URL ||
-                       !import.meta.env.VITE_SUPABASE_ANON_KEY;
+                       !supabaseUrl ||
+                       !supabaseKey;
 
     if (isDebugMode && !window.location.hash.includes('full-app')) {
       console.log('🧪 Rendering Debug App...');

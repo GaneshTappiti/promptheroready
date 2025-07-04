@@ -20,14 +20,30 @@ import { BetaRibbon } from "@/components/ui/beta-ribbon";
 import { config } from "@/config";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { LazyLoadErrorBoundary } from "@/components/common/LazyLoadErrorBoundary";
 import { ProtectedOnboardingRoute } from "@/components/ProtectedOnboardingRoute";
 
-// Lazy load page components for better performance
-const LandingPage = lazy(() => import("@/pages/LandingPage"));
-const Auth = lazy(() => import("@/pages/Auth"));
-const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
-const Onboarding = lazy(() => import("@/pages/Onboarding"));
-const Workspace = lazy(() => import("@/pages/Workspace"));
+// Lazy load page components for better performance with error handling
+const LandingPage = lazy(() => import("@/pages/LandingPage").catch(err => {
+  console.error('Failed to load LandingPage:', err);
+  return { default: () => <div>Error loading page</div> };
+}));
+const Auth = lazy(() => import("@/pages/Auth").catch(err => {
+  console.error('Failed to load Auth:', err);
+  return { default: () => <div>Error loading authentication page</div> };
+}));
+const AuthCallback = lazy(() => import("@/pages/AuthCallback").catch(err => {
+  console.error('Failed to load AuthCallback:', err);
+  return { default: () => <div>Error loading auth callback</div> };
+}));
+const Onboarding = lazy(() => import("@/pages/Onboarding").catch(err => {
+  console.error('Failed to load Onboarding:', err);
+  return { default: () => <div>Error loading onboarding</div> };
+}));
+const Workspace = lazy(() => import("@/pages/Workspace").catch(err => {
+  console.error('Failed to load Workspace:', err);
+  return { default: () => <div>Error loading workspace</div> };
+}));
 
 const IdeaVault = lazy(() => import("@/pages/IdeaVault"));
 const IdeaDetails = lazy(() => import("@/pages/IdeaDetails"));
@@ -123,10 +139,26 @@ function ProtectedWorkspaceRoute({ children, requiresAI = true }: { children: Re
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/auth/callback" element={<AuthCallback />} />
-      <Route path="/auth/reset-password" element={<Auth />} />
+      <Route path="/" element={
+        <LazyLoadErrorBoundary componentName="LandingPage">
+          <LandingPage />
+        </LazyLoadErrorBoundary>
+      } />
+      <Route path="/auth" element={
+        <LazyLoadErrorBoundary componentName="Auth">
+          <Auth />
+        </LazyLoadErrorBoundary>
+      } />
+      <Route path="/auth/callback" element={
+        <LazyLoadErrorBoundary componentName="AuthCallback">
+          <AuthCallback />
+        </LazyLoadErrorBoundary>
+      } />
+      <Route path="/auth/reset-password" element={
+        <LazyLoadErrorBoundary componentName="Auth">
+          <Auth />
+        </LazyLoadErrorBoundary>
+      } />
       <Route path="/signup-test" element={<SignupTest />} />
       <Route
         path="/onboarding"
@@ -142,6 +174,15 @@ function AppRoutes() {
           <ProtectedWorkspaceRoute requiresAI={false}>
             <Workspace />
           </ProtectedWorkspaceRoute>
+        }
+      />
+      {/* Test route that bypasses onboarding for debugging */}
+      <Route
+        path="/workspace-direct"
+        element={
+          <ProtectedRoute>
+            <Workspace />
+          </ProtectedRoute>
         }
       />
 

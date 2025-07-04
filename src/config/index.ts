@@ -3,34 +3,34 @@
  * Centralized configuration management with environment-specific settings
  */
 
-// Environment variables with defaults - using Vite format
+// Environment variables with defaults - supporting both Vite and React naming conventions
 const env = {
   NODE_ENV: import.meta.env.MODE || 'development',
-  APP_NAME: import.meta.env.VITE_APP_NAME || 'Pitch Perfect Engine',
-  APP_VERSION: import.meta.env.VITE_APP_VERSION || '1.0.0',
-  APP_ENVIRONMENT: import.meta.env.VITE_APP_ENVIRONMENT || 'development',
-  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
-  API_TIMEOUT: import.meta.env.VITE_API_TIMEOUT || '30000',
-  SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL || '',
-  SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-  DATABASE_URL: import.meta.env.VITE_DATABASE_URL || '',
-  ENCRYPTION_KEY: import.meta.env.VITE_ENCRYPTION_KEY || '',
-  SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN || '',
-  ANALYTICS_ID: import.meta.env.VITE_ANALYTICS_ID || '',
-  GOOGLE_ANALYTICS_ID: import.meta.env.VITE_GOOGLE_ANALYTICS_ID || '',
-  FEATURE_FLAGS: import.meta.env.VITE_FEATURE_FLAGS || '',
-  ENABLE_ANALYTICS: import.meta.env.VITE_ENABLE_ANALYTICS || 'true',
-  ENABLE_ERROR_REPORTING: import.meta.env.VITE_ENABLE_ERROR_REPORTING || 'true',
-  ENABLE_PERFORMANCE_MONITORING: import.meta.env.VITE_ENABLE_PERFORMANCE_MONITORING || 'true',
-  ENABLE_PWA: import.meta.env.VITE_ENABLE_PWA || 'true',
-  ENABLE_OFFLINE_MODE: import.meta.env.VITE_ENABLE_OFFLINE_MODE || 'false',
-  MOBILE_OPTIMIZATIONS: import.meta.env.VITE_MOBILE_OPTIMIZATIONS || 'true',
-  // AI Provider Keys
-  OPENAI_API_KEY: import.meta.env.VITE_OPENAI_API_KEY || '',
-  GEMINI_API_KEY: import.meta.env.VITE_GEMINI_API_KEY || '',
-  CLAUDE_API_KEY: import.meta.env.VITE_CLAUDE_API_KEY || '',
-  ANTHROPIC_API_KEY: import.meta.env.VITE_ANTHROPIC_API_KEY || '',
-  DEEPSEEK_API_KEY: import.meta.env.VITE_DEEPSEEK_API_KEY || '',
+  APP_NAME: import.meta.env.VITE_APP_NAME || import.meta.env.REACT_APP_NAME || 'Pitch Perfect Engine',
+  APP_VERSION: import.meta.env.VITE_APP_VERSION || import.meta.env.REACT_APP_VERSION || '1.0.0',
+  APP_ENVIRONMENT: import.meta.env.VITE_APP_ENVIRONMENT || import.meta.env.REACT_APP_ENVIRONMENT || 'development',
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || import.meta.env.REACT_APP_API_BASE_URL || 'http://localhost:3000',
+  API_TIMEOUT: import.meta.env.VITE_API_TIMEOUT || import.meta.env.REACT_APP_API_TIMEOUT || '30000',
+  SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL || import.meta.env.REACT_APP_SUPABASE_URL || '',
+  SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.REACT_APP_SUPABASE_ANON_KEY || '',
+  DATABASE_URL: import.meta.env.VITE_DATABASE_URL || import.meta.env.REACT_APP_DATABASE_URL || '',
+  ENCRYPTION_KEY: import.meta.env.VITE_ENCRYPTION_KEY || import.meta.env.REACT_APP_ENCRYPTION_KEY || '',
+  SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN || import.meta.env.REACT_APP_SENTRY_DSN || '',
+  ANALYTICS_ID: import.meta.env.VITE_ANALYTICS_ID || import.meta.env.REACT_APP_GOOGLE_ANALYTICS_ID || '',
+  GOOGLE_ANALYTICS_ID: import.meta.env.VITE_GOOGLE_ANALYTICS_ID || import.meta.env.REACT_APP_GOOGLE_ANALYTICS_ID || '',
+  FEATURE_FLAGS: import.meta.env.VITE_FEATURE_FLAGS || import.meta.env.REACT_APP_FEATURE_FLAGS || '',
+  ENABLE_ANALYTICS: import.meta.env.VITE_ENABLE_ANALYTICS || import.meta.env.REACT_APP_ENABLE_ANALYTICS || 'true',
+  ENABLE_ERROR_REPORTING: import.meta.env.VITE_ENABLE_ERROR_REPORTING || import.meta.env.REACT_APP_ENABLE_ERROR_REPORTING || 'true',
+  ENABLE_PERFORMANCE_MONITORING: import.meta.env.VITE_ENABLE_PERFORMANCE_MONITORING || import.meta.env.REACT_APP_ENABLE_PERFORMANCE_MONITORING || 'true',
+  ENABLE_PWA: import.meta.env.VITE_ENABLE_PWA || import.meta.env.REACT_APP_ENABLE_PWA || 'true',
+  ENABLE_OFFLINE_MODE: import.meta.env.VITE_ENABLE_OFFLINE_MODE || import.meta.env.REACT_APP_ENABLE_OFFLINE_MODE || 'false',
+  MOBILE_OPTIMIZATIONS: import.meta.env.VITE_MOBILE_OPTIMIZATIONS || import.meta.env.REACT_APP_MOBILE_OPTIMIZATIONS || 'true',
+  // AI Provider Keys - supporting both naming conventions
+  OPENAI_API_KEY: import.meta.env.VITE_OPENAI_API_KEY || import.meta.env.REACT_APP_OPENAI_API_KEY || '',
+  GEMINI_API_KEY: import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.REACT_APP_GEMINI_API_KEY || '',
+  CLAUDE_API_KEY: import.meta.env.VITE_CLAUDE_API_KEY || import.meta.env.REACT_APP_CLAUDE_API_KEY || '',
+  ANTHROPIC_API_KEY: import.meta.env.VITE_ANTHROPIC_API_KEY || import.meta.env.REACT_APP_ANTHROPIC_API_KEY || '',
+  DEEPSEEK_API_KEY: import.meta.env.VITE_DEEPSEEK_API_KEY || import.meta.env.REACT_APP_DEEPSEEK_API_KEY || '',
 } as const;
 
 // Validate required environment variables
