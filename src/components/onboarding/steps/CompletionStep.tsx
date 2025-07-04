@@ -198,6 +198,24 @@ export const CompletionStep = ({ data, onComplete, onBack }: CompletionStepProps
           </div>
         </div>
 
+        {/* AI Configuration Reminder */}
+        {!data.aiConfigured && (
+          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-200">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2">
+              <Target className="w-5 h-5 text-orange-600" />
+              Next Step: Configure Your AI
+            </h3>
+            <p className="text-gray-600 mb-4">
+              To unlock the full power of StartWise, configure your AI provider in Settings after completing onboarding.
+            </p>
+            <div className="flex justify-center gap-4 text-sm text-gray-500">
+              <span>• Get your API key</span>
+              <span>• Test connection</span>
+              <span>• Start building</span>
+            </div>
+          </div>
+        )}
+
         {/* Welcome Message */}
         <div className="text-center bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">

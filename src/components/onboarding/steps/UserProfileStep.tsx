@@ -32,9 +32,10 @@ interface UserProfileStepProps {
 export const UserProfileStep = ({ data, onUpdate, onNext, onBack }: UserProfileStepProps) => {
   const [userType, setUserType] = useState(data.userType || '');
   const [buildingGoal, setBuildingGoal] = useState(data.buildingGoal || '');
+  const [experience, setExperience] = useState(data.experience || '');
 
   const handleNext = () => {
-    onUpdate({ userType, buildingGoal });
+    onUpdate({ userType, buildingGoal, experience });
     onNext();
   };
 
@@ -215,16 +216,46 @@ export const UserProfileStep = ({ data, onUpdate, onNext, onBack }: UserProfileS
           </div>
         </div>
 
+        {/* Experience Level Selection */}
+        <div className="space-y-4">
+          <Label className="text-lg font-semibold text-gray-900">
+            What's your experience level?
+          </Label>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {[
+              { id: 'beginner', label: 'Beginner', description: 'New to building products', color: 'green' },
+              { id: 'intermediate', label: 'Intermediate', description: 'Some experience building', color: 'blue' },
+              { id: 'advanced', label: 'Advanced', description: 'Experienced builder', color: 'purple' }
+            ].map((level) => {
+              const isSelected = experience === level.id;
+
+              return (
+                <button
+                  key={level.id}
+                  onClick={() => setExperience(level.id)}
+                  className={`p-4 rounded-xl border-2 transition-all text-center ${getColorClasses(level.color, isSelected)}`}
+                >
+                  <div>
+                    <h3 className="font-semibold">{level.label}</h3>
+                    <p className="text-sm opacity-80">{level.description}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Navigation */}
         <div className="flex justify-between pt-6">
           <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
             <ArrowLeft className="w-4 h-4" />
             Back
           </Button>
-          
-          <Button 
+
+          <Button
             onClick={handleNext}
-            disabled={!userType || !buildingGoal}
+            disabled={!userType || !buildingGoal || !experience}
             className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white flex items-center gap-2"
           >
             Continue

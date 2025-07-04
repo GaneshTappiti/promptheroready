@@ -64,7 +64,10 @@ const MVPStudio = () => {
   const getRemainingPrompts = useIdeaStore((state) => state.getRemainingPrompts);
 
   // Initialize Gemini AI
-  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || "");
+  const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  const genAI = geminiApiKey && geminiApiKey !== 'your-gemini-api-key'
+    ? new GoogleGenerativeAI(geminiApiKey)
+    : null;
 
   // Database helper functions
   const loadMVPs = async () => {

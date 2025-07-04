@@ -90,11 +90,16 @@ class AIEngine {
   constructor(userId?: string) {
     // Keep backward compatibility with hardcoded Gemini
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    if (!apiKey) {
+    if (!apiKey || apiKey === 'your-gemini-api-key') {
       console.warn('VITE_GEMINI_API_KEY is not configured - will use user provider if available');
     } else {
-      this.genAI = new GoogleGenerativeAI(apiKey);
-      this.model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      try {
+        this.genAI = new GoogleGenerativeAI(apiKey);
+        this.model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        console.log('✅ Gemini AI initialized successfully');
+      } catch (error) {
+        console.error('❌ Failed to initialize Gemini AI:', error);
+      }
     }
 
     this.userId = userId;
@@ -128,18 +133,29 @@ class AIEngine {
           ? `${systemPrompt}\n\nUser: ${prompt}`
           : prompt;
 
-        const result = await this.model.generateContent({
-          contents: [{
-            role: "user",
-            parts: [{ text: fullPrompt }]
-          }]
-        });
+        try {
+          const result = await this.model.generateContent({
+            contents: [{
+              role: "user",
+              parts: [{ text: fullPrompt }]
+            }]
+          });
 
-        const response = await result.response;
-        return response.text();
+          const response = await result.response;
+          const text = response.text();
+
+          if (!text) {
+            throw new Error('Empty response from Gemini');
+          }
+
+          return text;
+        } catch (geminiError) {
+          console.error('Gemini API error:', geminiError);
+          throw new Error(`Gemini API failed: ${(geminiError as Error).message}`);
+        }
       }
 
-      throw new Error('No AI provider available');
+      throw new Error('No AI provider available - please configure an API key');
     } catch (error) {
       console.error('AI response generation failed:', error);
       throw new Error('Failed to generate AI response');

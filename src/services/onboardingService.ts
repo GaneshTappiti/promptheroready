@@ -6,14 +6,16 @@ export interface UserOnboardingProfile {
   id: string;
   user_id: string;
   user_type: string;
-  building_goal: string;
+  building_goal?: string;
+  experience_level?: string;
   ai_provider?: string;
   ai_configured: boolean;
   ui_style: string;
   theme: string;
   output_format: string;
   discovery_source: string;
-  completed_at: string;
+  onboarding_completed: boolean;
+  completed_at?: string;
   created_at: string;
   updated_at: string;
 }
@@ -28,12 +30,14 @@ class OnboardingService {
         user_id: userId,
         user_type: data.userType,
         building_goal: data.buildingGoal,
+        experience_level: data.experience,
         ai_provider: data.aiProvider,
         ai_configured: data.aiConfigured,
         ui_style: data.uiStyle,
         theme: data.theme,
         output_format: data.outputFormat,
         discovery_source: data.discoverySource,
+        onboarding_completed: true,
         completed_at: data.completedAt.toISOString()
       };
 

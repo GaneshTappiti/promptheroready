@@ -5,10 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Sparkles, 
-  ArrowRight, 
-  ArrowLeft,
+import {
+  Sparkles,
+  ArrowRight,
   User,
   Brain,
   Palette,

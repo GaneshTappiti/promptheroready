@@ -53,6 +53,7 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 const SignupTest = lazy(() => import("@/pages/SignupTest"));
 const AdminPermissionTest = lazy(() => import("@/pages/AdminPermissionTest"));
 const AIIntegrationTest = lazy(() => import("@/pages/AIIntegrationTest"));
+const AIConfigTest = lazy(() => import("@/pages/AIConfigTest"));
 const RealtimeTest = lazy(() => import("@/pages/RealtimeTest"));
 const PerformanceTest = lazy(() => import("@/pages/PerformanceTest"));
 
@@ -258,6 +259,7 @@ function AppRoutes() {
       <Route path="/database-test" element={<DatabaseTest />} />
       <Route path="/admin-permission-test" element={<AdminPermissionTest />} />
       <Route path="/ai-integration-test" element={<AIIntegrationTest />} />
+      <Route path="/ai-config-test" element={<AIConfigTest />} />
       <Route path="/realtime-test" element={<RealtimeTest />} />
       <Route path="/performance-test" element={<PerformanceTest />} />
 
