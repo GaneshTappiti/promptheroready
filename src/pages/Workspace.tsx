@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -336,8 +336,12 @@ const Workspace = () => {
   const profileRef = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { signOut } = useAuth();
   const { isAdmin } = useAdmin();
+
+  // Check if user just completed onboarding
+  const justCompletedOnboarding = location.state?.onboardingComplete;
 
   // Click outside handlers for dropdowns
   useEffect(() => {
@@ -420,6 +424,21 @@ const Workspace = () => {
       tasksSubscription.unsubscribe();
     };
   }, []);
+
+  // Show welcome message for users who just completed onboarding
+  useEffect(() => {
+    if (justCompletedOnboarding) {
+      // Clear the state to prevent showing the message again on refresh
+      window.history.replaceState({}, document.title);
+
+      // Show welcome toast
+      toast({
+        title: "🎉 Welcome to your StartWise workspace!",
+        description: "You're all set up! Start by exploring the AI Co-founder or creating your first idea.",
+        duration: 6000,
+      });
+    }
+  }, [justCompletedOnboarding, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

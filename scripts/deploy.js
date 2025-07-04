@@ -14,17 +14,17 @@ const ENVIRONMENTS = {
   development: {
     envFile: '.env.development',
     buildCommand: 'npm run build',
-    outputDir: 'dist',
+    outputDir: 'build',
   },
   staging: {
     envFile: '.env.staging',
-    buildCommand: 'npm run build',
-    outputDir: 'dist',
+    buildCommand: 'npm run build:staging',
+    outputDir: 'build',
   },
   production: {
     envFile: '.env.production',
     buildCommand: 'npm run build:production',
-    outputDir: 'dist',
+    outputDir: 'build',
   }
 }
 

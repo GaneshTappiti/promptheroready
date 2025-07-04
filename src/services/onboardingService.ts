@@ -6,14 +6,17 @@ export interface UserOnboardingProfile {
   id: string;
   user_id: string;
   user_type: string;
-  building_goal: string;
+  building_goal: string | null;
+  experience_level: string | null;
   ai_provider?: string;
   ai_configured: boolean;
   ui_style: string;
   theme: string;
   output_format: string;
-  discovery_source: string;
-  completed_at: string;
+  discovery_source: string | null;
+  onboarding_completed: boolean;
+  completed_steps: string[];
+  completed_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -28,12 +31,15 @@ class OnboardingService {
         user_id: userId,
         user_type: data.userType,
         building_goal: data.buildingGoal,
+        experience_level: data.experience, // Map experience to experience_level
         ai_provider: data.aiProvider,
         ai_configured: data.aiConfigured,
         ui_style: data.uiStyle,
         theme: data.theme,
         output_format: data.outputFormat,
         discovery_source: data.discoverySource,
+        onboarding_completed: true,
+        completed_steps: ['welcome', 'profile', 'ai-provider', 'preferences', 'discovery', 'completion'],
         completed_at: data.completedAt.toISOString()
       };
 
@@ -84,7 +90,7 @@ class OnboardingService {
   async hasCompletedOnboarding(userId: string): Promise<boolean> {
     try {
       const { data } = await this.getOnboardingData(userId);
-      return !!data;
+      return !!data && data.onboarding_completed;
     } catch (error) {
       console.error('Error checking onboarding status:', error);
       return false;

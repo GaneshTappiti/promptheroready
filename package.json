@@ -2,11 +2,12 @@
   "name": "promptheroready",
   "private": true,
   "version": "1.0.0",
+  "homepage": ".",
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "build:production": "set NODE_ENV=production && craco build",
-    "build:staging": "set NODE_ENV=production && craco build",
+    "build:production": "craco build",
+    "build:staging": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
     "lint": "eslint .",
@@ -24,7 +25,14 @@
     "db:reset": "supabase db reset",
     "db:status": "supabase status",
     "mobile:test": "npm run build && npm run preview",
-    "mobile:optimize": "npm run build:production && npm run analyze"
+    "mobile:optimize": "npm run build:production && npm run analyze",
+    "predeploy": "npm run build",
+    "deploy:vercel": "vercel --prod",
+    "deploy:netlify": "netlify deploy --prod --dir=build",
+    "serve": "npx serve -s build",
+    "preview": "npm run build && npm run serve",
+    "verify:deployment": "node scripts/verify-deployment.js",
+    "predeployment": "npm run verify:deployment"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

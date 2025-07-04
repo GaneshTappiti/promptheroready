@@ -9,6 +9,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { AppStateProvider } from "@/contexts/AppStateContext";
 import { AdminProvider } from "@/contexts/AdminContext";
+import { onboardingService } from "@/services/onboardingService";
 import { BreadcrumbProvider } from "@/components/BreadcrumbNavigation";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
@@ -105,6 +106,43 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+// Protected Route component that also checks onboarding completion
+function ProtectedWorkspaceRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  const [checkingOnboarding, setCheckingOnboarding] = React.useState(true);
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      if (user) {
+        const completed = await onboardingService.hasCompletedOnboarding(user.id);
+        setHasCompletedOnboarding(completed);
+      }
+      setCheckingOnboarding(false);
+    };
+
+    if (!loading && user) {
+      checkOnboardingStatus();
+    } else if (!loading) {
+      setCheckingOnboarding(false);
+    }
+  }, [user, loading]);
+
+  if (loading || checkingOnboarding) {
+    return <LoadingSpinner fullScreen text="Authenticating..." />;
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" />;
+  }
+
+  if (!hasCompletedOnboarding) {
+    return <Navigate to="/onboarding" />;
+  }
+
+  return <>{children}</>;
+}
+
 function AppRoutes() {
   return (
     <Routes>
@@ -124,9 +162,9 @@ function AppRoutes() {
       <Route
         path="/workspace"
         element={
-          <ProtectedRoute>
+          <ProtectedWorkspaceRoute>
             <Workspace />
-          </ProtectedRoute>
+          </ProtectedWorkspaceRoute>
         }
       />
 

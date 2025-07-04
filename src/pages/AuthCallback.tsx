@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
-import { hasProviderConfigured } from '@/services/userAIPreferencesService';
+import { onboardingService } from '@/services/onboardingService';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -10,16 +10,11 @@ export default function AuthCallback() {
   useEffect(() => {
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        // Check if user has AI provider configured
-        const hasAIProvider = await hasProviderConfigured(session.user.id);
+        // Check if user has completed onboarding
+        const hasCompletedOnboarding = await onboardingService.hasCompletedOnboarding(session.user.id);
 
-        // Check if this is a new user (created recently)
-        const userCreatedAt = new Date(session.user.created_at);
-        const now = new Date();
-        const isNewUser = (now.getTime() - userCreatedAt.getTime()) < 5 * 60 * 1000; // 5 minutes
-
-        // Redirect new users without AI provider to onboarding
-        if (isNewUser && !hasAIProvider) {
+        // All new users (those who haven't completed onboarding) should go through onboarding
+        if (!hasCompletedOnboarding) {
           navigate('/onboarding');
         } else {
           navigate('/workspace');

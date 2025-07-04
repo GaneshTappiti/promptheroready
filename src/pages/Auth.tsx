@@ -137,10 +137,10 @@ export default function Auth() {
             });
             navigate('/workspace');
           } else {
-            setSuccess('Please check your email to verify your account!');
+            setSuccess('Please check your email to verify your account! After verification, you\'ll be guided through a quick setup process.');
             toast({
-              title: "Success",
-              description: "Please check your email to verify your account!"
+              title: "Account Created Successfully!",
+              description: "Please check your email to verify your account. After verification, you'll be guided through a quick setup process to get started."
             });
           }
         }
