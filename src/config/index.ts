@@ -5,12 +5,12 @@
 
 // Helper function to get environment variable with fallback
 const getEnvVar = (reactKey: string, viteKey: string, defaultValue: string = '') => {
-  return import.meta.env[reactKey] || import.meta.env[viteKey] || defaultValue;
+  return process.env[reactKey] || process.env[viteKey] || defaultValue;
 };
 
 // Environment variables with defaults - supporting both REACT_APP_ and VITE_ prefixes
 const env = {
-  NODE_ENV: import.meta.env.NODE_ENV || 'development',
+  NODE_ENV: process.env.NODE_ENV || 'development',
   APP_NAME: getEnvVar('REACT_APP_NAME', 'VITE_APP_NAME', 'Pitch Perfect Engine'),
   APP_VERSION: getEnvVar('REACT_APP_VERSION', 'VITE_APP_VERSION', '1.0.0'),
   APP_ENVIRONMENT: getEnvVar('REACT_APP_ENVIRONMENT', 'VITE_APP_ENVIRONMENT', 'development'),

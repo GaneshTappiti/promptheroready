@@ -1,7 +1,8 @@
-import { createRoot } from 'react-dom/client'
-import App from './App'
-import DebugApp from './components/debug/DebugApp'
-import './index.css'
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+import DebugApp from './components/debug/DebugApp';
+import './index.css';
 
 console.log('🚀 main.tsx loading...');
 
@@ -36,7 +37,7 @@ const initializeClientSide = async () => {
   }
 
   // Register service worker for PWA functionality
-  if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
@@ -109,12 +110,9 @@ const renderApp = () => {
 
     // Validate environment
     console.log('🔍 Environment check:', {
-      NODE_ENV: import.meta.env.NODE_ENV,
-      MODE: import.meta.env.MODE,
-      PROD: import.meta.env.PROD,
-      DEV: import.meta.env.DEV,
-      SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL ? '✅ Set' : '❌ Missing',
-      SUPABASE_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY ? '✅ Set' : '❌ Missing'
+      NODE_ENV: process.env.NODE_ENV,
+      SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL ? '✅ Set' : '❌ Missing',
+      SUPABASE_KEY: process.env.REACT_APP_SUPABASE_ANON_KEY ? '✅ Set' : '❌ Missing'
     });
 
     // Create root and render app
@@ -129,8 +127,8 @@ const renderApp = () => {
     // Check if we should load debug mode
     const isDebugMode = window.location.search.includes('debug=true') ||
                        window.location.hash.includes('debug') ||
-                       !import.meta.env.VITE_SUPABASE_URL ||
-                       !import.meta.env.VITE_SUPABASE_ANON_KEY;
+                       !process.env.REACT_APP_SUPABASE_URL ||
+                       !process.env.REACT_APP_SUPABASE_ANON_KEY;
 
     if (isDebugMode && !window.location.hash.includes('full-app')) {
       console.log('🧪 Rendering Debug App...');

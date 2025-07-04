@@ -9,6 +9,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { AppStateProvider } from "@/contexts/AppStateContext";
 import { AdminProvider } from "@/contexts/AdminContext";
+import { onboardingService } from "@/services/onboardingService";
 import { BreadcrumbProvider } from "@/components/BreadcrumbNavigation";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
@@ -57,6 +58,7 @@ const AIIntegrationTest = lazy(() => import("@/pages/AIIntegrationTest"));
 const AIConfigTest = lazy(() => import("@/pages/AIConfigTest"));
 const RealtimeTest = lazy(() => import("@/pages/RealtimeTest"));
 const PerformanceTest = lazy(() => import("@/pages/PerformanceTest"));
+const APIKeyTestPage = lazy(() => import("@/pages/APIKeyTestPage"));
 
 const PromptGuide = lazy(() => import("@/components/prompting/PromptGuide"));
 const PromptBuilder = lazy(() => import("@/components/prompting/PromptBuilder"));
@@ -274,6 +276,11 @@ function AppRoutes() {
       <Route path="/ai-config-test" element={<AIConfigTest />} />
       <Route path="/realtime-test" element={<RealtimeTest />} />
       <Route path="/performance-test" element={<PerformanceTest />} />
+      <Route path="/api-key-test" element={
+        <ProtectedRoute>
+          <APIKeyTestPage />
+        </ProtectedRoute>
+      } />
 
       {/* Admin Routes */}
       <Route path="/admin/*" element={

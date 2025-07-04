@@ -730,26 +730,63 @@ export interface Database {
         Row: {
           id: string
           user_id: string
-          preferred_provider: string
-          api_keys: Json
-          model_preferences: Json
+          provider: string
+          api_key_encrypted: string | null
+          model_name: string | null
+          custom_endpoint: string | null
+          temperature: number
+          max_tokens: number
+          provider_settings: Json
+          connection_status: string
+          last_error: string | null
+          last_test_at: string | null
+          total_requests: number
+          total_tokens_used: number
+          last_used_at: string | null
+          is_active: boolean
           created_at: string
           updated_at: string
         }
         Insert: {
           id?: string
           user_id: string
-          preferred_provider: string
-          api_keys?: Json
-          model_preferences?: Json
+          provider: string
+          api_key_encrypted?: string | null
+          model_name?: string | null
+          custom_endpoint?: string | null
+          temperature?: number
+          max_tokens?: number
+          provider_settings?: Json
+          connection_status?: string
+          last_error?: string | null
+          last_test_at?: string | null
+          total_requests?: number
+          total_tokens_used?: number
+          last_used_at?: string | null
+          is_active?: boolean
           created_at?: string
           updated_at?: string
         }
         Update: {
           id?: string
           user_id?: string
-          preferred_provider?: string
-          api_keys?: Json
+          provider?: string
+          api_key_encrypted?: string | null
+          model_name?: string | null
+          custom_endpoint?: string | null
+          temperature?: number
+          max_tokens?: number
+          provider_settings?: Json
+          connection_status?: string
+          last_error?: string | null
+          last_test_at?: string | null
+          total_requests?: number
+          total_tokens_used?: number
+          last_used_at?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }s?: Json
           model_preferences?: Json
           created_at?: string
           updated_at?: string
