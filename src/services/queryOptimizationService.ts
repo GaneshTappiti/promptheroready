@@ -421,10 +421,16 @@ export class QueryOptimizationService {
    * Initialize optimization service
    */
   static async initialize(): Promise<void> {
+    // Only initialize on client side
+    if (typeof window === 'undefined') {
+      console.log('Skipping QueryOptimizationService initialization on server side');
+      return;
+    }
+
     try {
       await this.optimizeConnectionPool();
       await this.preloadCommonData();
-      
+
       // Set up periodic cache cleanup
       setInterval(() => {
         this.cleanupExpiredCache();
@@ -433,6 +439,7 @@ export class QueryOptimizationService {
       console.log('Query optimization service initialized');
     } catch (error) {
       console.error('Error initializing query optimization service:', error);
+      // Don't throw error to prevent app from crashing
     }
   }
 

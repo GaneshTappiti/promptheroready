@@ -108,11 +108,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log('🔄 Attempting signup for email:', email);
 
+      const redirectUrl = typeof window !== 'undefined'
+        ? `${window.location.origin}/auth/callback`
+        : '/auth/callback';
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: redirectUrl,
           data: userData,
         },
       });
@@ -160,8 +164,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const resetPassword = async (email: string) => {
     try {
+      const redirectUrl = typeof window !== 'undefined'
+        ? `${window.location.origin}/auth/reset-password`
+        : '/auth/reset-password';
+
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
+        redirectTo: redirectUrl,
       });
       return { error };
     } catch (error) {
@@ -184,10 +192,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithProvider = async (provider: Provider) => {
     try {
+      const redirectUrl = typeof window !== 'undefined'
+        ? `${window.location.origin}/auth/callback`
+        : '/auth/callback';
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
         },
       });
       return { error };
@@ -199,13 +211,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const resendVerificationEmail = async () => {
     if (!user) return { error: new Error('No user found') };
-    
+
     try {
+      const redirectUrl = typeof window !== 'undefined'
+        ? `${window.location.origin}/auth/callback`
+        : '/auth/callback';
+
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email: user.email!,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: redirectUrl,
         },
       });
       return { error };

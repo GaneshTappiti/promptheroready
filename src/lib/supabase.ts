@@ -40,6 +40,7 @@ export const supabase = createClient<Database>(
       storage: {
         getItem: (key: string) => {
           try {
+            if (typeof localStorage === 'undefined') return null;
             const item = localStorage.getItem(key);
             return item ? JSON.parse(item) : null;
           } catch (error) {
@@ -49,6 +50,7 @@ export const supabase = createClient<Database>(
         },
         setItem: (key: string, value: unknown) => {
           try {
+            if (typeof localStorage === 'undefined') return;
             localStorage.setItem(key, JSON.stringify(value));
           } catch (error) {
             console.error('Error writing to localStorage:', error);
@@ -1186,8 +1188,8 @@ export const initializeSupabaseMonitoring = () => {
   }
 };
 
-// Auto-initialize monitoring in development
-if (import.meta.env.DEV) {
+// Auto-initialize monitoring in development (client-side only)
+if (import.meta.env.DEV && typeof window !== 'undefined') {
   initializeSupabaseMonitoring();
 }
 
