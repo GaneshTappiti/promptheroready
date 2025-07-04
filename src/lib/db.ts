@@ -2,7 +2,7 @@ import { Pool } from 'pg';
 
 // Database connection configuration - should be set via environment variables
 const dbConfig = {
-  connectionString: import.meta.env.VITE_DATABASE_URL,
+  connectionString: import.meta.env.VITE_DATABASE_URL || '',
   ssl: true,
   max: 20, // Maximum number of clients in the pool
   idleTimeoutMillis: 30000, // How long a client is allowed to remain idle before being closed

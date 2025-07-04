@@ -3,39 +3,34 @@
  * Centralized configuration management with environment-specific settings
  */
 
-// Helper function to get environment variable with fallback
-const getEnvVar = (reactKey: string, viteKey: string, defaultValue: string = '') => {
-  return process.env[reactKey] || process.env[viteKey] || defaultValue;
-};
-
-// Environment variables with defaults - supporting both REACT_APP_ and VITE_ prefixes
+// Environment variables with defaults - using Vite format
 const env = {
-  NODE_ENV: process.env.NODE_ENV || 'development',
-  APP_NAME: getEnvVar('REACT_APP_NAME', 'VITE_APP_NAME', 'Pitch Perfect Engine'),
-  APP_VERSION: getEnvVar('REACT_APP_VERSION', 'VITE_APP_VERSION', '1.0.0'),
-  APP_ENVIRONMENT: getEnvVar('REACT_APP_ENVIRONMENT', 'VITE_APP_ENVIRONMENT', 'development'),
-  API_BASE_URL: getEnvVar('REACT_APP_API_BASE_URL', 'VITE_API_BASE_URL', 'http://localhost:3000'),
-  API_TIMEOUT: getEnvVar('REACT_APP_API_TIMEOUT', 'VITE_API_TIMEOUT', '30000'),
-  SUPABASE_URL: getEnvVar('REACT_APP_SUPABASE_URL', 'VITE_SUPABASE_URL', ''),
-  SUPABASE_ANON_KEY: getEnvVar('REACT_APP_SUPABASE_ANON_KEY', 'VITE_SUPABASE_ANON_KEY', ''),
-  DATABASE_URL: getEnvVar('REACT_APP_DATABASE_URL', 'VITE_DATABASE_URL', ''),
-  ENCRYPTION_KEY: getEnvVar('REACT_APP_ENCRYPTION_KEY', 'VITE_ENCRYPTION_KEY', ''),
-  SENTRY_DSN: getEnvVar('REACT_APP_SENTRY_DSN', 'VITE_SENTRY_DSN', ''),
-  ANALYTICS_ID: getEnvVar('REACT_APP_ANALYTICS_ID', 'VITE_ANALYTICS_ID', ''),
-  GOOGLE_ANALYTICS_ID: getEnvVar('REACT_APP_GOOGLE_ANALYTICS_ID', 'VITE_GOOGLE_ANALYTICS_ID', ''),
-  FEATURE_FLAGS: getEnvVar('REACT_APP_FEATURE_FLAGS', 'VITE_FEATURE_FLAGS', ''),
-  ENABLE_ANALYTICS: getEnvVar('REACT_APP_ENABLE_ANALYTICS', 'VITE_ENABLE_ANALYTICS', 'true'),
-  ENABLE_ERROR_REPORTING: getEnvVar('REACT_APP_ENABLE_ERROR_REPORTING', 'VITE_ENABLE_ERROR_REPORTING', 'true'),
-  ENABLE_PERFORMANCE_MONITORING: getEnvVar('REACT_APP_ENABLE_PERFORMANCE_MONITORING', 'VITE_ENABLE_PERFORMANCE_MONITORING', 'true'),
-  ENABLE_PWA: getEnvVar('REACT_APP_ENABLE_PWA', 'VITE_ENABLE_PWA', 'true'),
-  ENABLE_OFFLINE_MODE: getEnvVar('REACT_APP_ENABLE_OFFLINE_MODE', 'VITE_ENABLE_OFFLINE_MODE', 'false'),
-  MOBILE_OPTIMIZATIONS: getEnvVar('REACT_APP_MOBILE_OPTIMIZATIONS', 'VITE_MOBILE_OPTIMIZATIONS', 'true'),
+  NODE_ENV: import.meta.env.MODE || 'development',
+  APP_NAME: import.meta.env.VITE_APP_NAME || 'Pitch Perfect Engine',
+  APP_VERSION: import.meta.env.VITE_APP_VERSION || '1.0.0',
+  APP_ENVIRONMENT: import.meta.env.VITE_APP_ENVIRONMENT || 'development',
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
+  API_TIMEOUT: import.meta.env.VITE_API_TIMEOUT || '30000',
+  SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL || '',
+  SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY || '',
+  DATABASE_URL: import.meta.env.VITE_DATABASE_URL || '',
+  ENCRYPTION_KEY: import.meta.env.VITE_ENCRYPTION_KEY || '',
+  SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN || '',
+  ANALYTICS_ID: import.meta.env.VITE_ANALYTICS_ID || '',
+  GOOGLE_ANALYTICS_ID: import.meta.env.VITE_GOOGLE_ANALYTICS_ID || '',
+  FEATURE_FLAGS: import.meta.env.VITE_FEATURE_FLAGS || '',
+  ENABLE_ANALYTICS: import.meta.env.VITE_ENABLE_ANALYTICS || 'true',
+  ENABLE_ERROR_REPORTING: import.meta.env.VITE_ENABLE_ERROR_REPORTING || 'true',
+  ENABLE_PERFORMANCE_MONITORING: import.meta.env.VITE_ENABLE_PERFORMANCE_MONITORING || 'true',
+  ENABLE_PWA: import.meta.env.VITE_ENABLE_PWA || 'true',
+  ENABLE_OFFLINE_MODE: import.meta.env.VITE_ENABLE_OFFLINE_MODE || 'false',
+  MOBILE_OPTIMIZATIONS: import.meta.env.VITE_MOBILE_OPTIMIZATIONS || 'true',
   // AI Provider Keys
-  OPENAI_API_KEY: getEnvVar('REACT_APP_OPENAI_API_KEY', 'VITE_OPENAI_API_KEY', ''),
-  GEMINI_API_KEY: getEnvVar('REACT_APP_GEMINI_API_KEY', 'VITE_GEMINI_API_KEY', ''),
-  CLAUDE_API_KEY: getEnvVar('REACT_APP_CLAUDE_API_KEY', 'VITE_CLAUDE_API_KEY', ''),
-  ANTHROPIC_API_KEY: getEnvVar('REACT_APP_ANTHROPIC_API_KEY', 'VITE_ANTHROPIC_API_KEY', ''),
-  DEEPSEEK_API_KEY: getEnvVar('REACT_APP_DEEPSEEK_API_KEY', 'VITE_DEEPSEEK_API_KEY', ''),
+  OPENAI_API_KEY: import.meta.env.VITE_OPENAI_API_KEY || '',
+  GEMINI_API_KEY: import.meta.env.VITE_GEMINI_API_KEY || '',
+  CLAUDE_API_KEY: import.meta.env.VITE_CLAUDE_API_KEY || '',
+  ANTHROPIC_API_KEY: import.meta.env.VITE_ANTHROPIC_API_KEY || '',
+  DEEPSEEK_API_KEY: import.meta.env.VITE_DEEPSEEK_API_KEY || '',
 } as const;
 
 // Validate required environment variables

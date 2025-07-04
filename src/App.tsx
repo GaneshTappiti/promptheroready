@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { AppStateProvider } from "@/contexts/AppStateContext";
 import { AdminProvider } from "@/contexts/AdminContext";
-import { onboardingService } from "@/services/onboardingService";
+// import { onboardingService } from "@/services/onboardingService";
 import { BreadcrumbProvider } from "@/components/BreadcrumbNavigation";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";

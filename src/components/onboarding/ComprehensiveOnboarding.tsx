@@ -163,7 +163,7 @@ export const ComprehensiveOnboarding = ({ onComplete }: ComprehensiveOnboardingP
             onUpdate={updateOnboardingData}
             onNext={goToNextStep}
             onBack={goToPreviousStep}
-            user={user}
+
           />
         );
       case 'preferences':

@@ -21,7 +21,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { aiProviderService } from '@/services/aiProviderService';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 
 interface APIProvider {
   id: string;

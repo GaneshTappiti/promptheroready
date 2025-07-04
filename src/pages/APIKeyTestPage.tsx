@@ -22,7 +22,7 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { APIKeyTester } from '@/components/APIKeyTester';
-import { APIKeyManager } from '@/components/APIKeyManager';
+import APIKeyManager from '@/components/APIKeyManager';
 import { aiProviderService } from '@/services/aiProviderService';
 import { UserAIPreferences } from '@/types/aiProvider';
 import { SupabaseConnectionTester } from '@/utils/supabaseConnectionTest';
@@ -326,3 +326,5 @@ export const APIKeyTestPage: React.FC = () => {
     </div>
   );
 };
+
+export default APIKeyTestPage;

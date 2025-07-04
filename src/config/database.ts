@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import { Pool } from 'pg';
 
-// Supabase client configuration - React-style with fallback
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+// Supabase client configuration - Vite format
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables. Please check your .env file.');
@@ -13,7 +13,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // PostgreSQL pool configuration
 const pool = new Pool({
-  connectionString: process.env.REACT_APP_DATABASE_URL || process.env.VITE_DATABASE_URL,
+  connectionString: import.meta.env.VITE_DATABASE_URL,
   ssl: {
     rejectUnauthorized: false // Required for Supabase
   }

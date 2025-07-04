@@ -42,7 +42,7 @@ export class EncryptionService {
     // 3. Use hardware security modules (HSM) for key generation
     
     // For now, we'll use a combination of user ID and environment variable
-    const masterKey = process.env.REACT_APP_ENCRYPTION_MASTER_KEY || process.env.VITE_ENCRYPTION_MASTER_KEY || 'default-master-key-change-in-production';
+    const masterKey = import.meta.env.VITE_ENCRYPTION_MASTER_KEY || 'default-master-key-change-in-production';
     const userSalt = new TextEncoder().encode(userId + masterKey);
     
     // Create a proper salt by hashing the user salt

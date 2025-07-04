@@ -37,7 +37,7 @@ const initializeClientSide = async () => {
   }
 
   // Register service worker for PWA functionality
-  if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+  if ('serviceWorker' in navigator && import.meta.env.PROD) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
@@ -110,9 +110,9 @@ const renderApp = () => {
 
     // Validate environment
     console.log('🔍 Environment check:', {
-      NODE_ENV: process.env.NODE_ENV,
-      SUPABASE_URL: process.env.REACT_APP_SUPABASE_URL ? '✅ Set' : '❌ Missing',
-      SUPABASE_KEY: process.env.REACT_APP_SUPABASE_ANON_KEY ? '✅ Set' : '❌ Missing'
+      NODE_ENV: import.meta.env.MODE,
+      SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL ? '✅ Set' : '❌ Missing',
+      SUPABASE_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY ? '✅ Set' : '❌ Missing'
     });
 
     // Create root and render app
@@ -127,22 +127,70 @@ const renderApp = () => {
     // Check if we should load debug mode
     const isDebugMode = window.location.search.includes('debug=true') ||
                        window.location.hash.includes('debug') ||
-                       !process.env.REACT_APP_SUPABASE_URL ||
-                       !process.env.REACT_APP_SUPABASE_ANON_KEY;
+                       !import.meta.env.VITE_SUPABASE_URL ||
+                       !import.meta.env.VITE_SUPABASE_ANON_KEY;
 
     if (isDebugMode && !window.location.hash.includes('full-app')) {
       console.log('🧪 Rendering Debug App...');
-      root.render(<DebugApp />);
+      root.render(
+        <React.StrictMode>
+          <DebugApp />
+        </React.StrictMode>
+      );
       console.log('✅ Debug App rendered successfully!');
     } else {
       console.log('🎨 Attempting to render Full App component...');
       try {
-        root.render(<App />);
+        root.render(
+          <React.StrictMode>
+            <App />
+          </React.StrictMode>
+        );
         console.log('✅ Full App rendered successfully!');
       } catch (appError) {
         console.error('🔥 Failed to render App component:', appError);
         console.log('🧪 Falling back to Debug App...');
-        root.render(<DebugApp />);
+        try {
+          root.render(
+            <React.StrictMode>
+              <DebugApp />
+            </React.StrictMode>
+          );
+        } catch (debugError) {
+          console.error('🔥 Even Debug App failed:', debugError);
+          // Ultimate fallback - render basic HTML
+          root.render(
+            <div style={{
+              padding: '20px',
+              fontFamily: 'Arial, sans-serif',
+              background: 'linear-gradient(135deg, #10b981, #059669)',
+              color: 'white',
+              minHeight: '100vh',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <h1>🚀 PromptHeroReady</h1>
+                <p>Application is starting up...</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  style={{
+                    padding: '10px 20px',
+                    background: 'white',
+                    color: '#059669',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    marginTop: '20px'
+                  }}
+                >
+                  Reload Application
+                </button>
+              </div>
+            </div>
+          );
+        }
       }
     }
   } catch (error) {

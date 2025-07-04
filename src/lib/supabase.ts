@@ -5,10 +5,10 @@ import type { Database } from '@/types/database';
 // SUPABASE CONFIGURATION & CLIENT SETUP
 // =====================================================
 
-// Environment variables with validation - React-style with fallback
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
-const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
-// const dbConnectionString = process.env.REACT_APP_DATABASE_URL || process.env.VITE_DATABASE_URL || '';
+// Environment variables with validation - Vite format
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// const dbConnectionString = import.meta.env.VITE_DATABASE_URL || '';
 
 // Configuration validation
 if (!supabaseUrl || !supabaseKey) {

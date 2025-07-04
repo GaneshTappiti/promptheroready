@@ -784,9 +784,6 @@ export interface Database {
           total_tokens_used?: number
           last_used_at?: string | null
           is_active?: boolean
-          created_at?: string
-          updated_at?: string
-        }s?: Json
           model_preferences?: Json
           created_at?: string
           updated_at?: string
