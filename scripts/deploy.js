@@ -119,9 +119,9 @@ async function validateEnvironment() {
   // Check required environment variables
   const envContent = fs.readFileSync(config.envFile, 'utf8')
   const requiredVars = [
-    'REACT_APP_SUPABASE_URL',
-    'REACT_APP_SUPABASE_ANON_KEY',
-    'REACT_APP_ENCRYPTION_KEY'
+    'VITE_SUPABASE_URL',
+    'VITE_SUPABASE_ANON_KEY',
+    'VITE_ENCRYPTION_KEY'
   ]
   
   const missingVars = requiredVars.filter(varName => {

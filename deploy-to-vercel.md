@@ -32,7 +32,7 @@ Your application is ready for deployment! Here are the steps to deploy to Vercel
    ```
    VITE_SUPABASE_URL=https://dsfikceaftssoaazhvwv.supabase.co
    VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzZmlrY2VhZnRzc29hYXpodnd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2MTM2NzYsImV4cCI6MjA2NDE4OTY3Nn0.TVtwI2INheLjdnwnaZNM0tLuz9URmGZ4MHbH2Akb3fA
-   REACT_APP_ENCRYPTION_KEY=b8c263070380da68b0a350cba5fadc7d00e77dbbed0cfce1c70a919088025dc3
+   VITE_ENCRYPTION_KEY=b8c263070380da68b0a350cba5fadc7d00e77dbbed0cfce1c70a919088025dc3
    NODE_ENV=production
    ```
 

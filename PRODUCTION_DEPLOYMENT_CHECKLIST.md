@@ -4,9 +4,9 @@
 
 ### ✅ Environment Configuration
 - [ ] Copy `.env.production` to `.env.local` and fill in production values
-- [ ] Set `REACT_APP_SUPABASE_URL` to production Supabase URL
-- [ ] Set `REACT_APP_SUPABASE_ANON_KEY` to production Supabase anon key
-- [ ] Generate secure `REACT_APP_ENCRYPTION_KEY` (32+ characters)
+- [ ] Set `VITE_SUPABASE_URL` to production Supabase URL
+- [ ] Set `VITE_SUPABASE_ANON_KEY` to production Supabase anon key
+- [ ] Generate secure `VITE_ENCRYPTION_KEY` (32+ characters)
 - [ ] Configure AI provider API keys (if using)
 - [ ] Set up analytics IDs (Google Analytics, etc.)
 - [ ] Configure error reporting (Sentry DSN)
