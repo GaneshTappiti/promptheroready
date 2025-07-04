@@ -10,11 +10,7 @@
       "NODE_OPTIONS": "--max-old-space-size=4096"
     }
   },
-  "functions": {
-    "app/api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
+
   "rewrites": [
     {
       "source": "/(.*)",
